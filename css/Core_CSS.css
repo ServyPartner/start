@@ -1,0 +1,378 @@
+/*════════════════════════════════════════════════════════════════════
+
+ARCHIVO:         Core_CSS.html
+ESPEJO GITHUB:   github/css/Core_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
+PROYECTO:        INGeniusCloud | ServyPartner
+RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
+                 maestra, placeholders, modo móvil del lienzo y
+                 notificación flotante).
+VERSIÓN:         1.0
+DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
+════════════════════════════════════════════════════════════════════*/
+
+  :root {
+    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+
+    --size-tituloPost: 24px;      --weight-tituloPost: 300;      --color-tituloPost: #1f2937;
+    --size-titulo: 22px;          --weight-titulo: 300;          --color-titulo: #1f2937;
+    --size-subtitulo: 18px;       --weight-subtitulo: 300;       --color-subtitulo: #1f2937;
+    --size-textoPrimario: 14px;   --weight-textoPrimario: 300;   --color-textoPrimario: #1f2937;
+    --size-textoSecundario: 14px; --weight-textoSecundario: 300; --color-textoSecundario: #64748B;
+    --size-cita: 11px;            --weight-cita: 400;            --color-cita: #1f2937;
+    --size-enlaces: 13px;         --weight-enlaces: 400;         --color-enlaces: #2563EB;
+    --size-botonPrimario: 16px;   --weight-botonPrimario: 400;   --color-botonPrimario: #FFFFFF;
+    --size-botonSecundario: 16px; --weight-botonSecundario: 400; --color-botonSecundario: #7A828A;
+    --size-badge: 9px;            --weight-badge: 700;
+
+    /* COLOR PRIMARIO · el AZUL oficial de la Partner vive
+       CENTRALIZADO aquí (mismo trato que las variables de
+       tipografía). Trío del acta, intocable:
+       #2563EB oficial · #1D4ED8 medio · #DBEAFE claro.
+       Consumidores: var(--color-primario), var(--color-primario-medio),
+       var(--color-primario-claro) — nada de azules sueltos. */
+    --color-primario: #2563EB;
+    --color-primario-medio: #1D4ED8;
+    --color-primario-claro: #DBEAFE;
+
+    /* CHIPS · letras propias de los dos carriles de chips
+       (molde del original: la clase solo manda tamaño y peso;
+       el color lo viste cada elemento). */
+    --size-chipsFiltros: 14px;    --weight-chipsFiltros: 300;
+    --size-chipsFormulario: 12px; --weight-chipsFormulario: 300;
+
+    /* ============================================================
+       FAMILIA UI · tamaños recurrentes de sheets y controles
+       (referencia única: cambiar aquí cambia todo el sistema)
+       ============================================================ */
+    --size-ui-1: 0.72rem;
+    --size-ui-2: 0.78rem;
+    --size-ui-3: 0.82rem;
+  }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: var(--font-main) !important;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background: radial-gradient(circle at 50% 0%, #2b2f42 0%, #14151c 45%, #0a0b0f 100%);
+    color: #fff;
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    min-height: 100vh;
+  }
+
+  /* ============================================================
+     CLASES MAESTRAS DE TIPOGRAFÍA (las mismas del original —
+     el texto de la Partner nace con estas clases; regla del
+     dueño: cero tipografías harcodeadas)
+     ============================================================ */
+  .tituloPost {
+    font-size: var(--size-tituloPost) !important;
+    font-weight: var(--weight-tituloPost) !important;
+    color: var(--color-tituloPost) !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.5px !important;
+    text-align: left !important;
+  }
+  .titulo {
+    font-size: var(--size-titulo) !important;
+    font-weight: var(--weight-titulo) !important;
+    color: var(--color-titulo) !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.5px !important;
+    text-align: left !important;
+  }
+  .subtitulo {
+    font-size: var(--size-subtitulo) !important;
+    font-weight: var(--weight-subtitulo) !important;
+    color: var(--color-subtitulo) !important;
+    line-height: 1.3 !important;
+    letter-spacing: 0px !important;
+    text-align: left !important;
+  }
+  .textoPrimario, .textoPrimario p, .textoPrimario li, .textoPrimario div {
+    font-size: var(--size-textoPrimario) !important;
+    font-weight: var(--weight-textoPrimario) !important;
+    color: var(--color-textoPrimario) !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0px !important;
+  }
+  .textoPrimario strong, .textoPrimario b { font-weight: 600 !important; }
+  .textoPrimario em, .textoPrimario i { font-style: italic !important; }
+  .textoPrimario h2 {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+    color: #1f2937 !important;
+    margin: 16px 0 8px 0 !important;
+  }
+  .textoSecundario, .textoSecundario * {
+    font-size: var(--size-textoSecundario) !important;
+    font-weight: var(--weight-textoSecundario) !important;
+    color: var(--color-textoSecundario) !important;
+    line-height: 1.6 !important;
+    letter-spacing: 0px !important;
+  }
+  .textoSecundario strong, .textoSecundario b { font-weight: 600 !important; }
+  .cita {
+    font-size: var(--size-cita) !important;
+    font-weight: var(--weight-cita) !important;
+    color: var(--color-cita) !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0px !important;
+  }
+  .enlacesOpciones {
+    font-size: var(--size-enlaces) !important;
+    font-weight: var(--weight-enlaces) !important;
+    color: var(--color-enlaces) !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0px !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+    text-decoration: underline !important;
+    text-decoration-style: dotted !important;
+    text-decoration-thickness: 1.5px !important;
+    text-underline-offset: 4px !important;
+    cursor: pointer !important;
+    margin: 0 !important;
+    align-self: flex-start !important;
+  }
+  .botonPrimario {
+    font-size: var(--size-botonPrimario) !important;
+    font-weight: var(--weight-botonPrimario) !important;
+    color: var(--color-botonPrimario) !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.1px !important;
+  }
+  .botonSecundario {
+    font-size: var(--size-botonSecundario) !important;
+    font-weight: var(--weight-botonSecundario) !important;
+    color: var(--color-botonSecundario) !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.1px !important;
+  }
+  .badge {
+    font-size: var(--size-badge) !important;
+    font-weight: var(--weight-badge) !important;
+    line-height: 1.2 !important;
+    letter-spacing: 0.5px !important;
+  }
+
+  /* ============================================================
+     CHIPS MAESTROS (molde) · SOLO tamaño y peso — el color lo
+     viste cada elemento y sus estados.
+     ============================================================ */
+  .chipsFiltros {
+    font-size: var(--size-chipsFiltros) !important;
+    font-weight: var(--weight-chipsFiltros) !important;
+  }
+  .chipsFormulario {
+    font-size: var(--size-chipsFormulario) !important;
+    font-weight: var(--weight-chipsFormulario) !important;
+  }
+
+  /* ============================================================
+     PLACEHOLDERS · voz única en toda la app
+     ============================================================ */
+  ::placeholder {
+    color: var(--color-textoSecundario) !important;
+    font-weight: var(--weight-textoSecundario) !important;
+    font-size: var(--size-textoSecundario) !important;
+    opacity: 1 !important;
+  }
+  ::-webkit-input-placeholder {
+    color: var(--color-textoSecundario) !important;
+    font-weight: var(--weight-textoSecundario) !important;
+    font-size: var(--size-textoSecundario) !important;
+    opacity: 1 !important;
+  }
+
+  /* ============================================================
+     MODO MÓVIL Y LIENZO
+     ============================================================ */
+  body.is-mobile {
+    display: block !important;
+    padding: 0 !important;
+    /* degradado del documento: AZUL CLARO de la Partner arriba
+       (#DBEAFE, tercera del trío del acta) y blanco desde el
+       30% — el mismo que viste el preloader y el arranque. El
+       degradado del LIENZO (.area-contenido) NO se toca. */
+    background-color: #DBEAFE !important;
+    background-image: linear-gradient(180deg, #DBEAFE 0%, #DBEAFE 12%, #ffffff 30%, #ffffff 100%) !important;
+    background-repeat: no-repeat !important;
+    color: #000;
+  }
+  body.is-mobile .phone {
+    width: 100% !important; height: 100vh !important; min-height: 100vh !important;
+    border-radius: 0 !important; padding: 0 !important;
+    background: transparent !important; box-shadow: none !important;
+  }
+  body.is-mobile .glass { border-radius: 0 !important; background: transparent !important; }
+  body.is-mobile .safari { top: 0 !important; background: transparent !important; }
+  body.is-mobile .btn, body.is-mobile .notch, body.is-mobile .status,
+  body.is-mobile .safari-bottom, body.is-mobile .home-bar { display: none !important; }
+  body.is-mobile .lienzo { width: 100% !important; height: 100vh !important; max-height: 100vh !important; }
+
+  .lienzo-wrap { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
+
+  .titulo-header {
+    flex: 1 1 auto; min-width: 0; margin: 0; padding: 2px 0 2px 8px;
+    font-size: 30.6px; font-weight: 300; line-height: 1.15; letter-spacing: -0.01em;
+    color: #1f2937; text-align: left;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .titulo-header[hidden] { display: none; }
+
+  .area-contenido {
+    flex: 1 1 auto; min-height: 0; background: #DBEAFE; color: #1f2937;
+    display: flex; flex-direction: column;
+    padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
+    transition: background 0.35s ease;
+  }
+
+  /* ============================================================
+     FILA DE CABECERA (molde del lienzo)
+     ============================================================ */
+  .filtros-wrap {
+    flex-shrink: 0;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px 16px 6px 16px;
+  }
+  .btn-volver {
+    flex-shrink: 0;
+    width: 34px; height: 34px;
+    margin-top: 2px;
+    border: 1.2px solid #475569;
+    background: transparent;
+    color: #475569;
+    cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+    border-radius: 50%;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .btn-volver.visible { display: flex; }
+  .btn-volver svg { width: 18px; height: 18px; display: block; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .menu-global {
+    flex-shrink: 0;
+    width: 34px; height: 34px;
+    margin-top: 2px;
+    border: none;
+    background: transparent;
+    color: #475569;
+    cursor: pointer;
+    display: flex;
+    align-items: center; justify-content: center;
+    border-radius: 50%;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .menu-global:active { background-color: rgba(15, 23, 42, 0.06); }
+  .menu-global svg { width: 20px; height: 20px; display: block; }
+
+  /* ============================================================
+     VOLVER ARRIBA DE LOS BOTTOM SHEETS (clase compartida)
+     ============================================================ */
+  .mk-sheet-top {
+    position: absolute; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); right: 14px; width: 34px; height: 34px;
+    border: 1.2px solid #cbd5e1; background: #ffffff; color: #94a3b8; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%; z-index: 8; padding: 0;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.08);
+    opacity: 0; pointer-events: none; transform: translateY(4px);
+    transition: opacity 0.2s ease, transform 0.22s ease;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .mk-sheet-top svg { width: 18px; height: 18px; display: block; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .mk-sheet-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+  .mk-sheet-top:active { opacity: 0.5; }
+
+  /* ============================================================
+     NOTIFICACIÓN FLOTANTE · .notificacionFlotante
+     Clase CENTRALIZADA y UNIVERSAL para los avisos flotantes de
+     la Partner (voz única del Core; molde del original).
+     · POSICIÓN FIJA INFERIOR DERECHA incluida en la clase,
+       respeta el safe-area del móvil. El bottom 68px respeta la
+       barra de Safari.
+     · CRISTAL AZUL: fondo #DBEAFE translúcido + blur y borde
+       azul claro — se adivina lo que hay detrás.
+     · TINTA ÚNICA #1E40AF: el texto (.textoPrimario dentro del
+       aviso) y la ✕ visten el mismo azul oscuro.
+     · TIPOGRAFÍA CERO HARCODEADA: la línea viste .textoPrimario.
+     · FORMA: PÍLDORA. Entra subiendo suave y sale igual.
+     Va OCULTA por defecto: .visible la enciende.
+     ============================================================ */
+  .notificacionFlotante {
+    position: fixed !important;
+    right: 16px;
+    bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+    min-height: 44px;
+    max-width: min(320px, calc(100vw - 32px));
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    background: rgba(219, 234, 254, 0.55) !important;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(37, 99, 235, 0.35);
+    text-align: left !important;
+    color: #1E40AF;
+    border-radius: 999px !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18), 0 3px 10px rgba(15, 23, 42, 0.10);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(12px);
+    pointer-events: none;
+    transition: opacity 0.28s ease, transform 0.28s ease, visibility 0s linear 0.28s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .notificacionFlotante.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: opacity 0.28s ease, transform 0.28s ease, visibility 0s;
+  }
+  .notificacionFlotante .textoPrimario {
+    color: #1E40AF;
+  }
+  .notificacionFlotante .avisoCerrar {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #1E40AF;
+    cursor: pointer;
+  }
+  .notificacionFlotante .avisoCerrar svg {
+    width: 12px;
+    height: 12px;
+    display: block;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .notificacionFlotante {
+      transform: none;
+      transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+    }
+    .notificacionFlotante.visible {
+      transform: none;
+      transition: opacity 0.2s ease, visibility 0s;
+    }
+  }

@@ -1,0 +1,168 @@
+<!--
+════════════════════════════════════════════════════════════════════
+ARCHIVO:         index.html (GitHub Pages · espejo del Index.html de GAS)
+PROYECTO:        INGeniusCloud | ServyPartner
+RESPONSABILIDAD: Misma estructura que el Index de GAS, pero estática:
+                 SISTEMA y PARTNERS llegan POR DATOS (abrirSesion
+                 vía POST al /exec) y los fragments viven en css/
+                 y js/. Sin GA4 (la Partner P1 no lleva analítica
+                 propia).
+VERSIÓN:         1.0
+ENCABEZADOS:     Solo describen lo que funciona HOY. El historial
+                 de tandas vive en la bitácora del taller.
+DEPENDENCIAS:    css/*.css + js/*.js (misma carpeta), manifest.json,
+                 sw.js, icon-192.png, icon-512.png, GitHub_Cromo.*,
+                 Backend: 00 DoGet.gs (doPost con abrirSesion).
+════════════════════════════════════════════════════════════════════
+-->
+<html lang="es">
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>ServyCloud Partner</title>
+
+  <!-- FUENTE INTER (la misma del original) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/Core_CSS.css"><link rel="stylesheet" href="./css/Global_CSS.css">
+
+<!-- ═══ CROMO DE LA PÁGINA ESTÁTICA ═══ -->
+  <meta name="theme-color" content="#2563EB">
+  <!-- PWA iOS: el lienzo pinta DETRÁS de la barra de estado
+       (black-translucent + viewport-fit=cover + los safe-areas de
+       Core_CSS). En Safari/Chrome del navegador las metas no
+       estorban. -->
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="ServyCloud Partner">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+  <link id="pagina-icono" rel="icon" href="./favicon-48.png">
+
+  <link rel="stylesheet" href="./css/GitHub_Cromo.css">
+</head>
+<body>
+<!-- ═══ BOTÓN INSTALAR APP (solo Android; se muestra y se oculta solo) ═══ -->
+  <div id="zona-instalar" hidden role="group" aria-label="Instalar aplicación">
+      <button id="btn-instalar" type="button">
+          <span class="btn-instalar-glifo" data-glifo="instalar" aria-hidden="true"></span>
+          <span>Instalar app</span>
+      </button>
+      <span class="zona-instalar-divisor" aria-hidden="true"></span>
+      <button id="btn-instalar-cerrar" type="button" aria-label="Cerrar sin instalar">✕</button>
+  </div>
+
+
+
+
+  <!-- Detección temprana de móvil · ANTES de Telefono.html -->
+  <script>
+    (function () {
+      var ua = navigator.userAgent || '';
+      var esMovilUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(ua);
+      var esPantallaPequena = window.matchMedia('(max-width: 768px)').matches;
+      if (esMovilUA || esPantallaPequena) { document.body.classList.add('is-mobile'); }
+    })();
+  </script>
+
+  <script src="./js/Iconos.js"></script>
+  <link rel="stylesheet" href="./css/Telefono.css">
+<!-- =========================================================
+     ESTRUCTURA DEL TELÉFONO
+     ========================================================= -->
+<div class="phone">
+  <!-- Botones laterales -->
+  <div class="btn mute"></div>
+  <div class="btn vol-up"></div>
+  <div class="btn vol-dn"></div>
+  <div class="btn power"></div>
+
+  <div class="glass">
+    <!-- Notch -->
+    <div class="notch"></div>
+
+    <!-- Barra de estado -->
+    <div class="status">
+      <div class="left" id="reloj-estado">9:41</div>
+      <div class="right">
+        <div class="signal"><i></i><i></i><i></i><i></i></div>
+        <span class="wifi-glifo" data-glifo="wifi" aria-hidden="true"></span>
+        <div class="battery"><span></span></div>
+      </div>
+    </div>
+
+    <!-- Safari -->
+    <div class="safari">
+
+      <!-- Zona de trabajo: aquí se inyecta el contenido -->
+      <div class="lienzo" id="lienzo"></div>
+
+      <!-- Barra inferior de Safari -->
+      <div class="safari-bottom">
+        <div class="circle-btn" aria-hidden="true" data-glifo="volver"></div>
+
+        <div class="url-capsule">
+          <span class="url-glifo" data-glifo="candadoUrl" aria-hidden="true"></span>
+          https://github.com/ingeniuscloud/ServyCloud-Partner
+        </div>
+
+        <!-- Icono de tres puntos: simples, finos y grises -->
+        <div class="circle-btn" aria-hidden="true" data-glifo="tresPuntos"></div>
+      </div>
+
+      <div class="home-bar"></div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     SCRIPT PARA LA HORA DINÁMICA (Formato 12h)
+     ========================================================= -->
+  <script src="./js/Telefono.js"></script>
+
+  <script>
+    /* La página es estática (GitHub Pages). La sesión llega
+       POR DATOS: abrirSesion entrega TOKEN_SESION, SISTEMA y
+       PARTNERS. El dueño pega la URL /exec de LA PARTNER al
+       desplegar (T6). */
+    window.TOKEN_SESION  = '';
+    window.PARTNERS      = [];
+    window.URL_EXEC      = "PEGAR_AQUI_LA_URL_EXEC_DE_LA_PARTNER";
+  </script>
+
+  <template id="canvas-content">
+    <div class="lienzo-wrap">
+      <div class="area-contenido">
+
+        <!-- ============================================================
+             FILA DE CABECERA · Título + Menú Global
+             ============================================================ -->
+        <div class="filtros-wrap">
+          <button type="button" class="btn-volver" id="btnVolver" aria-label="Volver" hidden data-glifo="volver"></button>
+
+          <h1 class="titulo-header" id="tituloHeader" hidden></h1>
+
+          <button type="button" class="menu-global" aria-label="Menú" data-glifo="menu"></button>
+        </div>
+
+        <!-- ÁREA DE PANTALLAS · selección de partner y pantallas
+             de cada pestaña del podio -->
+        <div class="pantalla-area" id="pantallaArea"></div>
+
+      </div>
+
+      <!-- ============================================================
+           FOOTER PODIO 5 · elemento exclusivo de esta app
+           ============================================================ -->
+      <footer class="podio-footer" id="podioFooter" hidden></footer>
+    </div>
+  </template>
+
+  <script src="./js/Global_Script.js"></script><script src="./js/Global_Menu_Script.js"></script><script src="./js/Core_Script.js"></script>
+
+  <script src="./js/GitHub_Cromo.js"></script>
+</body>
+</html>

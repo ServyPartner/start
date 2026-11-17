@@ -1,0 +1,255 @@
+/*
+════════════════════════════════════════════════════════════════════
+ARCHIVO:         GitHub_Cromo.css
+ESPEJO GITHUB:   css/GitHub_Cromo.css (SOLO-GitHub: no existe en GAS)
+PROYECTO:        ServyPartner | App en GitHub Pages
+RESPONSABILIDAD: Estilos del cromo de la página estática: preloader
+                 orbital y píldora "Instalar app". Molde del cromo
+                 de la app pública, vestido del AZUL de la Partner
+                 (#2563EB oficial · #1D4ED8 medio · #DBEAFE claro —
+                 acta, intocable). El dueño no necesita tocarlo.
+VERSIÓN:         1.0
+CAMBIOS:         P1 (Tanda 1 — cimientos): nace del molde con el
+                 degradado azul (era naranja) y la píldora azul
+                 (era cian de la marca INGeniusCloud).
+DEPENDENCIAS:    index.html (clases .preloader-overlay, .carga-*,
+                 #zona-instalar) · js/GitHub_Cromo.js
+════════════════════════════════════════════════════════════════════
+*/
+    /* ═══ PRELOADER ORBITAL (mismo lenguaje visual del molde;
+         fondo AZUL CLARO de la Partner — degradado de la familia
+         del trío del acta — y interior BLANCO de una vez) ═══ */
+    .preloader-overlay {
+      position: fixed;
+      inset: 0;
+      /* FRANJA DEL TELÉFONO: la caja estira su techo y su piso
+         hacia las safe areas (reloj / barra de gestos) para que
+         el degradado azul llegue DE UNA VEZ a la punta.
+         En la PC env() vale 0 y esto no cambia nada. */
+      top: calc(0px - env(safe-area-inset-top, 0px));
+      bottom: calc(0px - env(safe-area-inset-bottom, 0px));
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(180deg, #60A5FA 0%, #93C5FD 100%);
+      opacity: 1;
+      transition: opacity 0.32s ease;
+      pointer-events: none;
+    }
+
+    /* CINTURÓN 1: mientras el preloader vive, el FONDO DEL
+       DOCUMENTO viste el MISMO degradado azul. Al retirarse el
+       preloader, el js quita la clase y vuelve el degradado
+       azul claro de la app (Core_CSS). */
+    html.preloader-activo {
+      background-color: #60A5FA;
+      background-image: linear-gradient(180deg, #60A5FA 0%, #93C5FD 100%);
+      background-repeat: no-repeat;
+    }
+    .preloader-overlay.saliendo { opacity: 0; }
+    .preloader-overlay[hidden]  { display: none; }
+
+    .carga-preloader {
+      --text-primary: #ffffff;
+      --text-muted: #ffffff;
+      --logo-primario: #ffffff;
+      --logo-secundario: rgba(255, 255, 255, 0.65);
+
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    @keyframes rot { to { transform: rotate(360deg); } }
+
+    .carga-loader {
+      position: relative;
+      width: 100px;
+      height: 100px;
+    }
+
+    .carga-orbital {
+      position: absolute;
+      border-radius: 50%;
+      border: 1px solid transparent;
+    }
+
+    .carga-orbital-1 {
+      inset: 0;
+      border-top-color: var(--logo-primario);
+      border-right-color: var(--logo-primario);
+      animation: rot 1.6s linear infinite;
+    }
+
+    .carga-orbital-2 {
+      inset: 12px;
+      border-bottom-color: var(--logo-secundario);
+      border-left-color: var(--logo-secundario);
+      animation: rot 1.2s linear infinite reverse;
+    }
+
+    .carga-core {
+      position: absolute;
+      width: 48px;
+      height: 48px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .carga-core span {
+      font-size: 22px;
+      font-weight: 400;
+      letter-spacing: -0.5px;
+      color: var(--logo-primario);
+      animation: cargaPulso 2s ease-in-out infinite;
+    }
+
+    .carga-brand {
+      margin-top: 25px;
+      font-size: 21px;
+      letter-spacing: -0.6px;
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: baseline;
+    }
+
+    .carga-brand-servy  { color: var(--logo-primario);   font-weight: 900; }
+    .carga-brand-cloud  { color: var(--text-primary);    font-weight: 700; }
+    .carga-brand-partner{ color: var(--logo-secundario); font-weight: 300; letter-spacing: 1px; margin-left: 5px; }
+
+    .carga-status {
+      margin-top: 9px;
+      font-size: 12px;
+      letter-spacing: 0.3px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+    }
+
+    .carga-puntos {
+      display: inline-flex;
+      gap: 4px;
+      margin-left: 6px;
+    }
+
+    .carga-puntos span {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--logo-primario);
+      animation: cargaPunto 1.4s infinite;
+    }
+    .carga-puntos span:nth-child(2) { animation-delay: 0.2s; }
+    .carga-puntos span:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes cargaPunto {
+      0%, 100% { opacity: 0.2; transform: translateY(0); }
+      50%      { opacity: 1;   transform: translateY(-3px); }
+    }
+    @keyframes cargaPulso {
+      0%, 100% { transform: scale(0.92); opacity: 0.65; }
+      50%      { transform: scale(1);    opacity: 1; }
+    }
+
+    /* ═══ BOTÓN INSTALAR APP (PWA · solo Android) ═══ */
+    #zona-instalar {
+      position: fixed;
+      left: 14px;
+      bottom: calc(14px + env(safe-area-inset-bottom));
+      z-index: 9000;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px 6px 14px;
+      border-radius: 999px;
+      background: #2563EB;
+      color: #ffffff;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+      animation: instalar-entrada 0.35s ease;
+    }
+    #zona-instalar[hidden] { display: none; }
+
+    #btn-instalar {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: none;
+      border: none;
+      color: inherit;
+      font: inherit;
+      font-size: 15px;
+      font-weight: 600;
+      padding: 6px 0;
+      cursor: pointer;
+    }
+
+    .zona-instalar-divisor {
+      width: 1px;
+      height: 18px;
+      background: rgba(255, 255, 255, 0.35);
+    }
+
+    /* Envoltorio del glifo instalar (data-glifo):
+       display contents = el svg pintado es el hijo directo del
+       botón. */
+    .btn-instalar-glifo { display: contents; }
+
+    #btn-instalar-cerrar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: none;
+      background: rgba(255, 255, 255, 0.22);
+      color: #ffffff;
+      font-size: 13px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    @keyframes instalar-entrada {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ═══ MODO MANUAL · pasos para Androids donde Chrome no
+         ofrece el diálogo nativo (Android Go/básicos): la
+         píldora pasa a "¿Cómo instalar?" y despliega esta
+         tarjeta encima de ella ═══ */
+    #zona-instalar-pasos {
+      position: fixed;
+      left: 14px;
+      right: 14px;
+      bottom: calc(78px + env(safe-area-inset-bottom));
+      z-index: 9000;
+      max-width: 340px;
+      background: #ffffff;
+      color: #1f2937;
+      border-radius: 14px;
+      padding: 14px 16px 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.30);
+      animation: instalar-entrada 0.35s ease;
+    }
+    #zona-instalar-pasos[hidden] { display: none; }
+
+    .zona-pasos-titulo {
+      margin: 0 0 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .zona-pasos-lista {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+      font-size: 13px;
+      line-height: 1.45;
+      color: #334155;
+    }
+    .zona-pasos-lista b { color: #0f172a; }
