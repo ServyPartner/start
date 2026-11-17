@@ -6,14 +6,15 @@
 *                  los listeners que Chrome exige para considerar la
 *                  página INSTALABLE (botón "Instalar app"). NO guarda
 *                  nada en caché: todas las peticiones siguen su curso
-*                  normal, así la app de GAS (ServyCloud Partner) y
+*                  normal, así la app de GAS (ServyPartner) y
 *                  sus actualizaciones nunca quedan viejas.
-* VERSIÓN:         1.0
-* CAMBIOS:         P1 (Tanda 1 — cimientos): molde del sw.js de la
-*                  app pública. La regla transversal del acta (cache
-*                  del shell para trabajo offline) se construirá con
-*                  el dueño cuando el espejo se despliegue (T6): hoy
-*                  paso puro, igual que la pública.
+* VERSIÓN:         1.1
+* CAMBIOS:         T2 (Tanda 2 — perfil): renombre alineado (la app
+*                  de GAS es ServyPartner). Sigue paso puro: la
+*                  regla transversal del acta (cache del shell para
+*                  trabajo offline) se construye con el dueño
+*                  cuando el espejo se despliegue (T6): hoy paso
+*                  puro, igual que la pública.
 * DEPENDENCIAS:    Vive en la MISMA carpeta del repositorio que
 *                  index.html, manifest.json y los iconos. Se
 *                  registra desde GitHub_Cromo.js con
