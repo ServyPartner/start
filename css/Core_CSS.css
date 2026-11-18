@@ -1,12 +1,11 @@
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Core_CSS.html
-ESPEJO GITHUB:   github/css/Core_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
                  maestra, placeholders, modo móvil del lienzo y
                  notificación flotante).
-VERSIÓN:         1.0
+VERSIÓN:         1.1
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 ════════════════════════════════════════════════════════════════════*/
 
@@ -222,14 +221,34 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 
   .titulo-header {
     flex: 1 1 auto; min-width: 0; margin: 0; padding: 2px 0 2px 8px;
-    font-size: 30.6px; font-weight: 300; line-height: 1.15; letter-spacing: -0.01em;
-    color: #1f2937; text-align: left;
+    /* Título de sección = la tipografía del LIENZO del post del
+       original (h1.tituloPost): tokens del Core, nada a mano. */
+    font-size: var(--size-tituloPost);
+    font-weight: var(--weight-tituloPost);
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    color: var(--color-tituloPost); text-align: left;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   }
   .titulo-header[hidden] { display: none; }
 
   .area-contenido {
-    flex: 1 1 auto; min-height: 0; background: #DBEAFE; color: #1f2937;
+    flex: 1 1 auto; min-height: 0;
+    /* DEGRADADO DEL LIENZO · la misma pintura del original
+       (Core_Post_Script → pintarAreaConPost sin post: blanco
+       0-5%, banda clarita 15-24%, blanco 36-100%) con el AZUL
+       CLARITO #DBEAFE del acta en la banda. Cuando T3 traiga
+       posts, el pintado dinámico del post pisará este fondo
+       igual que en la pública. */
+    background-color: #ffffff;
+    background-image: linear-gradient(180deg,
+      #ffffff 0%,
+      #ffffff 5%,
+      #DBEAFE 15%,
+      #DBEAFE 24%,
+      #ffffff 36%,
+      #ffffff 100%);
+    color: #1f2937;
     display: flex; flex-direction: column;
     padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px);
     transition: background 0.35s ease;
@@ -376,3 +395,4 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
       transition: opacity 0.2s ease, visibility 0s;
     }
   }
+

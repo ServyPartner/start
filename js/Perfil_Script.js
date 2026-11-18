@@ -25,15 +25,18 @@
 
     var el = {};
 
-    /* ---------- Validadores (espejo del backend) ---------- */
+    /* ---------- Validadores (espejo del backend) ----------
+       telefonoWhatsapp con las constantes del sheet de reserva
+       del original (Reserva_Valida: MIN 10 · MAX 11 números
+       locales — el +58 va fijo como prefijo visual). */
     var REGLAS = {
-      nombre:         { min: 2,   max: 80,  obligatorio: true  },
-      direccion:      { min: 0,   max: 200, obligatorio: false },
-      ciudad:         { min: 2,   max: 80,  obligatorio: true  },
-      municipio:      { min: 2,   max: 80,  obligatorio: true  },
-      estado:         { min: 2,   max: 80,  obligatorio: true  },
-      esloganPartner: { min: 0,   max: 120, obligatorio: false },
-      whatsapp:       { min: 10,  max: 15,  obligatorio: true,  telefono: true }
+      nombre:           { min: 2,   max: 80,  obligatorio: true  },
+      direccion:        { min: 0,   max: 200, obligatorio: false },
+      ciudad:           { min: 2,   max: 80,  obligatorio: true  },
+      municipio:        { min: 2,   max: 80,  obligatorio: true  },
+      estado:           { min: 2,   max: 80,  obligatorio: true  },
+      esloganPartner:   { min: 0,   max: 120, obligatorio: false },
+      telefonoWhatsapp: { min: 10,  max: 11,  obligatorio: true,  telefono: true }
     };
 
     function _esc_(texto) {
@@ -187,6 +190,22 @@
                '</div>';
       };
 
+      /* Campo telefónico del molde Reserva (Reserva_Dato): el
+         +58 va FIJO como prefijo visual y el input recibe SOLO
+         el número local (10-11 números, sin el 0 inicial). */
+      var campoTel = function (id, etiqueta, valor, atributos) {
+        return '<div class="form-field" id="field' + id + '">' +
+                 '<div class="form-input-tel">' +
+                   '<span class="form-prefijo">+58</span>' +
+                   '<input type="tel" id="input' + id + '" placeholder=" " class="form-input-tel-input" value="' +
+                     _esc_(valor || '') + '"' + (atributos || '') + '>' +
+                 '</div>' +
+                 '<label for="input' + id + '" class="form-label">' + _esc_(etiqueta) + '</label>' +
+                 '<span class="field-check" data-glifo="check"></span>' +
+                 '<div class="errorForm" hidden></div>' +
+               '</div>';
+      };
+
       area.innerHTML =
         '<div class="perfil-wrap">' +
 
@@ -210,19 +229,16 @@
             campo('Eslogan', 'Eslogan (opcional)', perfil.esloganPartner, 'text',
                   ' maxlength="120"') +
 
-            '<fieldset class="form-fieldset" id="fieldsetUbicacion">' +
-              '<legend>Ubicación</legend>' +
-              campo('Direccion', 'Dirección (opcional)', perfil.direccion, 'text',
-                    ' maxlength="200" autocomplete="street-address"') +
-              campo('Ciudad', 'Ciudad', perfil.ciudad, 'text', ' maxlength="80"') +
-              campo('Municipio', 'Municipio', perfil.municipio, 'text', ' maxlength="80"') +
-              campo('Estado', 'Estado', perfil.estado, 'text', ' maxlength="80"') +
-            '</fieldset>' +
+            campo('Direccion', 'Dirección (opcional)', perfil.direccion, 'text',
+                  ' maxlength="200" autocomplete="street-address"') +
+            campo('Ciudad', 'Ciudad', perfil.ciudad, 'text', ' maxlength="80"') +
+            campo('Municipio', 'Municipio', perfil.municipio, 'text', ' maxlength="80"') +
+            campo('Estado', 'Estado', perfil.estado, 'text', ' maxlength="80"') +
 
-            campo('Whatsapp', 'WhatsApp de contacto', perfil.whatsapp, 'tel',
-                  ' inputmode="numeric" maxlength="15" autocomplete="tel-national"') +
+            campoTel('TelefonoWhatsapp', 'WhatsApp de contacto', perfil.telefonoWhatsapp,
+                     ' inputmode="numeric" maxlength="11" autocomplete="tel-national"') +
 
-            '<p class="perfil-hint">Con o sin código de país — con números, sin espacios ni símbolos.</p>' +
+            '<p class="perfil-hint">Sin el +58 (va fijo a la izquierda) — 10 o 11 números, sin espacios ni símbolos.</p>' +
 
             '<button type="submit" class="form-submit botonPrimario" id="btnPerfilGuardar">' +
               '<span class="form-submit-texto">Guardar cambios</span>' +
@@ -251,22 +267,22 @@
         form:          area.querySelector('#formPerfil'),
         btnGuardar:    area.querySelector('#btnPerfilGuardar'),
         campos: {
-          nombre:         area.querySelector('#fieldNombre'),
-          esloganPartner: area.querySelector('#fieldEslogan'),
-          direccion:      area.querySelector('#fieldDireccion'),
-          ciudad:         area.querySelector('#fieldCiudad'),
-          municipio:      area.querySelector('#fieldMunicipio'),
-          estado:         area.querySelector('#fieldEstado'),
-          whatsapp:       area.querySelector('#fieldWhatsapp')
+          nombre:           area.querySelector('#fieldNombre'),
+          esloganPartner:   area.querySelector('#fieldEslogan'),
+          direccion:        area.querySelector('#fieldDireccion'),
+          ciudad:           area.querySelector('#fieldCiudad'),
+          municipio:        area.querySelector('#fieldMunicipio'),
+          estado:           area.querySelector('#fieldEstado'),
+          telefonoWhatsapp: area.querySelector('#fieldTelefonoWhatsapp')
         },
         inputs: {
-          nombre:         area.querySelector('#inputNombre'),
-          esloganPartner: area.querySelector('#inputEslogan'),
-          direccion:      area.querySelector('#inputDireccion'),
-          ciudad:         area.querySelector('#inputCiudad'),
-          municipio:      area.querySelector('#inputMunicipio'),
-          estado:         area.querySelector('#inputEstado'),
-          whatsapp:       area.querySelector('#inputWhatsapp')
+          nombre:           area.querySelector('#inputNombre'),
+          esloganPartner:   area.querySelector('#inputEslogan'),
+          direccion:        area.querySelector('#inputDireccion'),
+          ciudad:           area.querySelector('#inputCiudad'),
+          municipio:        area.querySelector('#inputMunicipio'),
+          estado:           area.querySelector('#inputEstado'),
+          telefonoWhatsapp: area.querySelector('#inputTelefonoWhatsapp')
         }
       };
     }
@@ -277,12 +293,16 @@
     function validarCampo_(clave, valorCrudo) {
       var r = REGLAS[clave];
       var v = String(valorCrudo == null ? '' : valorCrudo).trim();
-      if (clave === 'whatsapp') v = v.replace(/\D/g, '');
-      if (r.obligatorio && v.length < r.min) return { ok: false, vacio: true };
-      if (v.length > r.max) return { ok: false, largo: true };
-      if (clave === 'whatsapp' && v.length && v.length < r.min) {
+      if (r.telefono) v = v.replace(/\D/g, '');
+      if (r.telefono && v.charAt(0) === '0') v = v.substring(1);
+      /* Primero el corto (número incompleto) y después el vacío:
+         un teléfono de 7 números merece "Parece incompleto", no
+         "Este dato es obligatorio". */
+      if (r.telefono && v.length && v.length < r.min) {
         return { ok: false, corto: true };
       }
+      if (r.obligatorio && v.length < r.min) return { ok: false, vacio: true };
+      if (v.length > r.max) return { ok: false, largo: true };
       return { ok: true, valor: v };
     }
 
@@ -303,7 +323,7 @@
         field.classList.remove('invalido');
       } else if (String(input.value).trim()) {
         field.classList.remove('validado');
-        if (clave === 'whatsapp' && res.corto) {
+        if (REGLAS[clave] && REGLAS[clave].telefono && res.corto) {
           field.classList.add('invalido');
         } else if (!res.vacio) {
           field.classList.add('invalido');
@@ -325,8 +345,8 @@
         input.addEventListener('focus', function () { refrescarCampo(clave); });
         input.addEventListener('blur',  function () { refrescarCampo(clave); });
         input.addEventListener('input', function () {
-          if (clave === 'whatsapp') {
-            var limpio = input.value.replace(/\D/g, '').slice(0, 15);
+          if (REGLAS[clave] && REGLAS[clave].telefono) {
+            var limpio = input.value.replace(/\D/g, '').slice(0, REGLAS[clave].max + 1);
             if (limpio !== input.value) input.value = limpio;
           }
           refrescarCampo(clave);
@@ -619,3 +639,4 @@
     };
 
   })();
+

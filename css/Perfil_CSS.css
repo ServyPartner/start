@@ -1,12 +1,10 @@
-
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Perfil_CSS.html
-ESPEJO GITHUB:   github/css/Perfil_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Pantalla PERFIL: héroe del avatar + formulario del
                  molde Reserva vestido de azul.
-VERSIÓN:         1.0
+VERSIÓN:         1.1
 DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
                  Global_CSS.html (pantalla-area), Perfil_Script.html
 ════════════════════════════════════════════════════════════════════*/
@@ -137,31 +135,61 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
     text-align: left;
   }
 
-  .form-fieldset {
-    position: relative;
-    border: 1.5px solid #e2e8f0;
-    border-radius: 14px;
-    padding: 14px;
-    margin: 0 0 14px;
-    background: transparent;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
-  }
-  .form-fieldset legend {
-    padding: 0 6px;
-    margin-left: 4px;
-    font-size: var(--size-cita);
-    font-weight: var(--weight-cita);
-    color: #475569;
-    letter-spacing: 0.1px;
-    background-color: #ffffff;
-    border-radius: 3px;
-    text-align: left;
-  }
-
   .form-field {
     position: relative;
     margin-bottom: 14px;
   }
+
+  /* ============================================================
+     CAMPO TELEFÓNICO · molde Reserva (prefijo +58 fijo)
+     La caja es la .form-input-tel del original; el prefijo se
+     despierta con el campo (activo) y viste verde/rojo igual
+     que el check. El focus viste el AZUL de la Partner (aquí
+     nunca entra --post-color de la pública).
+     ============================================================ */
+  .form-input-tel {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 52px;
+    padding: 0 44px 0 0;
+    border-radius: 12px;
+    border: 1.5px solid #e2e8f0;
+    background-color: #f8fafc;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
+  }
+  .form-input-tel:focus-within {
+    border-color: var(--color-primario-medio);
+    background-color: #ffffff;
+  }
+  .form-input-tel-input {
+    flex: 1;
+    height: 100%;
+    border: none;
+    background: transparent;
+    padding: 0 0 0 14px;
+    font-size: var(--size-textoPrimario);
+    font-weight: var(--weight-textoPrimario);
+    color: #0f172a;
+    outline: none;
+    font-family: inherit;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .form-prefijo {
+    padding: 0 2px 0 14px;
+    font-size: var(--size-textoPrimario);
+    font-weight: var(--weight-textoPrimario);
+    color: #64748b;
+    user-select: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .form-field.activo    .form-prefijo { opacity: 1; }
+  .form-field.validado  .form-input-tel { border-color: #16a34a; background-color: #f0fdf4; }
+  .form-field.validado  .form-prefijo   { color: #16a34a; }
+  .form-field.invalido  .form-input-tel { border-color: #dc2626; background-color: #fef2f2; }
+  .form-field.invalido  .form-prefijo   { color: #dc2626; }
 
   .form-input {
     width: 100%;
@@ -366,3 +394,4 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
   @media (prefers-reduced-motion: reduce) {
     .perfil-cargador { animation-duration: 2.4s; }
   }
+

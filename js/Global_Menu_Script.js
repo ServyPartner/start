@@ -55,6 +55,25 @@
         .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
     }
 
+    /* Marca de la EMPRESA (INGeniusCloud), mismo reparto de
+       colores del original: IN · Genius · Cloud. El texto sale
+       de SISTEMA.root.main.marca (Setup — datos ágiles). */
+    function _renderMarcaMain(marca) {
+      var s = String(marca || '').trim();
+      if (!s) return '';
+
+      var idxGenius = s.indexOf('Genius');
+      var idxCloud  = s.lastIndexOf('Cloud');
+
+      if (idxGenius > 0 && idxCloud > idxGenius) {
+        return '<span class="in">'     + _esc_(s.substring(0, idxGenius))         + '</span>' +
+               '<span class="genius">' + _esc_(s.substring(idxGenius, idxCloud))  + '</span>' +
+               '<span class="cloud">'  + _esc_(s.substring(idxCloud))             + '</span>';
+      }
+
+      return _esc_(s);
+    }
+
     function _whatsappHrefSoporte() {
       var root  = (window.SISTEMA && window.SISTEMA.root)  || {};
       var admin = root.admin || {};
@@ -84,6 +103,24 @@
 
           '<div class="sheet-menu-sep"></div>' +
 
+          '<button class="sheet-menu-item" data-accion="terminos">' +
+            '<span class="sheet-menu-icon"><span data-glifo="book"></span></span>' +
+            '<span class="sheet-menu-texto subtitulo">Términos y condiciones</span>' +
+            '<span class="sheet-menu-chevron">›</span>' +
+          '</button>' +
+
+          '<button class="sheet-menu-item" data-accion="privacidad">' +
+            '<span class="sheet-menu-icon"><span data-glifo="candado"></span></span>' +
+            '<span class="sheet-menu-texto subtitulo">Política de privacidad</span>' +
+            '<span class="sheet-menu-chevron">›</span>' +
+          '</button>' +
+
+          '<button class="sheet-menu-item" data-accion="cookies">' +
+            '<span class="sheet-menu-icon"><span data-glifo="cookie"></span></span>' +
+            '<span class="sheet-menu-texto subtitulo">Política de cookies</span>' +
+            '<span class="sheet-menu-chevron">›</span>' +
+          '</button>' +
+
           '<button class="sheet-menu-item" data-accion="pwa">' +
             '<span class="sheet-menu-icon"><span data-glifo="download"></span></span>' +
             '<span class="sheet-menu-texto subtitulo">' + _esc_(pwaTitulo) + '</span>' +
@@ -108,20 +145,30 @@
     }
 
     function getAcercaHTML() {
+      /* Estructura del original: marca + eslogan + versión
+         arriba, «una creación de» + marca de la empresa + su
+         eslogan abajo, © año al pie. Todos los textos salen de
+         SISTEMA (identidad de la Partner + root.main del Setup
+         compartido): cero marcas pintadas a mano. */
       var identidad = (window.SISTEMA && window.SISTEMA.identidad) || {};
       var root      = (window.SISTEMA && window.SISTEMA.root)  || {};
       var main      = root.main || {};
 
-      var anioActual = new Date().getFullYear();
-      var marcaApp   = identidad.nombreApp || 'ServyPartner';
-      var versionApp = identidad.version   || '';
-      var marcaMain  = main.marca || '';
+      var anioActual  = new Date().getFullYear();
+      var marcaApp    = identidad.nombreApp || 'ServyPartner';
+      var esloganApp  = identidad.eslogan   || '';
+      var versionApp  = identidad.version   || '';
+      var marcaMain   = main.marca   || '';
+      var esloganMain = main.eslogan || '';
 
       return '' +
         '<div class="sheet-acerca">' +
 
           '<div class="sheet-acerca-app">' +
             '<h3 class="sheet-acerca-app-nombre">' + _renderMarcaPartner(marcaApp) + '</h3>' +
+            (esloganApp
+              ? '<p class="sheet-acerca-app-eslogan">' + _esc_(esloganApp) + '</p>'
+              : '') +
             (versionApp
               ? '<span class="sheet-acerca-app-version">Versión ' + _esc_(versionApp) + ' · ' +
                 _esc_(identidad.plataforma || 'Web App') + '</span>'
@@ -133,9 +180,10 @@
           '<div class="sheet-acerca-empresa">' +
             '<p class="sheet-acerca-credito">una creación de</p>' +
             (marcaMain
-              ? '<div class="carga-brand">' +
-                  '<span class="in">IN</span><span class="genius">Genius</span><span class="cloud">Cloud</span>' +
-                '</div>'
+              ? '<div class="carga-brand">' + _renderMarcaMain(marcaMain) + '</div>'
+              : '') +
+            (esloganMain
+              ? '<p class="sheet-acerca-empresa-eslogan">' + _esc_(esloganMain) + '</p>'
               : '') +
           '</div>' +
 
@@ -144,6 +192,85 @@
           '</p>' +
 
         '</div>';
+    }
+
+    /* ============================================================
+       SUBVISTAS LEGALES · interpolación de placeholders
+       (molde del original): el contenido vive en
+       SISTEMA.contenidoLegal (03 Constantes.gs) y los textos
+       llevan {marcaApp}·{marcaEmpresa}·{correo}·{whatsapp}.
+       ============================================================ */
+    function getLegalHTML(clave) {
+      var contenido = window.SISTEMA &&
+                      window.SISTEMA.contenidoLegal &&
+                      window.SISTEMA.contenidoLegal[clave];
+
+      if (!contenido) {
+        return '<h2 class="sheet-titulo titulo">Próximamente</h2>';
+      }
+
+      var root  = (window.SISTEMA && window.SISTEMA.root) || {};
+      var app   = root.app   || {};
+      var main  = root.main  || {};
+      var admin = root.admin || {};
+
+      var datos = {
+        marcaApp:     String((window.SISTEMA && window.SISTEMA.identidad &&
+                              window.SISTEMA.identidad.nombreApp) || 'ServyPartner').trim(),
+        marcaEmpresa: String(main.marca  || '').trim() || String((window.SISTEMA && window.SISTEMA.identidad &&
+                              window.SISTEMA.identidad.nombreApp) || 'ServyPartner').trim(),
+        correo:       String(app.correo    || '').trim() || '—',
+        whatsapp:     String(admin.whatsapp || '').trim() || '—'
+      };
+
+      function interpolar(texto) {
+        if (texto == null) return '';
+        return String(texto)
+          .replace(/\{marcaApp\}/g,     datos.marcaApp)
+          .replace(/\{marcaEmpresa\}/g, datos.marcaEmpresa)
+          .replace(/\{correo\}/g,       datos.correo)
+          .replace(/\{whatsapp\}/g,     datos.whatsapp);
+      }
+
+      var html = '<div class="sheet-privacidad textoPrimario">';
+
+      html += '<div class="sheet-titulo-con-icono">';
+      if (contenido.icono) {
+        html += '<span class="icono"><span data-glifo="' + contenido.icono + '"></span></span>';
+      }
+      html += '<span class="titulo">' + interpolar(contenido.titulo) + '</span>';
+      html += '</div>';
+
+      if (contenido.ultimaActualizacion) {
+        html += '<p class="fecha">Última actualización · ' +
+                interpolar(contenido.ultimaActualizacion) + '</p>';
+      }
+
+      var secciones = contenido.secciones || [];
+      secciones.forEach(function (s) {
+        html += '<h3>' + interpolar(s.titulo) + '</h3>';
+
+        if (s.intro) {
+          html += '<p>' + interpolar(s.intro) + '</p>';
+        }
+
+        if (s.parrafos && s.parrafos.length > 0) {
+          s.parrafos.forEach(function (p) {
+            html += '<p>' + interpolar(p) + '</p>';
+          });
+        }
+
+        if (s.items && s.items.length > 0) {
+          html += '<ul>';
+          s.items.forEach(function (item) {
+            html += '<li>' + interpolar(item) + '</li>';
+          });
+          html += '</ul>';
+        }
+      });
+
+      html += '</div>';
+      return html;
     }
 
     function getPlataformaUsuario() {
@@ -404,9 +531,12 @@
     }
 
     function getContenido(k) {
-      if (k === 'menu')   return getMenuHTML();
-      if (k === 'acerca') return getAcercaHTML();
-      if (k === 'pwa')    return getPWAHTML();
+      if (k === 'menu')       return getMenuHTML();
+      if (k === 'acerca')     return getAcercaHTML();
+      if (k === 'terminos')   return getLegalHTML('terminos');
+      if (k === 'privacidad') return getLegalHTML('privacidad');
+      if (k === 'cookies')    return getLegalHTML('cookies');
+      if (k === 'pwa')        return getPWAHTML();
       return '';
     }
 
@@ -562,7 +692,17 @@
 
     function navegar(subvista) {
       sheet.classList.add('subvista');
-      sheet.classList.remove('con-privacidad', 'scroll-mas');
+
+      /* Las legales llevan el degradado de «sigue hay más» del
+         original (mismo gesto de scroll). */
+      if (subvista === 'privacidad' ||
+          subvista === 'terminos'   ||
+          subvista === 'cookies') {
+        sheet.classList.add('con-privacidad');
+      } else {
+        sheet.classList.remove('con-privacidad', 'scroll-mas');
+      }
+
       inyectarConFade(subvista);
     }
 
@@ -598,7 +738,11 @@
 
       haptic(8);
 
-      if (accion === 'acerca') {
+      /* Subvistas heredadas del original: legales + Acerca. */
+      if (accion === 'terminos'    ||
+          accion === 'privacidad'  ||
+          accion === 'cookies'     ||
+          accion === 'acerca') {
         navegar(accion);
         return;
       }
