@@ -296,9 +296,9 @@
 
           '<form class="perfil-form" id="formPerfil" novalidate>' +
 
-            /* BLOQUE 1 · Nombre Comercial + Eslogan (opcional) */
+            /* BLOQUE 1 · Nombre o Razón Social + Eslogan (opcional) */
             '<div class="form-bloque">' +
-              campo('Nombre', 'Nombre Comercial', perfil.nombre, 'text',
+              campo('Nombre', 'Nombre o Razón Social', perfil.nombre, 'text',
                     ' autocomplete="organization" maxlength="80"') +
               campo('Eslogan', 'Eslogan (Opcional)', perfil.esloganPartner, 'text',
                     ' maxlength="120"') +

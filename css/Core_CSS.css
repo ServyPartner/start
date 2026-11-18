@@ -8,10 +8,11 @@ RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
                  maestra, placeholders, SISTEMA SKELETON .skl,
                  marca de la cabecera, modo móvil del lienzo y
                  notificación flotante).
-VERSIÓN:         1.4
-CAMBIOS:         Correcciones 4 (18-nov): marca de cabecera pegada
-                 a un solo cuerpo tipográfico · tokens de marca
-                 y avisos · clases .pantallaError y .pildoraReconectando/.pildoraPwa. Historial: bitácora del taller.
+VERSIÓN:         1.5
+CAMBIOS:         Correcciones 5 (18-nov): tokens badgeNuevo
+                 (11px · 600) repareados — la píldora «Pronto» los
+                 usaba sin que existieran. Historial: correcciones
+                 4 · 3 · bitácora del taller.
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 ════════════════════════════════════════════════════════════════════*/
 
@@ -30,6 +31,7 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     --size-botonPrimario: 16px;   --weight-botonPrimario: 400;   --color-botonPrimario: #FFFFFF;
     --size-botonSecundario: 16px; --weight-botonSecundario: 400; --color-botonSecundario: #7A828A;
     --size-badge: 9px;            --weight-badge: 700;
+    --size-badgeNuevo: 11px;      --weight-badgeNuevo: 600;   /* píldora «Pronto» — molde del original, repareado correcciones 5 */
 
     /* COLOR PRIMARIO · el AZUL oficial de la Partner vive
        CENTRALIZADO aquí (mismo trato que las variables de
