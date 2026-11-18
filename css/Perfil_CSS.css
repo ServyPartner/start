@@ -6,10 +6,11 @@ ESPEJO GITHUB:   github/css/Perfil_CSS.css (subir a GitHub Pages; editar en GAS 
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Pantalla PERFIL: héroe del avatar + formulario
                  de campos TRANSPARENTES con borde gris tenue,
-                 esquinas redondeadas y label en el borde (foco
-                 azul sin fondo) + ciclo visual del botón
-                 GUARDAR + skeleton con medidas reales.
-VERSIÓN:         1.4
+                 esquinas redondeadas, label EN el borde SIN
+                 chapa, fila Municipio+Estado (foco azul sin
+                 fondo) + ciclo visual del botón GUARDAR +
+                 skeleton con medidas reales.
+VERSIÓN:         1.5
 DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
                  sistema .skl), Global_CSS.html (pantalla-area),
                  Perfil_Script.html
@@ -141,6 +142,11 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
 
   .form-field {
     position: relative;
+    /* MUERE EL PESTAÑEO (orden del dueño, correcciones 5): al
+       tocar el campo no debe encenderse NINGÚN flash de fondo —
+       el resaltado de toque del navegador queda apagado en el
+       campo y en el input que vive dentro. */
+    -webkit-tap-highlight-color: transparent;
     /* MISMA SEPARACIÓN que el sheet de reserva del original
        (Reserva_CSS .form-field): 14px entre campos del mismo
        bloque. El ESPACIO entre bloques lo manda .form-bloque. */
@@ -155,6 +161,22 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
      ============================================================ */
   .form-bloque { display: flex; flex-direction: column; }
   .form-bloque + .form-bloque { margin-top: 28px; }
+
+  /* ============================================================
+     FILA DOBLE (orden del dueño, correcciones 5): Municipio y
+     Estado comparten la MISMA fila — cada uno la mitad, misma
+     altura 52px y el MISMO ritmo de 14px del sheet de reserva.
+     ============================================================ */
+  .form-fila {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+  .form-fila .form-field {
+    flex: 1;
+    min-width: 0;
+    margin-bottom: 0;
+  }
 
   /* ============================================================
      CAMPO TELEFÓNICO · prefijo +58 fijo del molde Reserva.
@@ -172,6 +194,7 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     border-radius: 12px;
     border: 1px solid #e2e8f0;
     background-color: transparent;
+    -webkit-tap-highlight-color: transparent;
     transition: border-color 0.2s ease;
   }
   .form-input-tel:focus-within {
@@ -182,6 +205,7 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     height: 100%;
     border: none;
     background: transparent;
+    -webkit-tap-highlight-color: transparent;
     padding: 0 0 0 14px;
     font-size: var(--size-textoPrimario);
     font-weight: var(--weight-textoPrimario);
@@ -210,6 +234,7 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     border-radius: 12px;
     border: 1px solid #e2e8f0;
     background-color: transparent;
+    -webkit-tap-highlight-color: transparent;
     font-size: var(--size-textoPrimario);
     font-weight: var(--weight-textoPrimario);
     color: #0f172a;
@@ -224,11 +249,10 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   }
 
   /* ============================================================
-     LABEL · vive EN EL BORDE del campo (orden del dueño): un
-     chip que CORTA la línea del borde superior — no flota suelto
-     ni vive dentro. El chip lleva fondo BLANCO (el lienzo es
-     blanco en la zona del formulario) para tapar el tramo del
-     borde que pasa por debajo. Color: gris de siempre; azul
+     LABEL · vive EN EL BORDE del campo (orden del dueño) y SIN
+     FONDO (orden del dueño, correcciones 5): murió la chapa
+     blanca — el título es solo letra sentada sobre el borde,
+     nada de cajas de color. Color: gris de siempre; azul
      oficial con el foco; rojo si el campo es inválido.
      ============================================================ */
   .form-label {
@@ -241,7 +265,6 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     color: #94a3b8;
     pointer-events: none;
     padding: 0 6px;
-    background-color: #ffffff;
     line-height: 1.2;
     transition: color 0.2s ease;
   }
@@ -286,7 +309,11 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
      ============================================================ */
   .form-submit {
     width: 100%;
-    margin-top: 16px;
+    /* ESPACIO AL BOTÓN (orden del dueño, correcciones 5): el
+       ritmo lo manda el bloque — 14px del último campo + 28px
+       del bloque = 42px, EXACTAMENTE el mismo espacio que hay
+       entre bloques de campos. Fuera el margin-top extra. */
+    margin-top: 0;
     padding: 15px 22px;
     border: none;
     border-radius: 999px;

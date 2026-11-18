@@ -131,7 +131,6 @@
               '<div class="skl skl-campo"></div>' +
               '<div class="skl skl-campo"></div>' +
               '<div class="skl skl-campo"></div>' +
-              '<div class="skl skl-campo"></div>' +
             '</div>' +
             '<div class="form-bloque">' +
               '<div class="skl skl-campo"></div>' +
@@ -310,8 +309,13 @@
               campo('Direccion', 'Dirección (Opcional)', perfil.direccion, 'text',
                     ' maxlength="200" autocomplete="street-address"') +
               campo('Ciudad', 'Ciudad', perfil.ciudad, 'text', ' maxlength="80"') +
-              campo('Municipio', 'Municipio', perfil.municipio, 'text', ' maxlength="80"') +
-              campo('Estado', 'Estado', perfil.estado, 'text', ' maxlength="80"') +
+              /* FILA DOBLE (orden del dueño, correcciones 5):
+                 Municipio y Estado viven EN LA MISMA fila — cada
+                 uno la mitad, misma altura y ritmo de siempre. */
+              '<div class="form-fila">' +
+                campo('Municipio', 'Municipio', perfil.municipio, 'text', ' maxlength="80"') +
+                campo('Estado', 'Estado', perfil.estado, 'text', ' maxlength="80"') +
+              '</div>' +
             '</div>' +
 
             /* BLOQUE 3 · WhatsApp de contacto (prefijo +58 fijo) */
