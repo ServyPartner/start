@@ -17,13 +17,16 @@
   window.Perfil = (function () {
 
     var state = {
-      cargando:  false,
-      datos:     null,     /* el perfil sellado que llegó del backend */
-      guardando: false,
-      subiendo:  false
+      cargando:   false,
+      datos:      null,     /* el perfil sellado que llegó del backend */
+      originales: null,     /* foto del perfil traído: contra esto se
+                               mide si el formulario tiene cambios */
+      guardando:  false,
+      subiendo:   false
     };
 
     var el = {};
+    var timerExito = null;  /* el check del botón vuelve solo */
 
     /* ---------- Validadores (espejo del backend) ----------
        telefonoWhatsapp con las constantes del sheet de reserva
@@ -111,15 +114,38 @@
     }
 
     /* ============================================================
-       ESTADOS DE PANTALLA · cargando / error de lectura
+       ESTADOS DE PANTALLA · SKELETON (orden del dueño: la carga
+       de las pantallas NO lleva spinner) y error de lectura.
+       El skeleton arma la SILUETA REAL de la pantalla (héroe del
+       avatar + los 4 bloques del formulario en sus medidas) para
+       que nada salte cuando llegan los datos.
        ============================================================ */
     function pintarCargando() {
       var area = document.getElementById('pantallaArea');
       if (!area) return;
       area.innerHTML =
-        '<div class="perfil-estado">' +
-          '<div class="perfil-cargador" aria-hidden="true"></div>' +
-          '<p class="textoSecundario">Cargando tu perfil…</p>' +
+        '<div class="perfil-wrap" aria-busy="true" aria-live="polite">' +
+          '<div class="perfil-hero">' +
+            '<div class="skl skl-avatar"></div>' +
+          '</div>' +
+          '<div class="perfil-form">' +
+            '<div class="form-bloque">' +
+              '<div class="skl skl-campo"></div>' +
+              '<div class="skl skl-campo"></div>' +
+            '</div>' +
+            '<div class="form-bloque">' +
+              '<div class="skl skl-campo"></div>' +
+              '<div class="skl skl-campo"></div>' +
+              '<div class="skl skl-campo"></div>' +
+              '<div class="skl skl-campo"></div>' +
+            '</div>' +
+            '<div class="form-bloque">' +
+              '<div class="skl skl-campo"></div>' +
+            '</div>' +
+            '<div class="form-bloque">' +
+              '<div class="skl skl-boton"></div>' +
+            '</div>' +
+          '</div>' +
         '</div>';
     }
 
@@ -128,7 +154,6 @@
       if (!area) return;
       area.innerHTML =
         '<div class="perfil-estado">' +
-          '<h2 class="titulo">Perfil</h2>' +
           '<p class="textoSecundario">' + _esc_(texto) + '</p>' +
           '<button type="button" class="perfil-reintentar" id="btnPerfilReintentar">Reintentar</button>' +
         '</div>';
@@ -144,6 +169,8 @@
     function pintar() {
       var p = partner();
       if (!p || !p.id) return;
+
+      if (timerExito) { clearTimeout(timerExito); timerExito = null; }
 
       /* CADA entrada a la pestaña nace del servidor (los datos
          son suyos y pueden haber cambiado): lectura fresca,
@@ -209,6 +236,9 @@
       area.innerHTML =
         '<div class="perfil-wrap">' +
 
+          /* SIN el nombre bajo el avatar (orden del dueño): es
+             redundante — el partner sabe quién es y la marca de
+             la cabecera ya viste la fila de arriba. */
           '<div class="perfil-hero">' +
             '<div class="perfil-avatar-zona">' +
               '<div class="perfil-avatar" id="perfilAvatar">' + avatar + '</div>' +
@@ -216,7 +246,6 @@
               '<input type="file" accept="image/*" class="perfil-input-foto" id="inputPerfilFoto">' +
             '</div>' +
             '<div class="perfil-foto-estado" id="perfilFotoEstado"></div>' +
-            '<h2 class="titulo perfil-titulo-hero" id="perfilHeroNombre">' + _esc_(perfil.nombre || '') + '</h2>' +
           '</div>' +
 
           '<form class="perfil-form" id="formPerfil" novalidate>' +
@@ -244,10 +273,15 @@
                        ' inputmode="numeric" maxlength="11" autocomplete="tel-national"') +
             '</div>' +
 
-            /* BLOQUE 4 · Guardar cambios — TEXTO CENTRADO */
+            /* BLOQUE 4 · Guardar cambios — nace INACTIVO (orden
+               del dueño): solo despierta cuando el formulario
+               tenga cambios reales. El SPINNER del procesamiento
+               y el CHECK del éxito viven DENTRO del botón. */
             '<div class="form-bloque">' +
-              '<button type="submit" class="form-submit botonPrimario" id="btnPerfilGuardar">' +
+              '<button type="submit" class="form-submit botonPrimario" id="btnPerfilGuardar" disabled>' +
+                '<span class="form-submit-spinner" aria-hidden="true"></span>' +
                 '<span class="form-submit-texto">Guardar cambios</span>' +
+                '<span class="form-submit-check" data-glifo="check" aria-hidden="true" hidden></span>' +
               '</button>' +
             '</div>' +
 
@@ -259,6 +293,11 @@
       recogerEl();
       enganchar();
       repoblar(perfil);
+
+      /* El botón nace INACTIVO: el formulario acaba de llegar y
+         aún no hay nada que asegurar (orden del dueño). */
+      guardarOriginales(perfil);
+      pintarBotonInactivo();
     }
 
     function recogerEl() {
@@ -266,7 +305,6 @@
       if (!area) return;
       el = {
         avatar:        area.querySelector('#perfilAvatar'),
-        heroNombre:    area.querySelector('#perfilHeroNombre'),
         fotoEstado:    area.querySelector('#perfilFotoEstado'),
         btnFoto:       area.querySelector('#btnPerfilFoto'),
         inputFoto:     area.querySelector('#inputPerfilFoto'),
@@ -291,6 +329,86 @@
           telefonoWhatsapp: area.querySelector('#inputTelefonoWhatsapp')
         }
       };
+    }
+
+    /* ============================================================
+       CICLO DEL BOTÓN GUARDAR · orden del dueño:
+       · INACTIVO al nacer y al quedar igual que el servidor.
+       · ACTIVO cuando el formulario difiere de lo traído — el
+         usuario SABE que debe guardar para asegurar su cambio.
+       · PROCESANDO: spinner dentro del botón mientras viaja.
+       · ÉXITO: check unos segundos y vuelve inactivo.
+       ============================================================ */
+    function guardarOriginales(perfil) {
+      state.originales = {};
+      Object.keys(REGLAS).forEach(function (clave) {
+        var v = String((perfil && perfil[clave] != null) ? perfil[clave] : '').trim();
+        if (REGLAS[clave].telefono) v = v.replace(/\D/g, '');
+        state.originales[clave] = v;
+      });
+    }
+
+    function hayCambios() {
+      if (!state.originales) return false;
+      for (var clave in REGLAS) {
+        if (!Object.prototype.hasOwnProperty.call(REGLAS, clave)) continue;
+        var input = el.inputs[clave];
+        if (!input) continue;
+        var v = String(input.value || '').trim();
+        if (REGLAS[clave].telefono) v = v.replace(/\D/g, '');
+        if (v !== state.originales[clave]) return true;
+      }
+      return false;
+    }
+
+    function _textoBoton(t) {
+      var span = el.btnGuardar && el.btnGuardar.querySelector('.form-submit-texto');
+      if (span) span.textContent = t;
+    }
+
+    function _checkBoton(mostrar) {
+      var span = el.btnGuardar && el.btnGuardar.querySelector('.form-submit-check');
+      if (span) span.hidden = !mostrar;
+    }
+
+    function pintarBotonInactivo() {
+      if (!el.btnGuardar) return;
+      el.btnGuardar.classList.remove('procesando', 'exito');
+      el.btnGuardar.disabled = true;
+      _checkBoton(false);
+      _textoBoton('Guardar cambios');
+    }
+
+    function pintarBotonActivo() {
+      if (!el.btnGuardar) return;
+      el.btnGuardar.classList.remove('procesando', 'exito');
+      el.btnGuardar.disabled = false;
+      _checkBoton(false);
+      _textoBoton('Guardar cambios');
+    }
+
+    function pintarBotonProcesando() {
+      if (!el.btnGuardar) return;
+      el.btnGuardar.classList.remove('exito');
+      el.btnGuardar.classList.add('procesando');
+      el.btnGuardar.disabled = true;
+      _checkBoton(false);
+      _textoBoton('Guardando…');
+    }
+
+    function pintarBotonExito() {
+      if (!el.btnGuardar) return;
+      el.btnGuardar.classList.remove('procesando');
+      el.btnGuardar.classList.add('exito');
+      el.btnGuardar.disabled = true;
+      _checkBoton(true);
+      _textoBoton('Guardado');
+    }
+
+    function refrescarBoton() {
+      if (!el.btnGuardar || state.guardando) return;
+      if (hayCambios()) pintarBotonActivo();
+      else pintarBotonInactivo();
     }
 
     /* ============================================================
@@ -356,6 +474,7 @@
             if (limpio !== input.value) input.value = limpio;
           }
           refrescarCampo(clave);
+          refrescarBoton();
         });
       });
 
@@ -388,9 +507,14 @@
     function repoblar(perfil) {
       Object.keys(el.inputs).forEach(function (clave) {
         var input = el.inputs[clave];
-        if (input && String(perfil[clave] || '').trim()) {
-          input.value = String(perfil[clave]).trim();
-          el.campos[clave].classList.add('activo');
+        if (input) {
+          /* El valor del SERVIDOR manda SIEMPRE (también el
+             vacío: si el partner limpió un campo opcional, el
+             input nace limpio — igual que la BD). */
+          input.value = String(perfil && perfil[clave] != null ? perfil[clave] : '').trim();
+          if (input.value) {
+            el.campos[clave].classList.add('activo');
+          }
         }
         refrescarCampo(clave);
       });
@@ -402,6 +526,10 @@
        ============================================================ */
     function onGuardar() {
       if (state.guardando) return;
+      /* Sin cambios reales no hay guardado (el botón está
+         inactivo; esta guardia cubre también el Enter suelto
+         dentro del formulario). */
+      if (!hayCambios()) return;
       limpiarErrores();
 
       var primerInvalido = null;
@@ -437,8 +565,7 @@
       if (!p || !p.id) return;
 
       state.guardando = true;
-      el.btnGuardar.disabled = true;
-      el.btnGuardar.querySelector('.form-submit-texto').textContent = 'Guardando…';
+      pintarBotonProcesando();
 
       postBackend('guardarPerfil', {
         idPartner: String(p.id),
@@ -446,20 +573,30 @@
       })
         .then(function (data) {
           state.guardando = false;
-          el.btnGuardar.disabled = false;
-          el.btnGuardar.querySelector('.form-submit-texto').textContent = 'Guardar cambios';
-          haptic([30, 20, 30]);
 
+          /* El servidor manda el perfil FRESCO: la foto de
+             referencia se actualiza y el formulario queda igual
+             que la BD — sin cambios pendientes que asegurar. */
           var fresco = (data && data.perfil) || {};
           state.datos = fresco;
-          if (el.heroNombre) el.heroNombre.textContent = fresco.nombre || '';
+          guardarOriginales(fresco);
+          repoblar(fresco);
           refrescarSesion(fresco);
-          _aviso('Perfil guardado');
+
+          /* ÉXITO VISIBLE (orden del dueño): el botón muestra el
+             check unos segundos y vuelve solo a su estado
+             inactivo. Sin aviso flotante: el feedback es EL
+             BOTÓN. */
+          haptic([30, 20, 30]);
+          pintarBotonExito();
+          if (timerExito) clearTimeout(timerExito);
+          timerExito = setTimeout(function () {
+            timerExito = null;
+            if (el.btnGuardar) pintarBotonInactivo();
+          }, 2600);
         })
         .catch(function (err) {
           state.guardando = false;
-          el.btnGuardar.disabled = false;
-          el.btnGuardar.querySelector('.form-submit-texto').textContent = 'Guardar cambios';
           haptic([30, 20, 30]);
 
           var msg = (err && err.message) || '';
@@ -477,21 +614,29 @@
                 ? 'Este dato es obligatorio.'
                 : 'Revisa este dato.');
               try { field.querySelector('.form-input').focus(); } catch (_) {}
+              refrescarBoton();
               return;
             }
             errorFlujo('Revisa los datos e intenta de nuevo.');
+            refrescarBoton();
             return;
           }
           if (msg.indexOf('RATE_LIMIT') === 0) {
             errorFlujo('Demasiados intentos seguidos. Espera un momento.');
+            refrescarBoton();
             return;
           }
           if (msg === 'SISTEMA_OCUPADO') {
             errorFlujo('El sistema está ocupado. Intenta de nuevo en unos segundos.');
+            refrescarBoton();
             return;
           }
-          if (msg === 'TOKEN_INVALIDO') return; /* el puente ya repuso la sesión */
+          if (msg === 'TOKEN_INVALIDO') {
+            refrescarBoton();
+            return; /* el puente ya repuso la sesión */
+          }
           errorFlujo('No se pudo guardar. Intenta de nuevo.');
+          refrescarBoton();
           console.error('[Perfil] guardar falló:', msg);
         });
     }

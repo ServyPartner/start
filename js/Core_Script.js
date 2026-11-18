@@ -25,6 +25,31 @@
       return s ? s.charAt(0).toUpperCase() : '?';
     }
 
+    /* ============================================================
+       MARCA DE LA CABECERA · «ServyPartner» con los colores
+       oficiales del «Acerca de» (Servy azul + Partner gris).
+       El texto sale de SISTEMA.identidad (03 Constantes.gs —
+       cero hardcodeado); se pinta UNA vez tras inyectar el
+       lienzo y ya nadie lo toca: la cabecera no lleva título
+       de pestaña (orden del dueño).
+       ============================================================ */
+    function pintarMarcaHeader() {
+      var caja = document.getElementById('headerMarca');
+      if (!caja) return;
+
+      var identidad = (window.SISTEMA && window.SISTEMA.identidad) || {};
+      var marca = String(identidad.nombreApp || '').trim();
+      if (!marca) return;
+
+      var idxCola = marca.indexOf('Partner');
+      var parte1 = (idxCola > 0) ? marca.substring(0, idxCola).trim() : marca;
+      var cola   = (idxCola > 0) ? marca.substring(idxCola).trim() : '';
+
+      caja.innerHTML =
+        '<span class="header-marca-servy">' + _esc_(parte1) + '</span>' +
+        (cola ? '<span class="header-marca-partner">' + _esc_(cola) + '</span>' : '');
+    }
+
     /* La lista de selección: marca arriba, pregunta y tarjetas.
        El ID viaja en data-id para la app (interno, jamás texto
        visible). Sin partners: pantalla vacía con reintentar. */
@@ -145,20 +170,14 @@
     }
 
     /* El menú global la llama: la elección muere aquí y la app
-       vuelve a la pantalla de selección (CADA carga, acta). */
+       vuelve a la pantalla de selección (CADA carga, acta).
+       La cabecera queda intacta: siempre viste la marca. */
     function cerrarSesion() {
       actual = null;
       try { sessionStorage.removeItem(KEY_SESION); } catch (_) {}
 
       var footer = document.getElementById('podioFooter');
       if (footer) footer.hidden = true;
-
-      var titulo = document.getElementById('tituloHeader');
-      var identidad = (window.SISTEMA && window.SISTEMA.identidad) || {};
-      if (titulo) {
-        titulo.textContent = identidad.nombreApp || 'ServyPartner';
-        titulo.hidden = false;
-      }
 
       if (window.Podio) window.Podio.reiniciar();
 
@@ -179,10 +198,11 @@
     }
 
     return {
-      lista:        lista,
-      seleccionar:  seleccionar,
-      cerrarSesion: cerrarSesion,
-      getActual:    function () { return actual; }
+      lista:            lista,
+      seleccionar:      seleccionar,
+      cerrarSesion:     cerrarSesion,
+      pintarMarcaHeader: pintarMarcaHeader,
+      getActual:        function () { return actual; }
     };
   })();
 
@@ -279,11 +299,9 @@
         }
       }
 
-      var titulo = document.getElementById('tituloHeader');
-      if (titulo) {
-        titulo.textContent = p.titulo;
-        titulo.hidden = false;
-      }
+      /* La cabecera NO lleva título de pestaña (orden del dueño):
+         siempre viste la marca — el item del podio activo ya
+         indica al usuario dónde está. */
 
       /* REGISTRO DE PANTALLAS (T2): si la pestaña tiene módulo
          vivo inscrito (window.Pantallas), él pinta la pantalla;
@@ -359,9 +377,14 @@
       pre.then(function () {
         /* CADA carga abre en la pantalla de selección (acta):
            el lienzo entra primero (cabecera + área + footer),
-           cerrarSesion limpia cualquier sesión local, pinta el
-           título de la marca y monta la lista de partners. */
+           se pinta la MARCA de la cabecera (ServyPartner con
+           los colores oficiales), cerrarSesion limpia cualquier
+           sesión local y monta la lista de partners. */
         inyectarLienzo();
+        if (window.Partner &&
+            typeof window.Partner.pintarMarcaHeader === 'function') {
+          window.Partner.pintarMarcaHeader();
+        }
         if (window.Partner &&
             typeof window.Partner.cerrarSesion === 'function') {
           window.Partner.cerrarSesion();

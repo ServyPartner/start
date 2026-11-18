@@ -4,17 +4,24 @@ ARCHIVO:         GitHub_Cromo.js
 ESPEJO GITHUB:   js/GitHub_Cromo.js (SOLO-GitHub: no existe en GAS)
 PROYECTO:        ServyPartner | App en GitHub Pages
 RESPONSABILIDAD: Cromo de la página estática: preloader orbital
-                 azul, píldora "Instalar app" (Android, con modo
-                 manual para Androids sin boleto) y registro del
-                 service worker. Molde del cromo de la app pública.
+                 azul (DENTRO del spinner dice «Servy», igual que
+                 la pública; la marca de abajo viste Servy +
+                 Partner con los colores oficiales), píldora
+                 "Instalar app" (Android, con modo manual para
+                 Androids sin boleto) y registro del service
+                 worker. Molde del cromo de la app pública.
                  SIN GA4 (la Partner P1 no lleva analítica propia;
                  el módulo Analitica nace cuando el dueño lo
                  ordene) y SIN puente de estado (la Partner no
                  guarda ciudad/vista: su único estado local es la
                  sesión del partner, que muere en cada carga —
                  acta). Claves de storage con prefijo propio.
-VERSIÓN:         1.0
-CAMBIOS:         P1 (Tanda 1 — cimientos): nace del molde.
+VERSIÓN:         1.1
+CAMBIOS:         Correcciones (18-nov, orden del dueño): el texto
+                 central del spinner es «Servy» (llegaba solo «S»)
+                 y la marca del preloader aprende el renombre:
+                 Servy + Partner (el «Cloud» del nombre viejo
+                 muere). Historial: P1 nace del molde.
 DEPENDENCIAS:    Global_Script.js (asegurarSesion) · css/
                  GitHub_Cromo.css · sw.js · manifest.json.
                  Debe cargarse ÚLTIMO.
@@ -40,7 +47,6 @@ DEPENDENCIAS:    Global_Script.js (asegurarSesion) · css/
                       '</div>' +
                       '<div class="carga-brand">' +
                           '<span class="carga-brand-servy">Servy</span>' +
-                          '<span class="carga-brand-cloud">Cloud</span>' +
                           '<span class="carga-brand-partner">Partner</span>' +
                       '</div>' +
                       '<div class="carga-status">' +
@@ -49,13 +55,13 @@ DEPENDENCIAS:    Global_Script.js (asegurarSesion) · css/
                       '</div>' +
                   '</div>';
 
-              wrap.querySelector('.carga-core span').textContent = textoCentralTxt || 'S';
+              wrap.querySelector('.carga-core span').textContent = textoCentralTxt || 'Servy';
               wrap.querySelector('.carga-status-texto').textContent = textoEstado || 'Cargando';
 
               return wrap;
           }
 
-          const preloader = crearPreloader('S', 'Cargando');
+          const preloader = crearPreloader('Servy', 'Cargando');
           document.body.appendChild(preloader);
 
           /* FRANJA DEL TELÉFONO: el fondo del DOCUMENTO viste el

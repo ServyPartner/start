@@ -4,11 +4,15 @@
 ARCHIVO:         Perfil_CSS.html
 ESPEJO GITHUB:   github/css/Perfil_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
-RESPONSABILIDAD: Pantalla PERFIL: héroe del avatar + formulario del
-                 molde Reserva vestido de azul.
-VERSIÓN:         1.2
-DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
-                 Global_CSS.html (pantalla-area), Perfil_Script.html
+RESPONSABILIDAD: Pantalla PERFIL: héroe del avatar + formulario
+                 minimalista (campos sin borde, gris clarito,
+                 esquinas casi cuadradas, foco azul delgado y
+                 fondo azul clarito) + ciclo visual del botón
+                 GUARDAR + skeleton con medidas reales.
+VERSIÓN:         1.3
+DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
+                 sistema .skl), Global_CSS.html (pantalla-area),
+                 Perfil_Script.html
 ════════════════════════════════════════════════════════════════════*/
 
   /* ============================================================
@@ -112,9 +116,11 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
   }
 
   /* ============================================================
-     FORMULARIO · molde Reserva (campos flotantes de 52px,
-     label flotante 11px, check verde / error rojo por campo).
-     El accent del molde es SIEMPRE el azul del Core.
+     FORMULARIO · minimalista (orden del dueño): campos SIN
+     borde, fondo GRIS CLARITO, esquinas CASI CUADRADAS. La
+     altura 52px y el margen 14px son del sheet de reserva del
+     original (intocables). El ESPACIO entre bloques lo manda
+     .form-bloque (más holgado en esta ronda).
      ============================================================ */
   .perfil-form { display: flex; flex-direction: column; }
 
@@ -132,11 +138,6 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
   }
   .errorForm[hidden] { display: none; }
 
-  .perfil-titulo-form {
-    margin: 14px 0 4px;
-    text-align: left;
-  }
-
   .form-field {
     position: relative;
     /* MISMA SEPARACIÓN que el sheet de reserva del original
@@ -147,20 +148,18 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
 
   /* ============================================================
      BLOQUES DEL FORMULARIO (orden del dueño): cada grupo de
-     datos vive en su .form-bloque y entre bloques hay ESPACIO
-     visible — Nombre+Eslogan · Dirección/Ciudad/Municipio/Estado
-     · WhatsApp · botón. Los campos dentro del bloque conservan
-     el margen del molde Reserva.
+     datos vive en su .form-bloque y entre bloques hay MÁS
+     ESPACIO que dentro (28px contra 14px) — los grupos se
+     leen como grupos.
      ============================================================ */
   .form-bloque { display: flex; flex-direction: column; }
-  .form-bloque + .form-bloque { margin-top: 16px; }
+  .form-bloque + .form-bloque { margin-top: 28px; }
 
   /* ============================================================
-     CAMPO TELEFÓNICO · molde Reserva (prefijo +58 fijo)
-     La caja es la .form-input-tel del original; el prefijo se
-     despierta con el campo (activo) y viste verde/rojo igual
-     que el check. El focus viste el AZUL de la Partner (aquí
-     nunca entra --post-color de la pública).
+     CAMPO TELEFÓNICO · prefijo +58 fijo del molde Reserva.
+     Minimalista como los demás: sin borde, gris clarito,
+     casi cuadrado. El FOCO pinta el borde azul muy delgado
+     (inset 1px — sin saltos de layout) y fondo azul clarito.
      ============================================================ */
   .form-input-tel {
     display: flex;
@@ -168,14 +167,14 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
     width: 100%;
     height: 52px;
     padding: 0 44px 0 0;
-    border-radius: 12px;
-    border: 1.5px solid #e2e8f0;
-    background-color: #f8fafc;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+    border-radius: 4px;
+    border: none;
+    background-color: #F1F5F9;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
   }
   .form-input-tel:focus-within {
-    border-color: var(--color-primario-medio);
-    background-color: #ffffff;
+    background-color: #DBEAFE;
+    box-shadow: inset 0 0 0 1px var(--color-primario);
   }
   .form-input-tel-input {
     flex: 1;
@@ -201,30 +200,28 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
     transition: opacity 0.2s;
   }
   .form-field.activo    .form-prefijo { opacity: 1; }
-  .form-field.validado  .form-input-tel { border-color: #16a34a; background-color: #f0fdf4; }
   .form-field.validado  .form-prefijo   { color: #16a34a; }
-  .form-field.invalido  .form-input-tel { border-color: #dc2626; background-color: #fef2f2; }
   .form-field.invalido  .form-prefijo   { color: #dc2626; }
 
   .form-input {
     width: 100%;
     height: 52px;
     padding: 0 44px 0 14px;
-    border-radius: 12px;
-    border: 1.5px solid #e2e8f0;
-    background-color: #f8fafc;
+    border-radius: 4px;
+    border: none;
+    background-color: #F1F5F9;
     font-size: var(--size-textoPrimario);
     font-weight: var(--weight-textoPrimario);
     color: #0f172a;
     outline: none;
     font-family: inherit;
-    transition: border-color 0.2s ease, background-color 0.2s ease;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
     -webkit-appearance: none;
     appearance: none;
   }
   .form-input:focus {
-    border-color: var(--color-primario-medio);
-    background-color: #ffffff;
+    background-color: #DBEAFE;
+    box-shadow: inset 0 0 0 1px var(--color-primario);
   }
 
   .form-label {
@@ -244,29 +241,41 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
                 color 0.22s, background-color 0.22s;
   }
 
+  /* El label flotante SUBE por encima del campo (fuera de la
+     caja, sin chip blanco: minimalista) y viste el azul oficial
+     mientras el partner está en ese campo. */
   .form-field.activo .form-label {
-    top: 0;
-    transform: translateY(-50%);
+    top: -6px;
+    transform: translateY(-100%);
     color: var(--color-primario-medio);
-    background-color: #ffffff;
+    background-color: transparent;
   }
 
   .form-field.validado .form-input {
-    border-color: #16a34a;
     background-color: #f0fdf4;
   }
   .form-field.validado .form-label {
     color: #16a34a;
-    background-color: #f0fdf4;
   }
 
   .form-field.invalido .form-input {
-    border-color: #dc2626;
     background-color: #fef2f2;
   }
   .form-field.invalido .form-label {
     color: #dc2626;
-    background-color: #fef2f2;
+  }
+
+  /* El FOCO manda (orden del dueño): aunque el campo esté
+     validado o inválido, si el partner está escribiendo aquí
+     se ve el borde azul delgado y el fondo azul clarito. */
+  .form-field .form-input:focus,
+  .form-field .form-input-tel:focus-within {
+    background-color: #DBEAFE;
+    box-shadow: inset 0 0 0 1px var(--color-primario);
+  }
+  .form-field .form-input:focus ~ .form-label,
+  .form-field.activo .form-label {
+    color: var(--color-primario-medio);
   }
 
   .field-check {
@@ -299,9 +308,14 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
   }
 
   /* ============================================================
-     BOTÓN GUARDAR · submit píldora del molde (vestido azul) con
-     el TEXTO CENTRADO (orden del dueño): sin flecha lateral —
-     la etiqueta queda en el centro exacto de la píldora.
+     BOTÓN GUARDAR · submit píldora con el TEXTO CENTRADO y su
+     CICLO COMPLETO (orden del dueño):
+     · INACTIVO (disabled, atenuado): nace así y vuelve así.
+     · ACTIVO (azul pleno): solo con cambios en el formulario.
+     · .procesando: SPINNER blanco dentro del botón mientras
+       viaja la escritura.
+     · .exito: píldora verde con CHECK — la sensación de que se
+       procesó todo con éxito — y vuelve inactivo solo.
      ============================================================ */
   .form-submit {
     width: 100%;
@@ -317,10 +331,11 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
     cursor: pointer;
     background: linear-gradient(135deg,
       var(--color-primario) 0%, var(--color-primario-medio) 100%);
-    transition: opacity 0.2s, filter 0.2s;
+    transition: opacity 0.2s, filter 0.2s, background 0.25s ease, box-shadow 0.25s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    gap: 9px;
     text-align: center;
     box-shadow: 0 6px 14px rgba(37, 99, 235, 0.30);
     -webkit-tap-highlight-color: transparent;
@@ -329,10 +344,85 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
     opacity: 0.42;
     cursor: not-allowed;
     filter: grayscale(0.35);
+    box-shadow: none;
+  }
+  .form-submit.procesando { opacity: 1; filter: none; }
+  .form-submit.exito {
+    background: #16a34a;
+    box-shadow: 0 6px 14px rgba(22, 163, 74, 0.30);
+    opacity: 1;
+    filter: none;
   }
   .form-submit-texto {
     flex: 0 1 auto;
     text-align: center;
+  }
+
+  /* SPINNER DENTRO DEL BOTÓN (solo .procesando): píldora azul,
+     spinner blanco — el guardado se siente en curso. */
+  .form-submit-spinner {
+    display: none;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+    animation: btnGiro 0.8s linear infinite;
+  }
+  @keyframes btnGiro { to { transform: rotate(360deg); } }
+  .form-submit.procesando .form-submit-spinner { display: inline-block; }
+
+  /* CHECK DE ÉXITO (solo .exito): entra con un pequeño pop. */
+  .form-submit-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: #ffffff;
+    animation: checkPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .form-submit-check[hidden] { display: none; }
+  .form-submit-check svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  @keyframes checkPop {
+    0%   { transform: scale(0.4); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .form-submit-check { animation: none; }
+    .form-submit-spinner { animation-duration: 2s; }
+  }
+
+  /* ============================================================
+     SKELETON DE LA PANTALLA · misma silueta que el contenido
+     real: círculo del avatar (104px), campos de 52px casi
+     cuadrados y píldora del botón. Las formas las viste el
+     sistema .skl del Core.
+     ============================================================ */
+  .skl-avatar {
+    width: 104px;
+    height: 104px;
+    border-radius: 50%;
+    margin: 0 auto;
+  }
+  .skl-campo {
+    height: 52px;
+    border-radius: 4px;
+    margin-bottom: 14px;
+  }
+  .skl-boton {
+    height: 52px;
+    border-radius: 999px;
   }
 
   /* ============================================================
@@ -368,17 +458,3 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
     box-shadow: 0 6px 14px rgba(37, 99, 235, 0.30);
   }
   .perfil-estado .perfil-reintentar:active { opacity: 0.85; }
-
-  .perfil-cargador {
-    width: 22px;
-    height: 22px;
-    border-radius: 50%;
-    border: 2.5px solid var(--color-primario-claro);
-    border-top-color: var(--color-primario);
-    animation: perfilGiro 0.9s linear infinite;
-    margin-bottom: 8px;
-  }
-  @keyframes perfilGiro { to { transform: rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) {
-    .perfil-cargador { animation-duration: 2.4s; }
-  }

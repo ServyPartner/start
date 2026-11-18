@@ -8,10 +8,12 @@ RESPONSABILIDAD: Estilos del cromo de la página estática: preloader
                  de la app pública, vestido del AZUL de la Partner
                  (#2563EB oficial · #1D4ED8 medio · #DBEAFE claro —
                  acta, intocable). El dueño no necesita tocarlo.
-VERSIÓN:         1.0
-CAMBIOS:         P1 (Tanda 1 — cimientos): nace del molde con el
-                 degradado azul (era naranja) y la píldora azul
-                 (era cian de la marca INGeniusCloud).
+VERSIÓN:         1.1
+CAMBIOS:         Correcciones (18-nov, orden del dueño): fuera la
+                 regla .carga-brand-cloud — la marca del preloader
+                 viste el renombre Servy + Partner.
+                 Historial: P1 nace del molde con el degradado
+                 azul (era naranja) y la píldora azul.
 DEPENDENCIAS:    index.html (clases .preloader-overlay, .carga-*,
                  #zona-instalar) · js/GitHub_Cromo.js
 ════════════════════════════════════════════════════════════════════
@@ -119,7 +121,6 @@ DEPENDENCIAS:    index.html (clases .preloader-overlay, .carga-*,
     }
 
     .carga-brand-servy  { color: var(--logo-primario);   font-weight: 900; }
-    .carga-brand-cloud  { color: var(--text-primary);    font-weight: 700; }
     .carga-brand-partner{ color: var(--logo-secundario); font-weight: 300; letter-spacing: 1px; margin-left: 5px; }
 
     .carga-status {

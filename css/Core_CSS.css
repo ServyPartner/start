@@ -5,20 +5,14 @@ ARCHIVO:         Core_CSS.html
 ESPEJO GITHUB:   github/css/Core_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
-                 maestra, placeholders, modo móvil del lienzo y
+                 maestra, placeholders, SISTEMA SKELETON .skl,
+                 marca de la cabecera, modo móvil del lienzo y
                  notificación flotante).
-VERSIÓN:         1.2
-CAMBIOS:         Correcciones (18-nov, orden del dueño): entra la
-                 regla GLOBAL del molde * { box-sizing: border-box }
-                 (faltaba: sin ella cada caja con borde/padding fijo
-                 crecía 3px de más y desbordaba el ancho — scroll
-                 horizontal y campos «grandísimos») · scrollbars
-                 OCULTOS en todas las pantallas (molde del original:
-                 scrollbar-width none + ::-webkit-scrollbar none —
-                 la app no muestra scroll ni vertical ni horizontal)
-                 · el CÍRCULO del botón del menú global vuelve (1.2px
-                 #475569, R65 del molde). Historial: T2 degradado
-                 azul clarito.
+VERSIÓN:         1.3
+CAMBIOS:         Correcciones (18-nov): sistema skeleton .skl ·
+                 marca .header-marca en la fila de cabecera ·
+                 .titulo-header retirado (el lienzo ya no lleva
+                 título activo). Historial: bitácora del taller.
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 ════════════════════════════════════════════════════════════════════*/
 
@@ -241,18 +235,66 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 
   .lienzo-wrap { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 
-  .titulo-header {
-    flex: 1 1 auto; min-width: 0; margin: 0; padding: 2px 0 2px 8px;
-    /* Título de sección = la tipografía del LIENZO del post del
-       original (h1.tituloPost): tokens del Core, nada a mano. */
+  /* ============================================================
+     MARCA DE LA CABECERA · «ServyPartner» con los colores
+     oficiales (los mismos del «Acerca de» y de la pantalla de
+     selección): Servy en el AZUL del Core y Partner en gris.
+     Vive a la IZQUIERDA de la fila de cabecera, siempre visible
+     — el lienzo ya no lleva título de pestaña (orden del dueño).
+     El texto sale de SISTEMA.identidad (03 Constantes.gs): la
+     lógica de pintado vive en Core_Script (pintarMarcaHeader).
+     ============================================================ */
+  .header-marca {
+    flex: 1 1 auto; min-width: 0;
+    margin: 0; padding: 7px 0 2px 8px;
+    display: flex; align-items: baseline;
+    line-height: 1.1;
+    letter-spacing: -0.6px;
     font-size: var(--size-tituloPost);
-    font-weight: var(--weight-tituloPost);
-    line-height: 1.2;
-    letter-spacing: -0.5px;
-    color: var(--color-tituloPost); text-align: left;
-    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
   }
-  .titulo-header[hidden] { display: none; }
+  .header-marca .header-marca-servy {
+    color: var(--color-primario);
+    font-weight: 900;
+  }
+  .header-marca .header-marca-partner {
+    color: #64748b;
+    font-weight: 400;
+    font-size: 19px;
+    letter-spacing: 0.5px;
+    margin-left: 5px;
+  }
+
+  /* ============================================================
+     SISTEMA SKELETON · carga de pantallas SIN spinner (orden del
+     dueño). Clase compartida .skl: un bloque gris que respira
+     con una banda de brillo que lo cruza; cada pantalla arma su
+     silueta real (mismas formas y medidas del contenido que
+     llega) para que nada salte al terminar la carga.
+     ============================================================ */
+  .skl {
+    position: relative;
+    overflow: hidden;
+    background: #e8edf3;
+    border-radius: 8px;
+    pointer-events: none;
+  }
+  .skl::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg,
+      rgba(255,255,255,0) 0%,
+      rgba(255,255,255,0.65) 50%,
+      rgba(255,255,255,0) 100%);
+    animation: sklBrillo 1.4s ease-in-out infinite;
+  }
+  @keyframes sklBrillo { to { transform: translateX(100%); } }
+  @media (prefers-reduced-motion: reduce) {
+    .skl::after { animation: none; }
+  }
 
   .area-contenido {
     flex: 1 1 auto; min-height: 0;

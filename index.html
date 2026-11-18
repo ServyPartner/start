@@ -5,9 +5,11 @@ PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Misma estructura que el Index de GAS, pero estática:
                  SISTEMA y PARTNERS llegan POR DATOS (abrirSesion
                  vía POST al /exec) y los fragments viven en css/
-                 y js/. Sin GA4 (la Partner P1 no lleva analítica
-                 propia).
-VERSIÓN:         1.1
+                 y js/. Cabecera con la MARCA ServyPartner a la
+                 izquierda y el Menú Global a la derecha — el
+                 lienzo NO lleva título de pestaña. Sin GA4 (la
+                 Partner P1 no lleva analítica propia).
+VERSIÓN:         1.2
 ENCABEZADOS:     Solo describen lo que funciona HOY. El historial
                  de tandas vive en la bitácora del taller.
 DEPENDENCIAS:    css/*.css + js/*.js (misma carpeta), manifest.json,
@@ -131,7 +133,7 @@ DEPENDENCIAS:    css/*.css + js/*.js (misma carpeta), manifest.json,
        desplegar (T6). */
     window.TOKEN_SESION  = '';
     window.PARTNERS      = [];
-    window.URL_EXEC      = "https://script.google.com/macros/s/AKfycbydc1a1H6nYU1P6d9_daDQ8XOIRzkySrGyiAxS3Pw4HkXYdOBRpeyEQgEetLEwx1d-7FQ/exec";
+    window.URL_EXEC      = "PEGAR_AQUI_LA_URL_EXEC_DE_LA_PARTNER";
   </script>
 
   <template id="canvas-content">
@@ -139,12 +141,12 @@ DEPENDENCIAS:    css/*.css + js/*.js (misma carpeta), manifest.json,
       <div class="area-contenido">
 
         <!-- ============================================================
-             FILA DE CABECERA · Título + Menú Global
+             FILA DE CABECERA · Marca ServyPartner + Menú Global
              ============================================================ -->
         <div class="filtros-wrap">
           <button type="button" class="btn-volver" id="btnVolver" aria-label="Volver" hidden data-glifo="volver"></button>
 
-          <h1 class="titulo-header" id="tituloHeader" hidden></h1>
+          <div class="header-marca" id="headerMarca"></div>
 
           <button type="button" class="menu-global" aria-label="Menú" data-glifo="menu"></button>
         </div>
