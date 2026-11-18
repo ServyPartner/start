@@ -5,15 +5,20 @@ PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Misma estructura que el Index de GAS, pero estática:
                  SISTEMA y PARTNERS llegan POR DATOS (abrirSesion
                  vía POST al /exec) y los fragments viven en css/
-                 y js/. Cabecera con la MARCA ServyPartner a la
+                 y js/. OG de la tarjeta social en el <head>
+                 (estático — el scraper de WhatsApp/Telegram no
+                 ejecuta JS; la imagen es el og-servypartner.png
+                 de este repo y la URL canónica la de Pages).
+                 Cabecera con la MARCA ServyPartner a la
                  izquierda y el Menú Global a la derecha — el
                  lienzo NO lleva título de pestaña. Sin GA4 (la
                  Partner P1 no lleva analítica propia).
-VERSIÓN:         1.2
+VERSIÓN:         1.3
 ENCABEZADOS:     Solo describen lo que funciona HOY. El historial
                  de tandas vive en la bitácora del taller.
 DEPENDENCIAS:    css/*.css + js/*.js (misma carpeta), manifest.json,
-                 sw.js, icon-192.png, icon-512.png, GitHub_Cromo.*,
+                 sw.js, icon-192.png, icon-512.png, og-servypartner.png,
+                 GitHub_Cromo.*,
                  Backend: 00 DoGet.gs (doPost con abrirSesion,
                  perfil, guardarPerfil, subirAvatar).
 ════════════════════════════════════════════════════════════════════
@@ -24,6 +29,20 @@ DEPENDENCIAS:    css/*.css + js/*.js (misma carpeta), manifest.json,
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>ServyPartner</title>
+
+  <!-- OG · tarjeta social del enlace compartido (orden del
+       dueño). En la página estática la imagen vive en este repo
+       y la URL canónica es la de GitHub Pages; el Index de GAS
+       lleva su propio OG dinámico (SISTEMA.og + URL_EXEC). -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="ServyPartner">
+  <meta property="og:description" content="Panel de partners de ServyCloud: edita tus publicaciones y tu perfil desde el celular.">
+  <meta property="og:image" content="https://ingeniuscloud.github.io/ServyCloud-Partner/og-servypartner.png">
+  <meta property="og:url" content="https://ingeniuscloud.github.io/ServyCloud-Partner/">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="ServyPartner">
+  <meta name="twitter:description" content="Panel de partners de ServyCloud: edita tus publicaciones y tu perfil desde el celular.">
+  <meta name="twitter:image" content="https://ingeniuscloud.github.io/ServyCloud-Partner/og-servypartner.png">
 
   <!-- FUENTE INTER (la misma del original) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -129,8 +148,8 @@ DEPENDENCIAS:    css/*.css + js/*.js (misma carpeta), manifest.json,
   <script>
     /* La página es estática (GitHub Pages). La sesión llega
        POR DATOS: abrirSesion entrega TOKEN_SESION, SISTEMA y
-       PARTNERS. El dueño pega la URL /exec de LA PARTNER al
-       desplegar (T6). */
+       PARTNERS. URL /exec de LA PARTNER (despliegue vigente,
+       pegada por orden del dueño 18-nov): */
     window.TOKEN_SESION  = '';
     window.PARTNERS      = [];
     window.URL_EXEC      = "https://script.google.com/macros/s/AKfycbydc1a1H6nYU1P6d9_daDQ8XOIRzkySrGyiAxS3Pw4HkXYdOBRpeyEQgEetLEwx1d-7FQ/exec";
@@ -164,7 +183,7 @@ DEPENDENCIAS:    css/*.css + js/*.js (misma carpeta), manifest.json,
     </div>
   </template>
 
-  <script src="./js/Global_Script.js"></script><script src="./js/Global_Menu_Script.js"></script><script src="./js/Core_Script.js"></script><script src="./js/Perfil_Script.js"></script>
+  <script src="./js/Global_Script.js"></script><script src="./js/Global_Menu_Script.js"></script><script src="./js/Core_Script.js"></script><script src="./js/Validaciones_Script.js"></script><script src="./js/Perfil_Script.js"></script>
 
   <script src="./js/GitHub_Cromo.js"></script>
 </body>

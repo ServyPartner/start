@@ -309,14 +309,8 @@
       if (!t) {
         t = document.createElement('div');
         t.id = 'aviso-pwa-global';
+        t.className = 'pildoraPwa';
         t.setAttribute('role', 'status');
-        t.setAttribute('style',
-          'position:fixed;left:50%;bottom:24px;transform:translateX(-50%);' +
-          'z-index:1400;max-width:calc(100vw - 32px);background:#1f2937;' +
-          'color:#ffffff;font-size:14px;font-weight:600;padding:11px 18px;' +
-          'border-radius:999px;text-align:center;box-shadow:' +
-          '0 10px 30px rgba(15,23,42,0.25);opacity:0;pointer-events:none;' +
-          'transition:opacity .22s ease;');
         document.body.appendChild(t);
       }
       t.textContent = texto;

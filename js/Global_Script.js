@@ -104,18 +104,16 @@
   }
 
   /* Pantalla de error de token: solo la invitación amable a
-     cerrar y reabrir la app (molde R95 de la pública). */
+     cerrar y reabrir la app (molde R95 de la pública). Las
+     clases viven en Core_CSS (.pantallaError — tipografía
+     centralizada). */
   function _mostrarErrorToken() {
     var html = '' +
-      '<div style="position:fixed;inset:0;background:#f8fafc;' +
-                  'display:flex;align-items:center;justify-content:center;' +
-                  'padding:32px 24px;font-family:-apple-system,BlinkMacSystemFont,' +
-                  '\'Segoe UI\',Roboto,sans-serif;text-align:center;z-index:999999;">' +
-        '<div style="max-width:340px;width:100%;">' +
-          '<div style="font-size:48px;line-height:1;margin-bottom:20px;">⚠️</div>' +
-          '<h1 style="font-size:20px;font-weight:700;color:#1f2937;margin:0 0 10px;' +
-                     'letter-spacing:-0.02em;">Algo salió mal</h1>' +
-          '<p style="font-size:14px;line-height:1.5;color:#64748b;margin:0 0 24px;">' +
+      '<div class="pantallaError">' +
+        '<div class="pantallaError-caja">' +
+          '<div class="pantallaError-icono">⚠️</div>' +
+          '<h1 class="pantallaError-titulo">Algo salió mal</h1>' +
+          '<p class="pantallaError-texto">' +
             'No pudimos conectar con el servidor. Cerrá la app y volvé a abrirla.' +
           '</p>' +
         '</div>' +
@@ -126,28 +124,20 @@
 
   /* ============================================================
      PANTALLA DE ERROR DE RED · la acción inicial falló del todo
+     (clases centralizadas .pantallaError del Core)
      ============================================================ */
   function _mostrarErrorRed() {
     if (document.getElementById('errorRedPantalla')) return;
 
     var html = '' +
-      '<div id="errorRedPantalla" style="position:fixed;inset:0;background:#f8fafc;' +
-                  'display:flex;align-items:center;justify-content:center;' +
-                  'padding:32px 24px;font-family:-apple-system,BlinkMacSystemFont,' +
-                  '\'Segoe UI\',Roboto,sans-serif;text-align:center;z-index:999998;">' +
-        '<div style="max-width:340px;width:100%;">' +
-          '<div style="font-size:48px;line-height:1;margin-bottom:20px;">📡</div>' +
-          '<h1 style="font-size:20px;font-weight:700;color:#1f2937;margin:0 0 10px;' +
-                     'letter-spacing:-0.02em;">Sin conexión</h1>' +
-          '<p style="font-size:14px;line-height:1.5;color:#64748b;margin:0 0 24px;">' +
+      '<div id="errorRedPantalla" class="pantallaError" style="z-index:999998;">' +
+        '<div class="pantallaError-caja">' +
+          '<div class="pantallaError-icono">📡</div>' +
+          '<h1 class="pantallaError-titulo">Sin conexión</h1>' +
+          '<p class="pantallaError-texto">' +
             'No pudimos cargar la información. Revisá tu conexión e intentá de nuevo.' +
           '</p>' +
-          '<button type="button" id="btnReintentarRed" ' +
-                  'style="display:inline-block;background:#2563EB;color:#fff;' +
-                         'border:none;font-family:inherit;font-weight:700;font-size:15px;' +
-                         'padding:12px 28px;border-radius:999px;cursor:pointer;' +
-                         'box-shadow:0 6px 12px rgba(37,99,235,0.3);' +
-                         '-webkit-tap-highlight-color:transparent;">' +
+          '<button type="button" id="btnReintentarRed" class="pantallaError-boton">' +
             'Reintentar' +
           '</button>' +
         '</div>' +
@@ -166,7 +156,8 @@
   }
 
   /* ============================================================
-     PÍLDORA "RECONECTANDO…" (molde R14)
+     PÍLDORA "RECONECTANDO…" (molde R14) · clase centralizada
+     .pildoraReconectando del Core (tipografía de tokens).
      ============================================================ */
   var _pillReconectando = null;
 
@@ -175,34 +166,13 @@
       if (_pillReconectando) return;
       if (!document.body) return;
 
-      if (!document.getElementById('estiloReconectando')) {
-        var estilo = document.createElement('style');
-        estilo.id = 'estiloReconectando';
-        estilo.textContent =
-          '@keyframes recSpin{to{transform:rotate(360deg)}}';
-        document.body.appendChild(estilo);
-      }
-
       var p = document.createElement('div');
       p.id = 'pillReconectando';
+      p.className = 'pildoraReconectando';
       p.setAttribute('role', 'status');
       p.setAttribute('aria-live', 'polite');
-      p.style.cssText =
-        'position:fixed;' +
-        'top:calc(env(safe-area-inset-top, 0px) + 12px);' +
-        'left:50%;transform:translateX(-50%);' +
-        'z-index:999990;background:#0f172a;color:#ffffff;' +
-        'font-family:inherit;font-size:13px;font-weight:600;' +
-        'letter-spacing:-0.01em;padding:9px 16px;' +
-        'border-radius:999px;' +
-        'box-shadow:0 6px 18px rgba(15,23,42,0.28);' +
-        'display:flex;align-items:center;gap:8px;' +
-        'pointer-events:none;opacity:0;transition:opacity 0.2s ease;';
       p.innerHTML =
-        '<span aria-hidden="true" style="width:11px;height:11px;' +
-        'border-radius:50%;border:2px solid rgba(255,255,255,0.35);' +
-        'border-top-color:#ffffff;display:inline-block;' +
-        'animation:recSpin 1s linear infinite;"></span>' +
+        '<span aria-hidden="true" class="pildora-giro"></span>' +
         'Reconectando\u2026';
 
       document.body.appendChild(p);

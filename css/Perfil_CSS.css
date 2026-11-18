@@ -5,11 +5,11 @@ ARCHIVO:         Perfil_CSS.html
 ESPEJO GITHUB:   github/css/Perfil_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Pantalla PERFIL: héroe del avatar + formulario
-                 minimalista (campos sin borde, gris clarito,
-                 esquinas casi cuadradas, foco azul delgado y
-                 fondo azul clarito) + ciclo visual del botón
+                 de campos TRANSPARENTES con borde gris tenue,
+                 esquinas redondeadas y label en el borde (foco
+                 azul sin fondo) + ciclo visual del botón
                  GUARDAR + skeleton con medidas reales.
-VERSIÓN:         1.3
+VERSIÓN:         1.4
 DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
                  sistema .skl), Global_CSS.html (pantalla-area),
                  Perfil_Script.html
@@ -61,8 +61,8 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     display: block;
   }
   .perfil-avatar-inicial {
-    font-size: 38px;
-    font-weight: 700;
+    font-size: var(--size-inicial-avatar);
+    font-weight: var(--weight-marca-media);
     line-height: 1;
   }
   .perfil-foto-btn {
@@ -116,11 +116,12 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   }
 
   /* ============================================================
-     FORMULARIO · minimalista (orden del dueño): campos SIN
-     borde, fondo GRIS CLARITO, esquinas CASI CUADRADAS. La
-     altura 52px y el margen 14px son del sheet de reserva del
-     original (intocables). El ESPACIO entre bloques lo manda
-     .form-bloque (más holgado en esta ronda).
+     CAMPOS DEL FORMULARIO (orden del dueño, correcciones 4):
+     SIN FONDO — transparente sobre el lienzo — con BORDE GRIS
+     TENUE MUY DELGADO (1px, el #e2e8f0 del molde) y ESQUINAS
+     REDONDEADAS 12px (las de antes). La altura 52px y el margen
+     14px son del sheet de reserva del original (intocables).
+     El ESPACIO entre bloques lo manda .form-bloque.
      ============================================================ */
   .perfil-form { display: flex; flex-direction: column; }
 
@@ -157,24 +158,24 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
 
   /* ============================================================
      CAMPO TELEFÓNICO · prefijo +58 fijo del molde Reserva.
-     Minimalista como los demás: sin borde, gris clarito,
-     casi cuadrado. El FOCO pinta el borde azul muy delgado
-     (inset 1px — sin saltos de layout) y fondo azul clarito.
+     Igual que los demás: transparente, borde gris tenue 1px,
+     esquinas redondeadas. El FOCO pinta el borde azul muy
+     delgado SIN cambiar el fondo (transparente, orden del
+     dueño).
      ============================================================ */
   .form-input-tel {
     display: flex;
     align-items: center;
     width: 100%;
     height: 52px;
-    padding: 0 44px 0 0;
-    border-radius: 4px;
-    border: none;
-    background-color: #F1F5F9;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    padding: 0 14px 0 0;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background-color: transparent;
+    transition: border-color 0.2s ease;
   }
   .form-input-tel:focus-within {
-    background-color: #DBEAFE;
-    box-shadow: inset 0 0 0 1px var(--color-primario);
+    border-color: var(--color-primario);
   }
   .form-input-tel-input {
     flex: 1;
@@ -200,111 +201,77 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     transition: opacity 0.2s;
   }
   .form-field.activo    .form-prefijo { opacity: 1; }
-  .form-field.validado  .form-prefijo   { color: #16a34a; }
   .form-field.invalido  .form-prefijo   { color: #dc2626; }
 
   .form-input {
     width: 100%;
     height: 52px;
-    padding: 0 44px 0 14px;
-    border-radius: 4px;
-    border: none;
-    background-color: #F1F5F9;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background-color: transparent;
     font-size: var(--size-textoPrimario);
     font-weight: var(--weight-textoPrimario);
     color: #0f172a;
     outline: none;
     font-family: inherit;
-    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+    transition: border-color 0.2s ease;
     -webkit-appearance: none;
     appearance: none;
   }
   .form-input:focus {
-    background-color: #DBEAFE;
-    box-shadow: inset 0 0 0 1px var(--color-primario);
+    border-color: var(--color-primario);
   }
 
+  /* ============================================================
+     LABEL · vive EN EL BORDE del campo (orden del dueño): un
+     chip que CORTA la línea del borde superior — no flota suelto
+     ni vive dentro. El chip lleva fondo BLANCO (el lienzo es
+     blanco en la zona del formulario) para tapar el tramo del
+     borde que pasa por debajo. Color: gris de siempre; azul
+     oficial con el foco; rojo si el campo es inválido.
+     ============================================================ */
   .form-label {
     position: absolute;
     left: 14px;
-    top: 50%;
+    top: 0;
     transform: translateY(-50%);
     font-size: var(--size-cita);
     font-weight: var(--weight-cita);
     color: #94a3b8;
     pointer-events: none;
-    padding: 0 4px;
-    border-radius: 3px;
-    background-color: transparent;
-    line-height: 1;
-    transition: top 0.22s, transform 0.22s,
-                color 0.22s, background-color 0.22s;
+    padding: 0 6px;
+    background-color: #ffffff;
+    line-height: 1.2;
+    transition: color 0.2s ease;
   }
 
-  /* El label flotante SUBE por encima del campo (fuera de la
-     caja, sin chip blanco: minimalista) y viste el azul oficial
-     mientras el partner está en ese campo. */
   .form-field.activo .form-label {
-    top: -6px;
-    transform: translateY(-100%);
     color: var(--color-primario-medio);
-    background-color: transparent;
   }
 
-  .form-field.validado .form-input {
-    background-color: #f0fdf4;
-  }
-  .form-field.validado .form-label {
-    color: #16a34a;
-  }
-
-  .form-field.invalido .form-input {
-    background-color: #fef2f2;
-  }
   .form-field.invalido .form-label {
     color: #dc2626;
   }
 
-  /* El FOCO manda (orden del dueño): aunque el campo esté
-     validado o inválido, si el partner está escribiendo aquí
-     se ve el borde azul delgado y el fondo azul clarito. */
-  .form-field .form-input:focus,
-  .form-field .form-input-tel:focus-within {
-    background-color: #DBEAFE;
-    box-shadow: inset 0 0 0 1px var(--color-primario);
+  /* El FOCO manda: aunque el campo esté inválido, si el partner
+     está escribiendo aquí se ve el borde azul delgado y el
+     fondo queda transparente (orden del dueño). */
+  .form-field .form-input:focus {
+    border-color: var(--color-primario);
   }
   .form-field .form-input:focus ~ .form-label,
   .form-field.activo .form-label {
     color: var(--color-primario-medio);
   }
 
-  .field-check {
-    position: absolute;
-    right: 14px;
-    top: 50%;
-    width: 20px;
-    height: 20px;
-    transform: translateY(-50%) scale(0.6);
-    color: #16a34a;
-    opacity: 0;
-    transition: opacity 0.22s, transform 0.22s cubic-bezier(0.34, 1.36, 0.64, 1);
-    pointer-events: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  /* INVÁLIDO · borde rojo delgado (sin fondos: la vestitura de
+     los campos es transparente). */
+  .form-field.invalido .form-input {
+    border-color: #dc2626;
   }
-  .field-check svg {
-    width: 100%;
-    height: 100%;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 2.6;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  .form-field.validado .field-check {
-    opacity: 1;
-    transform: translateY(-50%) scale(1);
+  .form-field.invalido .form-input-tel {
+    border-color: #dc2626;
   }
 
   /* ============================================================
@@ -405,9 +372,10 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
 
   /* ============================================================
      SKELETON DE LA PANTALLA · misma silueta que el contenido
-     real: círculo del avatar (104px), campos de 52px casi
-     cuadrados y píldora del botón. Las formas las viste el
-     sistema .skl del Core.
+     real: círculo del avatar (104px), campos de 52px con sus
+     esquinas redondeadas y píldora del botón. Las formas las
+     viste el sistema .skl del Core. Hoy solo actúa en la
+     PRIMERA lectura sin cache (L2).
      ============================================================ */
   .skl-avatar {
     width: 104px;
@@ -417,7 +385,7 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   }
   .skl-campo {
     height: 52px;
-    border-radius: 4px;
+    border-radius: 12px;
     margin-bottom: 14px;
   }
   .skl-boton {

@@ -8,6 +8,52 @@
     var KEY_SESION = 'partner_sesion';
     var actual = null;
 
+    /* ============================================================
+       LLAVE DE SESIÓN · CACHE DEL PERFIL (L2)
+       Orden del dueño: los datos del partner NO se releen de la
+       BD en cada click a Perfil — llegan de la caché local y la
+       carga es ágil sin gastar cuota GAS. La bolsa vive en
+       sessionStorage (muere al cerrar la app, acta) con una
+       entrada por idPartner sellada con su timestamp. El TTL es
+       de REVALIDACIÓN, no de existencia: vencido, Perfil pinta
+       lo cacheado y refresca mudo en segundo plano.
+       ============================================================ */
+    var KEY_PERFIL_CACHE = 'partner_perfil_cache';
+    var PERFIL_TTL_MS    = 5 * 60 * 1000;   /* 5 minutos */
+
+    function cachePerfilLeer(id) {
+      try {
+        var bolsa = JSON.parse(
+          sessionStorage.getItem(KEY_PERFIL_CACHE) || '{}');
+        var entrada = bolsa[String(id)];
+        if (!entrada || !entrada.datos) return null;
+        var edad = Date.now() - (entrada.ts || 0);
+        return {
+          datos:  entrada.datos,
+          edad:   edad,
+          fresca: edad <= PERFIL_TTL_MS
+        };
+      } catch (_) { return null; }
+    }
+
+    function cachePerfilGuardar(id, datos) {
+      try {
+        var bolsa = {};
+        try {
+          bolsa = JSON.parse(
+            sessionStorage.getItem(KEY_PERFIL_CACHE) || '{}');
+        } catch (_) {}
+        bolsa[String(id)] = { datos: datos, ts: Date.now() };
+        sessionStorage.setItem(KEY_PERFIL_CACHE,
+                               JSON.stringify(bolsa));
+      } catch (_) {}
+    }
+
+    function cachePerfilLimpiar() {
+      try { sessionStorage.removeItem(KEY_PERFIL_CACHE); }
+      catch (_) {}
+    }
+
     function lista() {
       return Array.isArray(window.PARTNERS) ? window.PARTNERS : [];
     }
@@ -176,6 +222,10 @@
       actual = null;
       try { sessionStorage.removeItem(KEY_SESION); } catch (_) {}
 
+      /* La cache del perfil muere con la sesión: otro partner
+         en este dispositivo no hereda datos que no son suyos. */
+      cachePerfilLimpiar();
+
       var footer = document.getElementById('podioFooter');
       if (footer) footer.hidden = true;
 
@@ -202,6 +252,11 @@
       seleccionar:      seleccionar,
       cerrarSesion:     cerrarSesion,
       pintarMarcaHeader: pintarMarcaHeader,
+      cachePerfil: {
+        leer:    cachePerfilLeer,
+        guardar: cachePerfilGuardar,
+        limpiar: cachePerfilLimpiar
+      },
       getActual:        function () { return actual; }
     };
   })();

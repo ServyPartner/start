@@ -8,11 +8,10 @@ RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
                  maestra, placeholders, SISTEMA SKELETON .skl,
                  marca de la cabecera, modo móvil del lienzo y
                  notificación flotante).
-VERSIÓN:         1.3
-CAMBIOS:         Correcciones (18-nov): sistema skeleton .skl ·
-                 marca .header-marca en la fila de cabecera ·
-                 .titulo-header retirado (el lienzo ya no lleva
-                 título activo). Historial: bitácora del taller.
+VERSIÓN:         1.4
+CAMBIOS:         Correcciones 4 (18-nov): marca de cabecera pegada
+                 a un solo cuerpo tipográfico · tokens de marca
+                 y avisos · clases .pantallaError y .pildoraReconectando/.pildoraPwa. Historial: bitácora del taller.
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 ════════════════════════════════════════════════════════════════════*/
 
@@ -47,6 +46,32 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
        el color lo viste cada elemento). */
     --size-chipsFiltros: 14px;    --weight-chipsFiltros: 300;
     --size-chipsFormulario: 12px; --weight-chipsFormulario: 300;
+
+    /* ============================================================
+       FAMILIA MARCA · tamaños y pesos de los wordmarks («Servy-
+       Partner», «INGeniusCloud»), iniciales de avatar, chevron
+       del menú y píldoras de aviso. ÚNICO sitio donde viven:
+       cambiar aquí cambia las tres pantallas que los visten
+       (audit tipografías — correcciones 4).
+       ============================================================ */
+    --size-marca-app: 2.6rem;       /* wordmark del «Acerca de» */
+    --size-marca-fila: 34px;        /* wordmark de pantalla completa (selección · carga) */
+    --size-marca-cola: 26px;        /* cola «Partner» del wordmark de pantalla */
+    --size-marca-eslogan: 0.86rem;  /* eslogan del wordmark */
+    --size-marca-empresa: 0.76rem;  /* eslogan de la empresa */
+    --size-chevron-menu: 1.1rem;    /* chevron de los ítems del menú */
+    --size-inicial-avatar: 38px;    /* inicial grande del avatar Perfil */
+    --size-inicial-card: 20px;      /* inicial chica de las tarjetas de selección */
+    --size-avisopildora: 13px;      /* píldora de reconexión */
+
+    --weight-marca-fuerte: 900;     /* la parte fuerte del wordmark */
+    --weight-marca-media: 700;      /* la parte media del wordmark */
+    --weight-marca-suave: 400;      /* la cola del wordmark */
+    --weight-medio: 500;            /* textos de apoyo de marca/fecha */
+    --weight-enfasis: 600;          /* énfasis de UI (nombres, píldoras) */
+    --weight-enfasis-fuerte: 700;   /* énfasis fuerte (soporte, errores, h2) */
+    --size-textoH2: 16px;           /* h2 dentro del texto enriquecido (legal) */
+    --size-icono-aviso: 48px;       /* pictograma de las pantallas de error */
 
     /* ============================================================
        FAMILIA UI · tamaños recurrentes de sheets y controles
@@ -117,11 +142,11 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     line-height: 1.6 !important;
     letter-spacing: 0px !important;
   }
-  .textoPrimario strong, .textoPrimario b { font-weight: 600 !important; }
+  .textoPrimario strong, .textoPrimario b { font-weight: var(--weight-enfasis) !important; }
   .textoPrimario em, .textoPrimario i { font-style: italic !important; }
   .textoPrimario h2 {
-    font-size: 16px !important;
-    font-weight: 600 !important;
+    font-size: var(--size-textoH2) !important;
+    font-weight: var(--weight-enfasis) !important;
     color: #1f2937 !important;
     margin: 16px 0 8px 0 !important;
   }
@@ -132,7 +157,7 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     line-height: 1.6 !important;
     letter-spacing: 0px !important;
   }
-  .textoSecundario strong, .textoSecundario b { font-weight: 600 !important; }
+  .textoSecundario strong, .textoSecundario b { font-weight: var(--weight-enfasis) !important; }
   .cita {
     font-size: var(--size-cita) !important;
     font-weight: var(--weight-cita) !important;
@@ -239,6 +264,10 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
      MARCA DE LA CABECERA · «ServyPartner» con los colores
      oficiales (los mismos del «Acerca de» y de la pantalla de
      selección): Servy en el AZUL del Core y Partner en gris.
+     PEGADA COMO UNA SOLA PALABRA (orden del dueño, correcciones
+     4): las dos partes heredan el MISMO tamaño y la MISMA
+     altura del contenedor (muere el 19px y el margen que
+     separaba la cola) — cada una con su color independiente.
      Vive a la IZQUIERDA de la fila de cabecera, siempre visible
      — el lienzo ya no lleva título de pestaña (orden del dueño).
      El texto sale de SISTEMA.identidad (03 Constantes.gs): la
@@ -256,14 +285,11 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
   }
   .header-marca .header-marca-servy {
     color: var(--color-primario);
-    font-weight: 900;
+    font-weight: var(--weight-marca-fuerte);
   }
   .header-marca .header-marca-partner {
     color: #64748b;
-    font-weight: 400;
-    font-size: 19px;
-    letter-spacing: 0.5px;
-    margin-left: 5px;
+    font-weight: var(--weight-marca-suave);
   }
 
   /* ============================================================
@@ -461,4 +487,121 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
       transform: none;
       transition: opacity 0.2s ease, visibility 0s;
     }
+  }
+
+  /* ============================================================
+     PANTALLA DE BLOQUEO · clases centralizadas (correcciones 4,
+     audit tipografías): las pantallas de error de token y de
+     red ya NO llevan estilos inline — visten ESTAS clases y sus
+     variables. Las construye Global_Script cuando la sesión
+     muere o la red falla del todo.
+     ============================================================ */
+  .pantallaError {
+    position: fixed;
+    inset: 0;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 24px;
+    text-align: center;
+    z-index: 999999;
+    font-family: inherit;
+  }
+  .pantallaError-caja   { max-width: 340px; width: 100%; }
+  .pantallaError-icono  { font-size: var(--size-icono-aviso); line-height: 1; margin-bottom: 20px; }
+  .pantallaError-titulo {
+    font-size: var(--size-titulo);
+    font-weight: var(--weight-enfasis-fuerte);
+    color: #1f2937;
+    margin: 0 0 10px;
+    letter-spacing: -0.5px;
+  }
+  .pantallaError-texto {
+    font-size: var(--size-textoSecundario);
+    font-weight: var(--weight-textoSecundario);
+    color: var(--color-textoSecundario);
+    line-height: 1.5;
+    margin: 0 0 24px;
+  }
+  .pantallaError-boton {
+    display: inline-block;
+    background: var(--color-primario);
+    color: #ffffff;
+    border: none;
+    font-family: inherit;
+    font-size: var(--size-botonPrimario);
+    font-weight: var(--weight-enfasis-fuerte);
+    letter-spacing: -0.1px;
+    padding: 12px 28px;
+    border-radius: 999px;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(37, 99, 235, 0.3);
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* ============================================================
+     PÍLDORAS DE AVISO · clases centralizadas (correcciones 4):
+     · .pildoraReconectando — la píldora superior mientras un
+       reintento viaja (Global_Script).
+     · .pildoraPwa — el aviso corto inferior del tutorial PWA
+       (Global_Menu_Script).
+     Tipografía desde tokens; nada de letras inline.
+     ============================================================ */
+  .pildoraReconectando {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 12px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 999990;
+    background: #0f172a;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: var(--size-avisopildora);
+    font-weight: var(--weight-enfasis);
+    letter-spacing: -0.01em;
+    padding: 9px 16px;
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.28);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+  }
+  .pildoraReconectando .pildora-giro {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+    display: inline-block;
+    animation: pildoraGiro 1s linear infinite;
+  }
+  @keyframes pildoraGiro { to { transform: rotate(360deg); } }
+
+  .pildoraPwa {
+    position: fixed;
+    left: 50%;
+    bottom: 24px;
+    transform: translateX(-50%);
+    z-index: 1400;
+    max-width: calc(100vw - 32px);
+    background: #1f2937;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: var(--size-textoPrimario);
+    font-weight: var(--weight-enfasis);
+    padding: 11px 18px;
+    border-radius: 999px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(15, 23, 42, 0.25);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pildoraReconectando .pildora-giro { animation-duration: 2s; }
   }

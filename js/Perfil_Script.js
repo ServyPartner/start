@@ -28,19 +28,12 @@
     var el = {};
     var timerExito = null;  /* el check del botón vuelve solo */
 
-    /* ---------- Validadores (espejo del backend) ----------
-       telefonoWhatsapp con las constantes del sheet de reserva
-       del original (Reserva_Valida: MIN 10 · MAX 11 números
-       locales — el +58 va fijo como prefijo visual). */
-    var REGLAS = {
-      nombre:           { min: 2,   max: 80,  obligatorio: true  },
-      direccion:        { min: 0,   max: 200, obligatorio: false },
-      ciudad:           { min: 2,   max: 80,  obligatorio: true  },
-      municipio:        { min: 2,   max: 80,  obligatorio: true  },
-      estado:           { min: 2,   max: 80,  obligatorio: true  },
-      esloganPartner:   { min: 0,   max: 120, obligatorio: false },
-      telefonoWhatsapp: { min: 10,  max: 11,  obligatorio: true,  telefono: true }
-    };
+    /* ---------- Límites del perfil (CENTRALIZADOS) ----------
+       La tabla vive en Validaciones_Script (window.Validaciones
+       .REGLAS_PERFIL) — el mismo patrón del sistema viejo: un
+       solo archivo de validaciones reutilizable. Aquí solo se
+       consume. */
+    var REGLAS = window.Validaciones.REGLAS_PERFIL;
 
     function _esc_(texto) {
       return String(texto == null ? '' : texto)
@@ -114,11 +107,12 @@
     }
 
     /* ============================================================
-       ESTADOS DE PANTALLA · SKELETON (orden del dueño: la carga
-       de las pantallas NO lleva spinner) y error de lectura.
-       El skeleton arma la SILUETA REAL de la pantalla (héroe del
-       avatar + los 4 bloques del formulario en sus medidas) para
-       que nada salte cuando llegan los datos.
+       ESTADOS DE PANTALLA · el skeleton SOLO existe para la
+       primera lectura sin cache (L2): con la cache de sesión la
+       pantalla nace pintada de golpe — ni skeleton ni lectura
+       (orden del dueño: entrar a Perfil no puede sentirse como
+       recargar). El sistema .skl queda vivo en el Core para
+       primera carga y para las pantallas de las tandas futuras.
        ============================================================ */
     function pintarCargando() {
       var area = document.getElementById('pantallaArea');
@@ -164,7 +158,14 @@
     }
 
     /* ============================================================
-       PINTAR · la acción perfil trae SOLO los campos sellados
+       PINTAR · L2: primero la cache de sesión, después la red.
+       · Cache FRESCA (< 5 min): pinta al instante — cero skeleton,
+         cero lectura de BD, cero cuota gastada.
+       · Cache VENCIDA: pinta lo cacheado al instante y revalida
+         MUDO en segundo plano (sin pisar una edición en curso).
+       · SIN cache (primera vez en esta sesión): skeleton + lectura.
+       La cache la administra Core_Script (window.Partner
+       .cachePerfil); guardar y avatar la actualizan al cerrar.
        ============================================================ */
     function pintar() {
       var p = partner();
@@ -172,17 +173,28 @@
 
       if (timerExito) { clearTimeout(timerExito); timerExito = null; }
 
-      /* CADA entrada a la pestaña nace del servidor (los datos
-         son suyos y pueden haber cambiado): lectura fresca,
-         rate limit generoso (30/min) en 02 Seguridad.gs. */
+      var cache = (window.Partner && window.Partner.cachePerfil)
+        ? window.Partner.cachePerfil.leer(p.id) : null;
+
+      if (cache && cache.datos) {
+        state.datos = cache.datos;
+        guardarOriginales(cache.datos);
+        render(cache.datos);
+        if (!cache.fresca) revalidarMudo(p);
+        return;
+      }
+
       state.cargando = true;
       pintarCargando();
+      leerDelServidor(p);
+    }
 
+    function leerDelServidor(p) {
       postBackend('perfil', { idPartner: String(p.id) }, { mudo: true })
         .then(function (data) {
           state.cargando = false;
           state.datos = (data && data.perfil) || {};
-          render(state.datos);
+          pintarDesde(state.datos, p);
         })
         .catch(function (err) {
           state.cargando = false;
@@ -193,6 +205,43 @@
             pintarError('No pudimos cargar tu perfil. Revisa tu conexión e intenta de nuevo.');
           }
           console.error('[Perfil] lectura falló:', msg);
+        });
+    }
+
+    /* Éxito de lectura: cache + render. */
+    function pintarDesde(perfil, p) {
+      if (p && window.Partner && window.Partner.cachePerfil) {
+        window.Partner.cachePerfil.guardar(p.id, perfil);
+      }
+      render(perfil);
+    }
+
+    /* REVALIDACIÓN MUDA (cache vencida): pide el perfil al
+       servidor sin tocar la pantalla salvo para refrescar la
+       cache. Si el formulario NO tiene edición del partner en
+       curso, el render también se refresca con lo que llegó. */
+    function revalidarMudo(p) {
+      postBackend('perfil', { idPartner: String(p.id) }, { mudo: true })
+        .then(function (data) {
+          var fresco = (data && data.perfil) || {};
+          if (p && window.Partner && window.Partner.cachePerfil) {
+            window.Partner.cachePerfil.guardar(p.id, fresco);
+          }
+
+          /* Con edición en curso o foco dentro del formulario,
+             solo actualiza la cache — el texto que el partner
+             escribe JAMÁS se pisa desde un refresco. */
+          if (state.guardando || hayCambios()) return;
+          var activo = document.activeElement;
+          if (activo && el.form && el.form.contains(activo) &&
+              activo.tagName === 'INPUT') return;
+
+          state.datos = fresco;
+          guardarOriginales(fresco);
+          repoblar(fresco);
+        })
+        .catch(function () {
+          /* Silencio: la pantalla ya está pintada con la cache. */
         });
     }
 
@@ -212,7 +261,6 @@
                  '<input type="' + (tipo || 'text') + '" id="input' + id + '" placeholder=" " class="form-input" value="' +
                    _esc_(valor || '') + '"' + (atributos || '') + '>' +
                  '<label for="input' + id + '" class="form-label">' + _esc_(etiqueta) + '</label>' +
-                 '<span class="field-check" data-glifo="check"></span>' +
                  '<div class="errorForm" hidden></div>' +
                '</div>';
       };
@@ -228,7 +276,6 @@
                      _esc_(valor || '') + '"' + (atributos || '') + '>' +
                  '</div>' +
                  '<label for="input' + id + '" class="form-label">' + _esc_(etiqueta) + '</label>' +
-                 '<span class="field-check" data-glifo="check"></span>' +
                  '<div class="errorForm" hidden></div>' +
                '</div>';
       };
@@ -412,24 +459,10 @@
     }
 
     /* ============================================================
-       ENGANCHAR · flotantes + validación viva (molde Reserva)
+       ENGANCHAR · flotantes + validación viva (molde Reserva).
+       El validador es EL CENTRAL (Validaciones.validarPerfil-
+       Campo — mismo contrato { ok · vacio|largo|corto }).
        ============================================================ */
-    function validarCampo_(clave, valorCrudo) {
-      var r = REGLAS[clave];
-      var v = String(valorCrudo == null ? '' : valorCrudo).trim();
-      if (r.telefono) v = v.replace(/\D/g, '');
-      if (r.telefono && v.charAt(0) === '0') v = v.substring(1);
-      /* Primero el corto (número incompleto) y después el vacío:
-         un teléfono de 7 números merece "Parece incompleto", no
-         "Este dato es obligatorio". */
-      if (r.telefono && v.length && v.length < r.min) {
-        return { ok: false, corto: true };
-      }
-      if (r.obligatorio && v.length < r.min) return { ok: false, vacio: true };
-      if (v.length > r.max) return { ok: false, largo: true };
-      return { ok: true, valor: v };
-    }
-
     function refrescarCampo(clave) {
       var field = el.campos[clave];
       var input = el.inputs[clave];
@@ -441,12 +474,10 @@
         field.classList.remove('activo');
       }
 
-      var res = validarCampo_(clave, input.value);
-      if (res.ok && String(input.value).trim()) {
-        field.classList.add('validado');
+      var res = window.Validaciones.validarPerfilCampo(clave, input.value);
+      if (!String(input.value).trim()) {
         field.classList.remove('invalido');
-      } else if (String(input.value).trim()) {
-        field.classList.remove('validado');
+      } else if (!res.ok) {
         if (REGLAS[clave] && REGLAS[clave].telefono && res.corto) {
           field.classList.add('invalido');
         } else if (!res.vacio) {
@@ -455,7 +486,6 @@
           field.classList.remove('invalido');
         }
       } else {
-        field.classList.remove('validado');
         field.classList.remove('invalido');
       }
     }
@@ -536,7 +566,7 @@
       var datos = {};
 
       Object.keys(REGLAS).forEach(function (clave) {
-        var res = validarCampo_(clave, el.inputs[clave].value);
+        var res = window.Validaciones.validarPerfilCampo(clave, el.inputs[clave].value);
         if (res.ok) {
           datos[clave] = res.valor;
           return;
@@ -575,13 +605,20 @@
           state.guardando = false;
 
           /* El servidor manda el perfil FRESCO: la foto de
-             referencia se actualiza y el formulario queda igual
-             que la BD — sin cambios pendientes que asegurar. */
+             referencia se actualiza, el formulario queda igual
+             que la BD — sin cambios pendientes que asegurar — y
+             la LLAVE DE SESIÓN se refresca (próximo click a
+             Perfil pinta instantáneo con el dato nuevo). */
           var fresco = (data && data.perfil) || {};
           state.datos = fresco;
           guardarOriginales(fresco);
           repoblar(fresco);
           refrescarSesion(fresco);
+
+          var pCache = partner();
+          if (pCache && window.Partner && window.Partner.cachePerfil) {
+            window.Partner.cachePerfil.guardar(pCache.id, fresco);
+          }
 
           /* ÉXITO VISIBLE (orden del dueño): el botón muestra el
              check unos segundos y vuelve solo a su estado
@@ -753,7 +790,13 @@
           if (nueva && el.avatar) {
             el.avatar.innerHTML = '<img src="' + _esc_(nueva) + '" alt="Foto del partner">';
           }
-          if (state.datos) state.datos.avatar = nueva;
+          if (state.datos) {
+            state.datos.avatar = nueva;
+            var pAvatar = partner();
+            if (pAvatar && window.Partner && window.Partner.cachePerfil) {
+              window.Partner.cachePerfil.guardar(pAvatar.id, state.datos);
+            }
+          }
           refrescarSesionAvatar(nueva);
           estadoFoto('Foto actualizada.', 'ok');
           _aviso('Foto actualizada');
