@@ -1,3 +1,4 @@
+
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Global_CSS.html
@@ -5,7 +6,7 @@ PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Menú global + guía PWA + puntero touch (PC) +
                  exclusivos de la Partner: pantalla de selección,
                  footer podio 5, pantallas durmientes.
-VERSIÓN:         1.1
+VERSIÓN:         1.2
 DEPENDENCIAS:    Core_CSS.html (variables y clases maestras)
 ════════════════════════════════════════════════════════════════════*/
 
@@ -716,10 +717,13 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras)
     min-height: 0;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
+    /* SIN SCROLL VISIBLE (orden del dueño): la barra nunca se ve. */
+    scrollbar-width: none;
     padding: 8px 20px 28px;
     display: flex;
     flex-direction: column;
   }
+  .seleccion-wrap::-webkit-scrollbar { display: none; }
   .seleccion-marca {
     display: inline-flex;
     align-items: baseline;
@@ -916,9 +920,16 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras)
     flex: 1 1 auto;
     min-height: 0;
     overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
+    /* SIN SCROLL VISIBLE (orden del dueño): el área scrollea si
+       un contenido excede la pantalla, pero la BARRA nunca se ve
+       — molde del original (.sheet-content: scrollbar-width none
+       + ::-webkit-scrollbar none). Ni vertical ni horizontal. */
+    scrollbar-width: none;
   }
+  .pantalla-area::-webkit-scrollbar { display: none; }
   .dormida-wrap {
     min-height: 100%;
     display: flex;

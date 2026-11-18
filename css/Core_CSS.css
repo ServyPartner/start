@@ -1,13 +1,28 @@
+
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Core_CSS.html
+ESPEJO GITHUB:   github/css/Core_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
                  maestra, placeholders, modo móvil del lienzo y
                  notificación flotante).
-VERSIÓN:         1.1
+VERSIÓN:         1.2
+CAMBIOS:         Correcciones (18-nov, orden del dueño): entra la
+                 regla GLOBAL del molde * { box-sizing: border-box }
+                 (faltaba: sin ella cada caja con borde/padding fijo
+                 crecía 3px de más y desbordaba el ancho — scroll
+                 horizontal y campos «grandísimos») · scrollbars
+                 OCULTOS en todas las pantallas (molde del original:
+                 scrollbar-width none + ::-webkit-scrollbar none —
+                 la app no muestra scroll ni vertical ni horizontal)
+                 · el CÍRCULO del botón del menú global vuelve (1.2px
+                 #475569, R65 del molde). Historial: T2 degradado
+                 azul clarito.
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 ════════════════════════════════════════════════════════════════════*/
+
+  *{ box-sizing: border-box; }
 
   :root {
     --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -54,7 +69,14 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     min-height: 100vh;
     font-family: var(--font-main) !important;
     -webkit-font-smoothing: antialiased;
+    /* SIN SCROLL VISIBLE (orden del dueño): la app no muestra
+       scroll ni vertical ni horizontal — igual que el original,
+       que esconde la barra en TODOS sus contenedores. */
+    overflow-x: hidden;
+    scrollbar-width: none;
   }
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar { display: none; }
 
   body {
     background: radial-gradient(circle at 50% 0%, #2b2f42 0%, #14151c 45%, #0a0b0f 100%);
@@ -285,7 +307,9 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     flex-shrink: 0;
     width: 34px; height: 34px;
     margin-top: 2px;
-    border: none;
+    /* EL CÍRCULO (R65 del molde, orden del dueño): borde propio
+       de 1.2px #475569 — es el contraste de la fila de cabecera. */
+    border: 1.2px solid #475569;
     background: transparent;
     color: #475569;
     cursor: pointer;
@@ -294,9 +318,10 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     border-radius: 50%;
     padding: 0;
     -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.15s ease;
   }
-  .menu-global:active { background-color: rgba(15, 23, 42, 0.06); }
-  .menu-global svg { width: 20px; height: 20px; display: block; }
+  .menu-global:active { opacity: 0.5; }
+  .menu-global svg { width: 20px; height: 20px; display: block; fill: currentColor; }
 
   /* ============================================================
      VOLVER ARRIBA DE LOS BOTTOM SHEETS (clase compartida)
@@ -395,4 +420,3 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
       transition: opacity 0.2s ease, visibility 0s;
     }
   }
-

@@ -219,31 +219,37 @@
             '<h2 class="titulo perfil-titulo-hero" id="perfilHeroNombre">' + _esc_(perfil.nombre || '') + '</h2>' +
           '</div>' +
 
-          '<p class="perfil-hint">Estos son los datos que ve el público en tus publicaciones. Guárdalos con tu mejor letra.</p>' +
-
           '<form class="perfil-form" id="formPerfil" novalidate>' +
 
-            campo('Nombre', 'Nombre del partner', perfil.nombre, 'text',
-                  ' autocomplete="organization" maxlength="80"') +
+            /* BLOQUE 1 · Nombre Comercial + Eslogan (opcional) */
+            '<div class="form-bloque">' +
+              campo('Nombre', 'Nombre Comercial', perfil.nombre, 'text',
+                    ' autocomplete="organization" maxlength="80"') +
+              campo('Eslogan', 'Eslogan (Opcional)', perfil.esloganPartner, 'text',
+                    ' maxlength="120"') +
+            '</div>' +
 
-            campo('Eslogan', 'Eslogan (opcional)', perfil.esloganPartner, 'text',
-                  ' maxlength="120"') +
+            /* BLOQUE 2 · Dirección + ciudad/municipio/estado */
+            '<div class="form-bloque">' +
+              campo('Direccion', 'Dirección (Opcional)', perfil.direccion, 'text',
+                    ' maxlength="200" autocomplete="street-address"') +
+              campo('Ciudad', 'Ciudad', perfil.ciudad, 'text', ' maxlength="80"') +
+              campo('Municipio', 'Municipio', perfil.municipio, 'text', ' maxlength="80"') +
+              campo('Estado', 'Estado', perfil.estado, 'text', ' maxlength="80"') +
+            '</div>' +
 
-            campo('Direccion', 'Dirección (opcional)', perfil.direccion, 'text',
-                  ' maxlength="200" autocomplete="street-address"') +
-            campo('Ciudad', 'Ciudad', perfil.ciudad, 'text', ' maxlength="80"') +
-            campo('Municipio', 'Municipio', perfil.municipio, 'text', ' maxlength="80"') +
-            campo('Estado', 'Estado', perfil.estado, 'text', ' maxlength="80"') +
+            /* BLOQUE 3 · WhatsApp de contacto (prefijo +58 fijo) */
+            '<div class="form-bloque">' +
+              campoTel('TelefonoWhatsapp', 'WhatsApp de contacto', perfil.telefonoWhatsapp,
+                       ' inputmode="numeric" maxlength="11" autocomplete="tel-national"') +
+            '</div>' +
 
-            campoTel('TelefonoWhatsapp', 'WhatsApp de contacto', perfil.telefonoWhatsapp,
-                     ' inputmode="numeric" maxlength="11" autocomplete="tel-national"') +
-
-            '<p class="perfil-hint">Sin el +58 (va fijo a la izquierda) — 10 o 11 números, sin espacios ni símbolos.</p>' +
-
-            '<button type="submit" class="form-submit botonPrimario" id="btnPerfilGuardar">' +
-              '<span class="form-submit-texto">Guardar cambios</span>' +
-              '<span class="form-submit-flecha" data-glifo="enviar"></span>' +
-            '</button>' +
+            /* BLOQUE 4 · Guardar cambios — TEXTO CENTRADO */
+            '<div class="form-bloque">' +
+              '<button type="submit" class="form-submit botonPrimario" id="btnPerfilGuardar">' +
+                '<span class="form-submit-texto">Guardar cambios</span>' +
+              '</button>' +
+            '</div>' +
 
           '</form>' +
         '</div>';
@@ -639,4 +645,3 @@
     };
 
   })();
-

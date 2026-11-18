@@ -145,19 +145,22 @@
     }
 
     function getAcercaHTML() {
-      /* Estructura del original: marca + eslogan + versión
-         arriba, «una creación de» + marca de la empresa + su
-         eslogan abajo, © año al pie. Todos los textos salen de
-         SISTEMA (identidad de la Partner + root.main del Setup
-         compartido): cero marcas pintadas a mano. */
+      /* Estructura del original (Global_Sheet_Script getAcercaHTML):
+         marca + eslogan + versión arriba, «una creación de» + marca
+         de la empresa + su eslogan abajo, © año al pie. La VERSIÓN
+         y el ESLOGAN de la app se extraen de root.app — la MISMA
+         parte ágil de donde el original los saca (Setup compartido):
+         el dueño los edita una vez y las dos apps hablan igual.
+         La marca es la de ESTA app (SISTEMA.identidad.nombreApp). */
       var identidad = (window.SISTEMA && window.SISTEMA.identidad) || {};
       var root      = (window.SISTEMA && window.SISTEMA.root)  || {};
       var main      = root.main || {};
+      var app       = root.app  || {};
 
       var anioActual  = new Date().getFullYear();
       var marcaApp    = identidad.nombreApp || 'ServyPartner';
-      var esloganApp  = identidad.eslogan   || '';
-      var versionApp  = identidad.version   || '';
+      var esloganApp  = app.eslogan || '';
+      var versionApp  = app.version || '';
       var marcaMain   = main.marca   || '';
       var esloganMain = main.eslogan || '';
 
@@ -170,8 +173,8 @@
               ? '<p class="sheet-acerca-app-eslogan">' + _esc_(esloganApp) + '</p>'
               : '') +
             (versionApp
-              ? '<span class="sheet-acerca-app-version">Versión ' + _esc_(versionApp) + ' · ' +
-                _esc_(identidad.plataforma || 'Web App') + '</span>'
+              ? '<span class="sheet-acerca-app-version">Versión ' + _esc_(versionApp) +
+                ' · Web App</span>'
               : '') +
           '</div>' +
 

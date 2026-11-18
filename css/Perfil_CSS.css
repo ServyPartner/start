@@ -1,10 +1,12 @@
+
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Perfil_CSS.html
+ESPEJO GITHUB:   github/css/Perfil_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Pantalla PERFIL: héroe del avatar + formulario del
                  molde Reserva vestido de azul.
-VERSIÓN:         1.1
+VERSIÓN:         1.2
 DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
                  Global_CSS.html (pantalla-area), Perfil_Script.html
 ════════════════════════════════════════════════════════════════════*/
@@ -137,8 +139,21 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
 
   .form-field {
     position: relative;
+    /* MISMA SEPARACIÓN que el sheet de reserva del original
+       (Reserva_CSS .form-field): 14px entre campos del mismo
+       bloque. El ESPACIO entre bloques lo manda .form-bloque. */
     margin-bottom: 14px;
   }
+
+  /* ============================================================
+     BLOQUES DEL FORMULARIO (orden del dueño): cada grupo de
+     datos vive en su .form-bloque y entre bloques hay ESPACIO
+     visible — Nombre+Eslogan · Dirección/Ciudad/Municipio/Estado
+     · WhatsApp · botón. Los campos dentro del bloque conservan
+     el margen del molde Reserva.
+     ============================================================ */
+  .form-bloque { display: flex; flex-direction: column; }
+  .form-bloque + .form-bloque { margin-top: 16px; }
 
   /* ============================================================
      CAMPO TELEFÓNICO · molde Reserva (prefijo +58 fijo)
@@ -283,23 +298,14 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
     transform: translateY(-50%) scale(1);
   }
 
-  .perfil-hint {
-    font-size: var(--size-cita);
-    font-weight: var(--weight-cita);
-    color: #64748b;
-    line-height: 1.5;
-    margin: 2px 0 16px;
-    text-align: left;
-  }
-
   /* ============================================================
-     BOTÓN GUARDAR · submit píldora del molde (texto izquierda
-     + glifo derecha), en AZUL oficial: el degradado naranja de
-     la pública nunca entra en esta app.
+     BOTÓN GUARDAR · submit píldora del molde (vestido azul) con
+     el TEXTO CENTRADO (orden del dueño): sin flecha lateral —
+     la etiqueta queda en el centro exacto de la píldora.
      ============================================================ */
   .form-submit {
     width: 100%;
-    margin-top: 14px;
+    margin-top: 16px;
     padding: 15px 22px;
     border: none;
     border-radius: 999px;
@@ -314,8 +320,8 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
     transition: opacity 0.2s, filter 0.2s;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 10px;
+    justify-content: center;
+    text-align: center;
     box-shadow: 0 6px 14px rgba(37, 99, 235, 0.30);
     -webkit-tap-highlight-color: transparent;
   }
@@ -325,26 +331,8 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
     filter: grayscale(0.35);
   }
   .form-submit-texto {
-    flex: 1;
-    text-align: left;
-  }
-  .form-submit-flecha {
-    width: 20px;
-    height: 20px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .form-submit-flecha svg {
-    width: 100%;
-    height: 100%;
-    display: block;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 2;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    flex: 0 1 auto;
+    text-align: center;
   }
 
   /* ============================================================
@@ -394,4 +382,3 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras),
   @media (prefers-reduced-motion: reduce) {
     .perfil-cargador { animation-duration: 2.4s; }
   }
-
