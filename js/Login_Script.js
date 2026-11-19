@@ -111,12 +111,14 @@
     }
 
     /* ============================================================
-       PINTAR EL ACCESO · título .tituloApp centrado + campos del
-       acta (correo = el usuario · clave con ojito sostenido) +
-       enlace «¿Olvidaste tu clave?» + botón Entrar. FUERA la
-       cabecera (body.en-acceso — Login_CSS) y SIN la pregunta
-       (orden del dueño: murió). Textos de SISTEMA.arranque —
-       cero texto suelto.
+       PINTAR EL ACCESO · DOS BLOQUES FIJOS (correcciones 16):
+       título al 20% + caja de vistas al 30% — anclas porcentuales
+       que no dependen del contenido (sin movimientos al alternar
+       vistas) — campos del acta (correo = el usuario · clave con
+       ojito sostenido) + enlace «¿Olvidaste tu clave?» + botón
+       Entrar. FUERA la cabecera (body.en-acceso — Login_CSS) y
+       SIN la pregunta (orden del dueño: murió). Textos de
+       SISTEMA.arranque — cero texto suelto.
        ============================================================ */
     function pintarAcceso() {
       var area = document.getElementById('pantallaArea');
@@ -141,10 +143,10 @@
       area.innerHTML =
         '<div class="acceso-wrap">' +
 
-          /* EL TÍTULO · FIJO ARRIBA (correcciones 14, orden del
-             dueño): FUERA de la caja centrada — primer hijo del
-             wrap. El flujo re-centra SOLO la caja al alternar
-             vistas: el título NO se mueve. */
+          /* EL BLOQUE 1 · título AL 20% de la pantalla, FIJO
+             (correcciones 16, orden del dueño): el ancla es
+             porcentual y NO depende del contenido — al alternar
+             vistas NADA se re-centra y el título NO se mueve. */
           '<div class="acceso-marca tituloApp" id="accesoMarca" role="heading" aria-level="1">' +
             _marcaTitulo_() +
           '</div>' +

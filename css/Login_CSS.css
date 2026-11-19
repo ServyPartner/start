@@ -3,12 +3,13 @@
 ARCHIVO:         Login_CSS.html
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Pantalla de ACCESO (login): montaje exclusivo
-                 (cabecera fuera, TÍTULO FIJO ARRIBA — correcciones
-                 14 —, centrado vertical de la caja, letra de
+                 (cabecera fuera · DOS BLOQUES FIJOS, correcciones
+                 16: título al 20% · contenido al 30% — sin
+                 movimientos al alternar vistas —, letra de
                  campos, enlace de recuperación, vistas del
                  flujo OTP). El formulario viste las clases
                  centrales (Core + Tipografia_CSS).
-VERSIÓN:         1.3
+VERSIÓN:         1.4
 DEPENDENCIAS:    Core_CSS.html (anatomía del formulario),
                  Tipografia_CSS.html (la letra), Login_Script.html
 ════════════════════════════════════════════════════════════════════*/
@@ -22,20 +23,28 @@ DEPENDENCIAS:    Core_CSS.html (anatomía del formulario),
   body.en-acceso .filtros-wrap { display: none; }
 
   /* ============================================================
-     MONTAJE DE LA PANTALLA · todo el contenido CENTRADO
-     VERTICALMENTE (orden del dueño) dentro del área de
-     pantallas. Sin tarjeta ni caja decorativa: la pantalla es
-     el lienzo del sistema (mismo degradado del Core) y el
-     formulario respira a un ancho cómodo de lectura.
+     MONTAJE DE LA PANTALLA · DOS BLOQUES FIJOS (orden del dueño,
+     correcciones 16) · la pantalla se parte de arriba abajo en
+     dos bloques ANCLADOS POR PORCENTAJE sobre el lienzo:
+     · BLOQUE 1 — el título ServyPartner, ubicado AL 20% de la
+       pantalla, FIJO.
+     · BLOQUE 2 — todo lo demás (las cuatro vistas), COMIENZA
+       AL 30% de la pantalla, FIJO.
+     Los anclas NO dependen del contenido: al alternar vistas
+     cada elemento cambia DENTRO de su bloque y NADA se
+     re-centra — inicio de pantalla sin movimientos (sin
+     fricción a la vista). Sin tarjeta ni caja decorativa: la
+     pantalla es el lienzo del sistema (mismo degradado del
+     Core) y el formulario respira a un ancho cómodo.
      ============================================================ */
   .acceso-wrap {
+    position: relative;
     min-height: 100%;
-    display: flex;
-    flex-direction: column;
-    /* El CENTRADO VERTICAL vive en la caja (margin auto): si el
-       contenido crece (teclado abierto, pantallas bajas), la
-       caja degrada a flujo normal y scrollea — nada se corta. */
-    padding: calc(20px + env(safe-area-inset-top, 0px)) 20px calc(28px + env(safe-area-inset-bottom, 0px));
+    /* Los DOS bloques son ABSOLUTOS (anclas 20% y 30%): en el
+       flujo normal no pinta nada. El scroll solo entra como
+       salvavidas si un contenido crece más que su bloque
+       (teclado abierto, pantallas bajas) — y scrollea SIN mover
+       las anclas: nada se corta, nada se mueve. */
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
     /* SIN SCROLL VISIBLE (orden del dueño): la barra nunca se ve. */
@@ -43,29 +52,35 @@ DEPENDENCIAS:    Core_CSS.html (anatomía del formulario),
   }
   .acceso-wrap::-webkit-scrollbar { display: none; }
 
+  /* EL BLOQUE 2 · todo lo demás. COMIENZA AL 30% de la
+     pantalla, FIJO: las vistas crecen y menguan HACIA ABAJO
+     desde el ancla y la pantalla no se re-centra al alternar
+     (el centro horizontal es el clásico auto con ambos lados
+     fijados, a un ancho cómodo de 340px). */
   .acceso-caja {
-    width: 100%;
+    position: absolute;
+    top: 30%;
+    left: 20px;
+    right: 20px;
     max-width: 340px;
-    /* margin AUTO EN LOS DOS EJES: CENTRADO vertical Y horizontal
-       (orden del dueño). Si el contenido crece (teclado abierto,
-       pantallas bajas), el auto degrada a flujo y scrollea. */
-    margin: auto;
+    margin: 0 auto;
+    padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
     display: flex;
     flex-direction: column;
   }
 
-  /* EL TÍTULO · el wordmark .tituloApp (Servy azul +
-     Partner gris), CENTRADO horizontalmente por la propia clase
-     central. FIJO ARRIBA (correcciones 14, orden del dueño):
-     FUERA de la caja centrada — primer hijo del wrap, anclado
-     en la parte alta de la pantalla (el dueño: «es el
-     protagonista de Login»). Al alternar vistas el flujo
-     re-centra SOLO la caja: el título NO se mueve. La
-     separación bajo él la da el centrado de la caja en el
-     espacio restante — respira como titular principal. */
+  /* EL BLOQUE 1 · el título · el wordmark .tituloApp (Servy
+     azul + Partner gris), CENTRADO horizontalmente por la
+     propia clase central. UBICADO AL 20% de la pantalla, FIJO
+     (orden del dueño, correcciones 16): fuera de toda caja,
+     anclado porcentualmente — NADA de lo que ocurra debajo lo
+     mueve (el dueño: «es el protagonista de Login»). */
   .acceso-marca {
-    flex-shrink: 0;
-    margin: 2px 0 0;
+    position: absolute;
+    top: 20%;
+    left: 20px;
+    right: 20px;
+    margin: 0;
   }
 
   /* ============================================================
