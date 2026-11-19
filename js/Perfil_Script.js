@@ -23,7 +23,10 @@
                                mide si el formulario tiene cambios */
       guardando:  false,
       subiendo:   false,
-      /* ---- Flujos sensibles (Tanda 1) ---- */
+      /* ---- Flujos sensibles (Tanda 1 · correcciones 7) ----
+       correoPaso: sellado (campo inactivo con datos / registro
+       si está vacío) · editando (el lápiz abrió la puerta) ·
+       verificando (OTP pedida: todo lo demás bloqueado). */
       correoPaso:    'sellado',   /* sellado | editando | verificando */
       correoEnviadoA:'',            /* el correo nuevo en tránsito */
       correoEnCurso: false,
@@ -161,6 +164,7 @@
             '<div class="skl skl-campo"></div>' +
             '<div class="skl skl-campo"></div>' +
             '<div class="skl skl-campo"></div>' +
+            '<div class="skl skl-campo"></div>' +
             '<div class="skl skl-boton"></div>' +
           '</div>' +
         '</div>';
@@ -272,6 +276,8 @@
           state.datos = fresco;
           guardarOriginales(fresco);
           repoblar(fresco);
+          if (state.correoPaso === 'sellado') ponerCorreoGuardado();
+          actualizarCorreoFlujo();
           renderGps();
         })
         .catch(function () {
@@ -369,46 +375,74 @@
                     ' maxlength="200" autocomplete="street-address"') +
             '</div>' +
 
-            /* BLOQUE 2 · Ubicación en el mapa — nace BLOQUEADA;
-               su cuerpo lo pinta renderGps() según la dirección. */
+            /* BLOQUE 2 · Ubicación GPS — SIN título y SIN caja
+               (orden del dueño): el botón va SOLO con su texto
+               interno. Su cuerpo lo pinta renderGps() según la
+               dirección. */
             '<div class="form-bloque">' +
               '<div class="form-field" id="fieldUbicacion">' +
-                '<span class="form-label">Ubicación en el mapa</span>' +
                 '<div class="gps-caja" id="gpsCaja"></div>' +
                 '<div class="errorForm" hidden></div>' +
               '</div>' +
             '</div>' +
 
-            /* BLOQUE 3 · Correo Electrónico — SELLADO con check;
-               su cuerpo lo pinta renderCorreoFlujo() (sin modo de
-               edición libre: editar = verificar, SIEMPRE). */
+            /* BLOQUE 3 · Correo Electrónico — LÁPIZ (orden del
+               dueño, correcciones 7): con datos el campo queda
+               INACTIVO y el lápiz CUADRADO activo a la derecha;
+               vacío se escribe directo y el lápiz duerme. Debajo,
+               EN UNA FILA, «Solicitar código de validación»
+               (.botonSecundario, INACTIVO al nacer) + el campo
+               «Ingresar Código» del OTP (INACTIVO al nacer).
+               Editar = verificar, SIEMPRE: los estados los manda
+               actualizarCorreoFlujo(). */
             '<div class="form-bloque">' +
-              '<div class="form-field activo" id="fieldCorreo">' +
-                '<span class="form-label">Correo Electrónico</span>' +
-                '<div id="correoCuerpo"></div>' +
+              '<div class="correo-fila">' +
+                '<div class="form-field" id="fieldCorreo">' +
+                  '<input type="email" id="inputCorreo" placeholder=" " class="form-input" maxlength="100" autocomplete="email" value="' +
+                    _esc_(correoActual()) + '">' +
+                  '<label for="inputCorreo" class="form-label">Correo Electrónico</label>' +
+                  '<div class="errorForm" hidden></div>' +
+                '</div>' +
+                '<button type="button" class="perfil-btn-send" id="btnCorreoEditar" data-glifo="lapiz" aria-label="Editar correo" disabled></button>' +
+              '</div>' +
+              '<div class="correo-otp-fila">' +
+                '<button type="button" class="correo-solicitar botonSecundario" id="btnCorreoSolicitar" disabled>Solicitar código de validación</button>' +
+                '<div class="form-field otp-campo" id="fieldOtp">' +
+                  '<input type="text" id="inputOtp" placeholder=" " class="form-input" disabled maxlength="6" inputmode="numeric" autocomplete="one-time-code">' +
+                  '<label for="inputOtp" class="form-label">Ingresar Código</label>' +
+                  '<div class="errorForm" hidden></div>' +
+                '</div>' +
               '</div>' +
             '</div>' +
 
             /* BLOQUE 4 · Clave de Usuario — write-only: la clave
                guardada JAMÁS viaja al teléfono. Puerta de
                identidad + nueva clave UNA vez + checks vivos
-               debajo del campo (solamente ahí) + ojito sostenido. */
+               debajo del campo (solamente ahí) + ojito sostenido.
+               SIN botones secundarios abajo (orden del dueño,
+               correcciones 7): cada campo lleva a su derecha el
+               botón CUADRADO con el glifo enviar — el mismo de la
+               sección «Preguntas y respuestas» del original. */
             '<div class="form-bloque">' +
-              '<div class="form-field" id="fieldClaveActual">' +
-                '<input type="password" id="inputClaveActual" placeholder=" " class="form-input con-ojo" autocomplete="current-password">' +
-                '<label for="inputClaveActual" class="form-label">Clave actual</label>' +
-                '<button type="button" class="ojito" id="ojitoClaveActual" data-glifo="ojo" aria-label="Mostrar la clave mientras se mantiene presionado"></button>' +
-                '<div class="errorForm" hidden></div>' +
+              '<div class="clave-fila">' +
+                '<div class="form-field" id="fieldClaveActual">' +
+                  '<input type="password" id="inputClaveActual" placeholder=" " class="form-input con-ojo" autocomplete="current-password">' +
+                  '<label for="inputClaveActual" class="form-label">Clave actual</label>' +
+                  '<button type="button" class="ojito" id="ojitoClaveActual" data-glifo="ojo" aria-label="Mostrar la clave mientras se mantiene presionado"></button>' +
+                  '<div class="errorForm" hidden></div>' +
+                '</div>' +
+                '<button type="button" class="perfil-btn-send" id="btnClaveVerificar" disabled aria-label="Verificar clave actual"><span data-glifo="enviar" aria-hidden="true"></span></button>' +
               '</div>' +
-              '<button type="button" class="perfil-btn-flujo perfil-btn-bloque" id="btnClaveVerificar">Verificar clave actual</button>' +
-              '<div class="form-field" id="fieldClaveNueva">' +
-                '<input type="password" id="inputClaveNueva" placeholder=" " class="form-input con-ojo" disabled autocomplete="new-password">' +
-                '<label for="inputClaveNueva" class="form-label">Nueva clave</label>' +
-                '<button type="button" class="ojito" id="ojitoClaveNueva" data-glifo="ojo" disabled aria-label="Mostrar la nueva clave mientras se mantiene presionado"></button>' +
-                '<div class="clave-checks" id="claveChecks">' + checkHtml + '</div>' +
-                '<div class="errorForm" hidden></div>' +
+              '<div class="clave-fila">' +
+                '<div class="form-field" id="fieldClaveNueva">' +
+                  '<input type="password" id="inputClaveNueva" placeholder=" " class="form-input con-ojo" disabled autocomplete="new-password">' +
+                  '<label for="inputClaveNueva" class="form-label">Nueva clave</label>' +
+                  '<button type="button" class="ojito" id="ojitoClaveNueva" data-glifo="ojo" disabled aria-label="Mostrar la nueva clave mientras se mantiene presionado"></button>' +
+                  '<div class="clave-checks" id="claveChecks">' + checkHtml + '</div>' +
+                  '<div class="errorForm" hidden></div>' +
+                '</div>' +
+                '<button type="button" class="perfil-btn-send" id="btnClaveGuardar" disabled aria-label="Guardar nueva clave"><span data-glifo="enviar" aria-hidden="true"></span></button>' +
               '</div>' +
-              '<button type="button" class="perfil-btn-flujo perfil-btn-bloque" id="btnClaveGuardar" disabled>Guardar nueva clave</button>' +
             '</div>' +
 
             /* BLOQUE 5 · Guardar cambios (eslogan + dirección) —
@@ -434,7 +468,7 @@
       repoblar(perfil);
 
       renderGps();
-      renderCorreoFlujo();
+      actualizarCorreoFlujo();
       renderClaveChecks();
 
       /* El botón nace INACTIVO: el formulario acaba de llegar y
@@ -462,10 +496,14 @@
           direccion:      area.querySelector('#inputDireccion')
         },
         /* Flujos sensibles */
-        fieldUbicacion:   area.querySelector('#fieldUbicacion'),
-        gpsCaja:          area.querySelector('#gpsCaja'),
-        fieldCorreo:      area.querySelector('#fieldCorreo'),
-        correoCuerpo:     area.querySelector('#correoCuerpo'),
+        fieldUbicacion:    area.querySelector('#fieldUbicacion'),
+        gpsCaja:           area.querySelector('#gpsCaja'),
+        fieldCorreo:       area.querySelector('#fieldCorreo'),
+        inputCorreo:       area.querySelector('#inputCorreo'),
+        btnCorreoEditar:   area.querySelector('#btnCorreoEditar'),
+        btnCorreoSolicitar:area.querySelector('#btnCorreoSolicitar'),
+        fieldOtp:          area.querySelector('#fieldOtp'),
+        inputOtp:          area.querySelector('#inputOtp'),
         fieldClaveActual: area.querySelector('#fieldClaveActual'),
         inputClaveActual: area.querySelector('#inputClaveActual'),
         ojitoClaveActual: area.querySelector('#ojitoClaveActual'),
@@ -636,6 +674,43 @@
       engancharOjito(el.ojitoClaveActual, el.inputClaveActual);
       engancharOjito(el.ojitoClaveNueva,  el.inputClaveNueva);
 
+      /* ---- Correo: lápiz · solicitar · OTP auto-verificada ---- */
+      if (el.inputCorreo && el.inputCorreo.dataset.bound !== '1') {
+        el.inputCorreo.dataset.bound = '1';
+        el.inputCorreo.addEventListener('focus', function () {
+          el.fieldCorreo.classList.add('activo');
+        });
+        el.inputCorreo.addEventListener('blur', function () {
+          actualizarCorreoFlujo();
+        });
+        el.inputCorreo.addEventListener('input', function () {
+          errorCampo(el.fieldCorreo, '');
+          actualizarCorreoFlujo();
+        });
+      }
+      if (el.btnCorreoEditar && el.btnCorreoEditar.dataset.bound !== '1') {
+        el.btnCorreoEditar.dataset.bound = '1';
+        el.btnCorreoEditar.addEventListener('click', onCorreoEditar);
+      }
+      if (el.btnCorreoSolicitar && el.btnCorreoSolicitar.dataset.bound !== '1') {
+        el.btnCorreoSolicitar.dataset.bound = '1';
+        el.btnCorreoSolicitar.addEventListener('click', onCorreoSolicitar);
+      }
+      if (el.inputOtp && el.inputOtp.dataset.bound !== '1') {
+        el.inputOtp.dataset.bound = '1';
+        el.inputOtp.addEventListener('focus', function () {
+          el.fieldOtp.classList.add('activo');
+        });
+        el.inputOtp.addEventListener('input', function () {
+          var limpio = el.inputOtp.value.replace(/\D/g, '').slice(0, 6);
+          if (limpio !== el.inputOtp.value) el.inputOtp.value = limpio;
+          errorCampo(el.fieldOtp, '');
+          /* AUTO-VERIFICAR al sexto dígito (sin botón: la fila es
+             solicitar + campo — orden del dueño). */
+          if (limpio.length === 6) onCorreoVerificar();
+        });
+      }
+
       /* ---- Clave: la puerta + la nueva ---- */
       if (el.inputClaveActual && el.inputClaveActual.dataset.bound !== '1') {
         el.inputClaveActual.dataset.bound = '1';
@@ -649,6 +724,14 @@
         });
         el.inputClaveActual.addEventListener('input', function () {
           errorCampo(el.fieldClaveActual, '');
+          /* Editar la clave actual CIERRA la puerta verificada:
+             el check no puede quedar encendido si la clave que lo
+             abrió cambió — la identidad se vuelve a verificar. */
+          if (state.claveVerificada) {
+            cerrarPuertaClave();
+          }
+          el.btnClaveVerificar.disabled =
+            !String(el.inputClaveActual.value || '').trim();
         });
       }
       if (el.btnClaveVerificar && el.btnClaveVerificar.dataset.bound !== '1') {
@@ -917,9 +1000,11 @@
         return;
       }
 
-      /* ACTIVO · sin punto aún. */
+      /* ACTIVO · sin punto aún: el botón SOLO con su texto
+         interno, centrado, tipografía .botonSecundario — sin
+         rectángulo y sin título (orden del dueño). */
       el.gpsCaja.innerHTML =
-        '<button type="button" class="gps-btn-capturar" id="btnGpsCapturar">Capturar ubicación</button>';
+        '<button type="button" class="gps-btn-capturar botonSecundario" id="btnGpsCapturar">Capturar ubicación GPS</button>';
       var cap = document.getElementById('btnGpsCapturar');
       if (cap) cap.addEventListener('click', capturarGps);
     }
@@ -996,104 +1081,86 @@
     }
 
     /* ============================================================
-       CORREO SELLADO (Tanda 1) · sin modo de edición libre:
-       editar = verificar, SIEMPRE (orden del dueño). El flujo
-       vive en el mismo campo: sellado → editando → verificando →
-       sellado con el correo nuevo y su check.
+       CORREO · LÁPIZ (correcciones 7, orden del dueño). Una sola
+       tela sin pasos: el campo con su lápiz CUADRADO a la derecha
+       y debajo, EN UNA FILA, «Solicitar código de validación» +
+       «Ingresar Código».
+       · Con datos: campo INACTIVO, lápiz ACTIVO (tocarlo entra a
+         edición; tocarlo de nuevo regresa al sellado — sin botón
+         cancelar).
+       · Vacío: se escribe directo y el lápiz duerme.
+       · «Solicitar…» solo despierta con correo válido EN MODO
+         EDICIÓN. Al pedir código: lápiz INACTIVO, correo
+         bloqueado y «Ingresar Código» DESPIERTA (si y solo si se
+         solicitó un código).
+       · El OTP se auto-verifica al sexto dígito; el éxito sella
+         el correo, el lápiz vuelve y los otros dos quedan
+         bloqueados.
        ============================================================ */
-    function renderCorreoFlujo() {
-      if (!el.correoCuerpo) return;
-      var actual = correoActual();
-      el.fieldCorreo.classList.toggle('activo', !!actual || state.correoPaso !== 'sellado');
+    function correoGuardado() {
+      return String((state.datos && state.datos.correo) || '').trim();
+    }
 
-      /* SELLADO · texto fijo + check. No se puede teclear aquí. */
+    function ponerCorreoGuardado() {
+      if (el.inputCorreo) el.inputCorreo.value = correoGuardado();
+    }
+
+    function actualizarCorreoFlujo() {
+      if (!el.inputCorreo || !el.fieldCorreo) return;
+
+      var guardado = correoGuardado();
+      var enFlujo = state.correoPaso === 'verificando';
+
+      /* CAMPO · INACTIVO sellado con datos o con OTP en proceso;
+         ACTIVO para escribir en registro (vacío) y en edición. */
+      var bloqueado = enFlujo ||
+        (state.correoPaso === 'sellado' && !!guardado);
+      el.inputCorreo.disabled = bloqueado;
+
+      var valor = String(el.inputCorreo.value || '').trim();
+      el.fieldCorreo.classList.toggle('activo',
+        !!valor || document.activeElement === el.inputCorreo);
+
+      /* LÁPIZ · activo SOLO si hay correo guardado que editar y
+         el OTP está quieto (orden del dueño). */
+      el.btnCorreoEditar.disabled =
+        enFlujo || (state.correoPaso === 'sellado' && !guardado);
+
+      /* SOLICITAR · vivo SOLO con correo válido EN MODO EDICIÓN. */
+      var modoEdicion = (state.correoPaso === 'editando') ||
+        (state.correoPaso === 'sellado' && !guardado);
+      var activo = modoEdicion && !state.correoEnCurso &&
+        window.Validaciones.validarCorreoNuevo(
+          String(el.inputCorreo.value || ''), correoActual()).ok;
+      el.btnCorreoSolicitar.disabled = !activo;
+      el.btnCorreoSolicitar.classList.toggle('activo', activo);
+      if (!state.correoEnCurso) {
+        el.btnCorreoSolicitar.textContent = 'Solicitar código de validación';
+      }
+
+      /* INGRESAR CÓDIGO · vivo SI Y SOLO SI se solicitó un
+         código y la validación OTP está en proceso. */
+      el.inputOtp.disabled = !enFlujo;
+      if (!enFlujo && !state.correoEnCurso) el.inputOtp.value = '';
+      el.fieldOtp.classList.toggle('activo', enFlujo);
+    }
+
+    /* El lápiz: entra y sale de la edición (el vaivén sustituye
+       al botón cancelar que murió — orden del dueño). */
+    function onCorreoEditar() {
+      if (state.correoPaso === 'verificando') return;
+      errorCampo(el.fieldCorreo, '');
+
       if (state.correoPaso === 'sellado') {
-        el.correoCuerpo.innerHTML =
-          '<div class="correo-caja">' +
-            '<span class="correo-valor' + (actual ? '' : ' vacio') + '">' +
-              _esc_(actual || 'Sin correo registrado') + '</span>' +
-            (actual ? '<span class="correo-check" data-glifo="check" aria-hidden="true"></span>' : '') +
-          '</div>' +
-          '<button type="button" class="perfil-enlace correo-cambiar" id="btnCambiarCorreo">' +
-            (actual ? 'Cambiar correo' : 'Registrar correo') + '</button>';
-        var btn = document.getElementById('btnCambiarCorreo');
-        if (btn) btn.addEventListener('click', function () {
-          state.correoPaso = 'editando';
-          renderCorreoFlujo();
-        });
-        if (typeof window.pintarGlifos === 'function') window.pintarGlifos(el.correoCuerpo);
-        return;
-      }
-
-      /* EDITANDO · el correo nuevo + pedir el código. */
-      if (state.correoPaso === 'editando') {
-        el.correoCuerpo.innerHTML =
-          '<input type="email" id="inputCorreoNuevo" class="form-input" placeholder=" " value="' +
-            _esc_(state.correoEnviadoA || '') + '" maxlength="100" autocomplete="email">' +
-          '<p class="correo-hint">Te enviaremos un código de 6 dígitos al correo nuevo para confirmar que es tuyo.</p>' +
-          '<div class="correo-flujo-acciones">' +
-            '<button type="button" class="perfil-btn-flujo" id="btnCorreoEnviar">Enviar código</button>' +
-            '<button type="button" class="perfil-btn-fantasma" id="btnCorreoCancelar">Cancelar</button>' +
-          '</div>' +
-          '<div class="errorForm" hidden></div>';
-
-        var input = document.getElementById('inputCorreoNuevo');
-        var btnEnv = document.getElementById('btnCorreoEnviar');
-        var btnCan = document.getElementById('btnCorreoCancelar');
-
-        if (input) {
-          if (input.value) el.fieldCorreo.classList.add('activo');
-          input.addEventListener('focus', function () { el.fieldCorreo.classList.add('activo'); });
-          input.addEventListener('blur', function () {
-            if (!String(input.value || '').trim()) el.fieldCorreo.classList.remove('activo');
-          });
-          input.addEventListener('input', function () {
-            errorCampo(el.fieldCorreo, '');
-          });
-        }
-        if (btnEnv) btnEnv.addEventListener('click', onCorreoEnviar);
-        if (btnCan) btnCan.addEventListener('click', function () {
-          state.correoPaso = 'sellado';
-          state.correoEnviadoA = '';
-          renderCorreoFlujo();
-        });
-        return;
-      }
-
-      /* VERIFICANDO · el código de 6 dígitos + cambiar. */
-      el.correoCuerpo.innerHTML =
-        '<div class="correo-nuevo-linea">' +
-          '<span class="correo-valor">' + _esc_(state.correoEnviadoA) + '</span>' +
-        '</div>' +
-        '<input type="text" id="inputCorreoCodigo" class="form-input" placeholder=" " maxlength="6" inputmode="numeric" autocomplete="one-time-code">' +
-        '<p class="correo-hint">Escribe el código que llegó al correo nuevo.</p>' +
-        '<div class="correo-flujo-acciones">' +
-          '<button type="button" class="perfil-btn-flujo" id="btnCorreoVerificar">Verificar y guardar</button>' +
-          '<button type="button" class="perfil-enlace" id="btnCorreoReenviar">Reenviar código</button>' +
-          '<button type="button" class="perfil-btn-fantasma" id="btnCorreoCancelar2">Cancelar</button>' +
-        '</div>' +
-        '<div class="errorForm" hidden></div>';
-
-      var cod = document.getElementById('inputCorreoCodigo');
-      var btnVer  = document.getElementById('btnCorreoVerificar');
-      var btnRe   = document.getElementById('btnCorreoReenviar');
-      var btnCan2 = document.getElementById('btnCorreoCancelar2');
-
-      if (cod) {
-        cod.addEventListener('focus', function () { el.fieldCorreo.classList.add('activo'); });
-        cod.addEventListener('input', function () {
-          var limpio = cod.value.replace(/\D/g, '').slice(0, 6);
-          if (limpio !== cod.value) cod.value = limpio;
-          errorCampo(el.fieldCorreo, '');
-        });
-      }
-      if (btnVer) btnVer.addEventListener('click', onCorreoVerificar);
-      if (btnRe)  btnRe.addEventListener('click', onCorreoEnviar);
-      if (btnCan2) btnCan2.addEventListener('click', function () {
-        state.correoPaso = 'sellado';
+        state.correoPaso = 'editando';
+        el.inputCorreo.value = '';          /* el nuevo se escribe de cero */
+        try { el.inputCorreo.focus(); } catch (_) {}
+      } else {
+        state.correoPaso = 'sellado';       /* regreso al sellado */
         state.correoEnviadoA = '';
-        renderCorreoFlujo();
-      });
+        ponerCorreoGuardado();
+      }
+      actualizarCorreoFlujo();
     }
 
     function _mensajeCorreo(res) {
@@ -1104,25 +1171,24 @@
       return 'Revisa este dato.';
     }
 
-    function onCorreoEnviar() {
+    function onCorreoSolicitar() {
       if (state.correoEnCurso) return;
       var p = partner();
       if (!p || !p.id) return;
 
-      var input = document.getElementById('inputCorreoNuevo');
-      var valor = input ? input.value : (state.correoEnviadoA || '');
-
-      var res = window.Validaciones.validarCorreoNuevo(valor, correoActual());
+      var res = window.Validaciones.validarCorreoNuevo(
+        el.inputCorreo.value, correoActual());
       if (!res.ok) {
         errorCampo(el.fieldCorreo, _mensajeCorreo(res));
-        if (input && res.vacio) { try { input.focus(); } catch (_) {} }
+        if (res.vacio) { try { el.inputCorreo.focus(); } catch (_) {} }
         return;
       }
 
       state.correoEnviadoA = res.valor;
       state.correoEnCurso = true;
-      var btn = document.getElementById('btnCorreoEnviar');
-      if (btn) { btn.disabled = true; btn.textContent = 'Enviando…'; }
+      el.btnCorreoSolicitar.disabled = true;
+      el.btnCorreoSolicitar.textContent = 'Enviando…';
+      errorCampo(el.fieldCorreo, '');
 
       postBackend('otpCorreoSolicitar', {
         idPartner:  String(p.id),
@@ -1131,11 +1197,13 @@
         .then(function () {
           state.correoEnCurso = false;
           state.correoPaso = 'verificando';
-          renderCorreoFlujo();
+          actualizarCorreoFlujo();
+          try { el.inputOtp.focus(); } catch (_) {}
         })
         .catch(function (err) {
           state.correoEnCurso = false;
-          renderCorreoFlujo();
+          state.correoPaso = correoGuardado() ? 'editando' : 'sellado';
+          actualizarCorreoFlujo();
 
           var msg = (err && err.message) || '';
           if (msg === 'CORREO_EN_USO') {
@@ -1156,23 +1224,21 @@
     }
 
     function onCorreoVerificar() {
-      if (state.correoEnCurso) return;
+      if (!el.inputOtp || state.correoEnCurso) return;
       var p = partner();
       if (!p || !p.id) return;
 
-      var input = document.getElementById('inputCorreoCodigo');
-      var res = window.Validaciones.validarCodigoOtp(input ? input.value : '');
+      var res = window.Validaciones.validarCodigoOtp(el.inputOtp.value);
       if (!res.ok) {
-        errorCampo(el.fieldCorreo, res.vacio
+        errorCampo(el.fieldOtp, res.vacio
           ? 'Escribe el código de 6 dígitos.'
           : 'El código son exactamente 6 dígitos.');
-        if (input && res.vacio) { try { input.focus(); } catch (_) {} }
         return;
       }
 
       state.correoEnCurso = true;
-      var btn = document.getElementById('btnCorreoVerificar');
-      if (btn) { btn.disabled = true; btn.textContent = 'Verificando…'; }
+      el.inputOtp.disabled = true;
+      errorCampo(el.fieldOtp, '');
 
       /* Verificar deja la MARCA (30 min) y el cambio la CONSUME:
          sin verificación fresca, el correo no se escribe — ni
@@ -1198,25 +1264,36 @@
         })
         .catch(function (err) {
           state.correoEnCurso = false;
-          renderCorreoFlujo();
 
           var msg = (err && err.message) || '';
-          if (msg === 'OTP_EXPIRADO' || msg === 'OTP_INTENTOS_AGOTADOS') {
-            errorCampo(el.fieldCorreo, 'El código venció o se agotó. Pide uno nuevo.');
-          } else if (msg === 'OTP_INCORRECTO' || msg === 'OTP_INVALIDO') {
-            errorCampo(el.fieldCorreo, 'El código no coincide. Revisa e intenta de nuevo.');
-          } else if (msg === 'SIN_VERIFICACION_OTP') {
-            errorCampo(el.fieldCorreo, 'La verificación no está vigente. Pide un código nuevo.');
-          } else if (msg === 'CORREO_EN_USO') {
-            errorCampo(el.fieldCorreo, 'Ese correo ya pertenece a otro partner.');
+          if (msg === 'OTP_EXPIRADO' || msg === 'OTP_INTENTOS_AGOTADOS' ||
+              msg === 'SIN_VERIFICACION_OTP' || msg === 'CORREO_EN_USO') {
+            /* La verificación MURIÓ: el campo OTP se bloquea y
+               queda el correo en edición para pedir otro código. */
+            state.correoPaso = correoGuardado() ? 'editando' : 'sellado';
+            actualizarCorreoFlujo();
+            errorCampo(el.fieldOtp, msg === 'CORREO_EN_USO'
+              ? 'Ese correo ya pertenece a otro partner.'
+              : 'El código venció o se agotó. Pide uno nuevo.');
+            return;
+          }
+
+          /* Código equivocado o tropiezo pasajero: el OTP sigue
+             vivo — se limpia y se puede reintentar. */
+          el.inputOtp.disabled = false;
+          el.inputOtp.value = '';
+          try { el.inputOtp.focus(); } catch (_) {}
+
+          if (msg === 'OTP_INCORRECTO' || msg === 'OTP_INVALIDO') {
+            errorCampo(el.fieldOtp, 'El código no coincide. Revisa e intenta de nuevo.');
           } else if (msg.indexOf('RATE_LIMIT') === 0) {
-            errorCampo(el.fieldCorreo, 'Demasiados intentos. Espera un momento.');
+            errorCampo(el.fieldOtp, 'Demasiados intentos. Espera un momento.');
           } else if (msg === 'SISTEMA_OCUPADO') {
-            errorCampo(el.fieldCorreo, 'El sistema está ocupado. Intenta en unos segundos.');
+            errorCampo(el.fieldOtp, 'El sistema está ocupado. Intenta en unos segundos.');
           } else if (msg === 'TOKEN_INVALIDO') {
             /* el puente ya repuso la sesión */
           } else {
-            errorCampo(el.fieldCorreo, 'No se pudo confirmar el cambio. Intenta de nuevo.');
+            errorCampo(el.fieldOtp, 'No se pudo confirmar el cambio. Intenta de nuevo.');
             console.error('[Perfil] cambio de correo falló:', msg);
           }
         });
@@ -1248,6 +1325,29 @@
       }
     }
 
+    /* Glifo del botón de campo: enviar (espera) · check (verificado). */
+    function _glifoBoton(btn, clave) {
+      if (!btn) return;
+      btn.innerHTML = '<span data-glifo="' + clave + '" aria-hidden="true"></span>';
+      if (typeof window.pintarGlifos === 'function') window.pintarGlifos(btn);
+    }
+
+    /* La puerta de identidad se CIERRA: la nueva clave vuelve a
+       nacer bloqueada y el botón vuelve al glifo enviar. */
+    function cerrarPuertaClave() {
+      state.claveVerificada = false;
+      if (el.inputClaveNueva) {
+        el.inputClaveNueva.value = '';
+        el.inputClaveNueva.disabled = true;
+      }
+      if (el.ojitoClaveNueva) el.ojitoClaveNueva.disabled = true;
+      if (el.fieldClaveNueva) el.fieldClaveNueva.classList.remove('activo');
+      el.btnClaveVerificar.classList.remove('verificada');
+      _glifoBoton(el.btnClaveVerificar, 'enviar');
+      errorCampo(el.fieldClaveNueva, '');
+      renderClaveChecks();
+    }
+
     function onClaveVerificar() {
       if (state.claveEnCurso) return;
       var p = partner();
@@ -1267,7 +1367,6 @@
 
       state.claveEnCurso = true;
       el.btnClaveVerificar.disabled = true;
-      el.btnClaveVerificar.textContent = 'Verificando…';
 
       postBackend('verificarClaveActual', {
         idPartner:   String(p.id),
@@ -1276,10 +1375,15 @@
         .then(function () {
           state.claveEnCurso = false;
           state.claveVerificada = true;
-          el.btnClaveVerificar.disabled = false;
-          el.btnClaveVerificar.textContent = 'Clave verificada';
 
-          /* La nueva clave DESPIERTA aquí (orden del dueño). */
+          /* La puerta ABRE: el check verde marca la identidad
+             verificada y la nueva clave DESPIERTA (orden del
+             dueño). El botón queda sellado — ya no hay nada que
+             verificar. */
+          el.btnClaveVerificar.classList.add('verificada');
+          el.btnClaveVerificar.disabled = true;
+          _glifoBoton(el.btnClaveVerificar, 'check');
+
           el.inputClaveNueva.disabled = false;
           el.ojitoClaveNueva.disabled = false;
           errorCampo(el.fieldClaveActual, '');
@@ -1288,8 +1392,9 @@
         })
         .catch(function (err) {
           state.claveEnCurso = false;
-          el.btnClaveVerificar.disabled = false;
-          el.btnClaveVerificar.textContent = 'Verificar clave actual';
+          el.btnClaveVerificar.disabled =
+            !String((el.inputClaveActual && el.inputClaveActual.value) || '').trim();
+          _glifoBoton(el.btnClaveVerificar, 'enviar');
 
           var msg = (err && err.message) || '';
           if (msg === 'CLAVE_ACTUAL_INVALIDA') {
@@ -1321,7 +1426,6 @@
 
       state.claveEnCurso = true;
       el.btnClaveGuardar.disabled = true;
-      el.btnClaveGuardar.textContent = 'Guardando…';
 
       /* El backend RE-verifica la clave actual DENTRO del lock:
          la puerta no es solo visual. */
@@ -1335,34 +1439,26 @@
 
           /* El flujo vuelve a nacer: sin claves escritas, puerta
              cerrada, checks apagados. */
-          state.claveVerificada = false;
           if (el.inputClaveActual) el.inputClaveActual.value = '';
-          if (el.inputClaveNueva)  el.inputClaveNueva.value = '';
-          if (el.inputClaveNueva)  el.inputClaveNueva.disabled = true;
-          if (el.ojitoClaveNueva)  el.ojitoClaveNueva.disabled = true;
           if (el.fieldClaveActual) el.fieldClaveActual.classList.remove('activo');
-          if (el.fieldClaveNueva)  el.fieldClaveNueva.classList.remove('activo');
-          el.btnClaveVerificar.textContent = 'Verificar clave actual';
-          el.btnClaveGuardar.textContent = 'Guardar nueva clave';
+          el.btnClaveVerificar.disabled = true;
+          cerrarPuertaClave();
           errorCampo(el.fieldClaveActual, '');
-          errorCampo(el.fieldClaveNueva, '');
-          renderClaveChecks();
 
           haptic([30, 20, 30]);
           _aviso('Clave actualizada');
         })
         .catch(function (err) {
           state.claveEnCurso = false;
-          el.btnClaveGuardar.disabled = false;
-          el.btnClaveGuardar.textContent = 'Guardar nueva clave';
+          renderClaveChecks();
 
           var msg = (err && err.message) || '';
           if (msg === 'CLAVE_ACTUAL_INVALIDA') {
             errorCampo(el.fieldClaveActual, 'La clave actual ya no coincide. Verifícala de nuevo.');
-            state.claveVerificada = false;
-            el.inputClaveNueva.disabled = true;
-            el.ojitoClaveNueva.disabled = true;
-            el.btnClaveVerificar.textContent = 'Verificar clave actual';
+            /* La puerta se cierra de verdad: la identidad debe
+               re-verificarse antes del siguiente intento. */
+            cerrarPuertaClave();
+            el.btnClaveVerificar.disabled = false;
           } else if (msg.indexOf('CLAVE_DEBIL:') === 0) {
             errorCampo(el.fieldClaveNueva,
               'Falta: ' + _textoRegla(msg.substring('CLAVE_DEBIL:'.length)));
@@ -1382,7 +1478,6 @@
             errorCampo(el.fieldClaveNueva, 'No se pudo guardar la clave. Intenta de nuevo.');
             console.error('[Perfil] cambio de clave falló:', msg);
           }
-          renderClaveChecks();
         });
     }
 
@@ -1418,7 +1513,8 @@
       }
       /* Si una revalidación muda trajo un correo nuevo sin que
          nadie lo cambiara aquí, el flujo cerrado lo refleja. */
-      if (state.correoPaso === 'sellado') renderCorreoFlujo();
+      if (state.correoPaso === 'sellado') ponerCorreoGuardado();
+      actualizarCorreoFlujo();
       renderGps();
     }
 

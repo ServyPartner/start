@@ -7,10 +7,13 @@ PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Pantalla PERFIL v2: héroe del avatar + TARJETA
                  SELLADA con candado + separador «DATOS EDITABLES»
                  + campos TRANSPARENTES del molde Reserva + GPS
-                 con mini mapa + correo sellado con flujo OTP +
-                 clave con ojito y checks + ciclo visual del botón
+                 sin caja (el botón SOLO con su texto, tipografía
+                 .botonSecundario) + correo con LÁPIZ cuadrado y
+                 fila OTP (solicitar + Ingresar Código) + clave
+                 con botones cuadrados de glifo (enviar · check)
+                 + ojito y checks + ciclo visual del botón
                  GUARDAR + skeleton con medidas reales.
-VERSIÓN:         1.6
+VERSIÓN:         1.7
 DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
                  sistema .skl), Global_CSS.html (pantalla-area),
                  Perfil_Script.html
@@ -425,52 +428,101 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     transition: opacity 0.2s ease;
   }
   .perfil-btn-fantasma:active { opacity: 0.7; }
-  /* Ritmo del bloque de clave: los botones respiran como los
-     campos (14px del molde). */
-  .perfil-btn-bloque { margin-bottom: 14px; }
-  .perfil-enlace {
-    display: inline-flex;
-    align-items: center;
-    border: none;
-    background: transparent;
-    padding: 0;
-    font-family: inherit;
-    font-size: var(--size-enlaces);
-    font-weight: var(--weight-enlaces);
-    color: var(--color-enlaces);
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .perfil-enlace:active { opacity: 0.7; }
-
   /* ============================================================
-     CORREO SELLADO · texto fijo con su CHECK de verificado.
-     No hay modo de edición libre: editar = verificar, SIEMPRE.
-     El flujo OTP vive en el MISMO campo (paso a paso).
+     FILAS DE CAMPO + BOTÓN CUADRADO (correcciones 7, orden del
+     dueño): la clave actual/nueva y el correo pierden sus
+     botones secundarios de abajo — cada campo lleva a su
+     DERECHA el botón CUADRADO 42×42 blanco (esquinas 12px,
+     la vestidura de los campos) con el GLIFO del original:
+     el «enviar» de Preguntas y respuestas (clave) y el lápiz
+     (correo). Sin texto: solo icono; apagado en gris tenue.
      ============================================================ */
-  .correo-caja {
+  .clave-fila,
+  .correo-fila {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+  .clave-fila .form-field,
+  .correo-fila .form-field { flex: 1; min-width: 0; }
+
+  .perfil-btn-send {
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    flex-shrink: 0;
+    margin-top: 5px;   /* centrado contra los 52px del campo */
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+    background-color: #ffffff;
+    color: var(--color-primario);
     display: flex;
     align-items: center;
-    gap: 8px;
-    width: 100%;
-    height: 52px;
-    padding: 0 14px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    background-color: transparent;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.10);
+    transition: color 0.2s ease, box-shadow 0.2s ease, opacity 0.15s ease;
     -webkit-tap-highlight-color: transparent;
   }
-  .correo-valor {
+  .perfil-btn-send svg {
+    width: 19px;
+    height: 19px;
+    display: block;
+    margin-left: 1px;
+    pointer-events: none;
+  }
+  .perfil-btn-send:active:not([disabled]) { opacity: 0.8; }
+  .perfil-btn-send[disabled] {
+    color: #cbd5e1;
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+  /* La puerta verificada: check verde (mismo verde del sistema). */
+  .perfil-btn-send.verificada { color: #16a34a; }
+
+  /* ============================================================
+     FILA OTP DEL CORREO (correcciones 7): EN UNA SOLA FILA, el
+     botón de TEXTO «Solicitar código de validación» con la
+     tipografía centralizada .botonSecundario (16px · 400 ·
+     #7A828A — igual que el original) + el campo «Ingresar
+     Código». Ambos nacen INACTIVOS.
+     ============================================================ */
+  .correo-otp-fila {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 2px;
+  }
+  .otp-campo { flex: 0 0 108px; margin-bottom: 0; }
+  .correo-solicitar {
     flex: 1;
     min-width: 0;
-    font-size: var(--size-textoPrimario);
-    font-weight: var(--weight-textoPrimario);
-    color: #0f172a;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    padding: 6px 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    text-align: center;
+    font-family: inherit;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.2s ease;
   }
-  .correo-valor.vacio { color: #cbd5e1; }
+  .correo-solicitar[disabled] { opacity: 0.45; cursor: not-allowed; }
+  /* ACTIVO (correo válido en edición): el azul oficial manda
+     sobre el gris de .botonSecundario — el estado se VE. */
+  .correo-solicitar.activo {
+    color: var(--color-primario) !important;
+    font-weight: var(--weight-enfasis) !important;
+  }
+  .correo-solicitar.activo:active { opacity: 0.7; }
+  @media (max-width: 355px) {
+    .correo-otp-fila { flex-wrap: wrap; }
+  }
+
+  /* ============================================================
+     CORREO · el campo vive en .correo-fila (lápiz cuadrado a la
+     derecha) y el OTP en .correo-otp-fila. Aquí solo queda el
+     CHECK verde que también viste la línea «listo» del GPS.
+     ============================================================ */
   .correo-check {
     width: 18px;
     height: 18px;
@@ -482,51 +534,18 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     height: 100%;
     display: block;
   }
-  .correo-cambiar {
-    margin: 8px 2px 0;
-  }
-  .correo-hint {
-    margin: 6px 2px 0;
-    font-size: var(--size-cita);
-    font-weight: var(--weight-cita);
-    color: var(--color-textoSecundario);
-    line-height: 1.45;
-  }
-  /* Cuando el flujo apila dos cajas (correo confirmado + código). */
-  .correo-nuevo-linea + .form-input {
-    margin-top: 10px;
-  }
-  .correo-flujo-acciones {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-    flex-wrap: wrap;
-  }
-  .correo-nuevo-linea {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    background-color: transparent;
-  }
-  .correo-nuevo-linea .correo-valor { color: var(--color-primario-medio); }
 
   /* ============================================================
-     UBICACIÓN EN EL MAPA · nace BLOQUEADO (orden del dueño):
-     solo se activa si el partner escribió su Dirección Local.
+     UBICACIÓN GPS · SIN TÍTULO y SIN CAJA (orden del dueño,
+     correcciones 7): el bloque no lleva label y el contenedor no
+     dibuja rectángulo — el botón «Capturar ubicación GPS» va SOLO
+     con su texto interno, centrado, con la tipografía centralizada
+     .botonSecundario (16px · 400 · #7A828A, la del original).
      La captura lee el GPS DEL TELÉFONO con el partner en su
-     local; el mini mapa (iframe de embed SIN API key) y el
-     enlace a Maps son la verificación visual del punto.
+     local; el mini mapa (iframe de embed SIN API key) es la
+     verificación visual del punto y conserva su marco propio.
      ============================================================ */
   .gps-caja {
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 12px 14px;
-    background-color: transparent;
     -webkit-tap-highlight-color: transparent;
   }
   .gps-inactivo {
@@ -536,28 +555,22 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     line-height: 1.5;
     padding: 4px 0;
   }
+  /* SOLO texto: sin borde, sin fondo, sin chapa — la tipografía
+     la manda la clase maestra .botonSecundario (el elemento la
+     lleva en el HTML). */
   .gps-btn-capturar {
+    display: block;
     width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 13px 16px;
-    border: 1px dashed #cbd5e1;
-    border-radius: 10px;
+    padding: 8px 0;
+    border: none;
     background: transparent;
-    color: var(--color-primario);
-    font-family: inherit;
-    font-size: var(--size-enlaces);
-    font-weight: var(--weight-enfasis);
     cursor: pointer;
+    text-align: center;
+    font-family: inherit;
     -webkit-tap-highlight-color: transparent;
-    transition: border-color 0.2s ease, background 0.2s ease;
+    transition: opacity 0.15s ease;
   }
-  .gps-btn-capturar:active {
-    border-color: var(--color-primario);
-    background: rgba(37, 99, 235, 0.04);
-  }
+  .gps-btn-capturar:active { opacity: 0.7; }
   .gps-mapa {
     width: 100%;
     height: 150px;
