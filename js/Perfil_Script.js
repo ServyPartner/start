@@ -250,6 +250,10 @@
         .catch(function (err) {
           state.cargando = false;
           var msg = (err && err.message) || '';
+          /* SESION_SIN_PARTNER (Tanda 2): el módulo de sesión YA
+             se hizo cargo — pintó el ACCESO y limpió la sesión.
+             Este catch NO repinta nada encima. */
+          if (msg === 'SESION_SIN_PARTNER') return;
           if (msg === 'PARTNER_NO_ENCONTRADO') {
             pintarError('No encontramos tus datos. Cambia de partner e intenta de nuevo.');
           } else {
@@ -294,8 +298,10 @@
           actualizarCorreoFlujo();
           renderGps();
         })
-        .catch(function () {
-          /* Silencio: la pantalla ya está pintada con la cache. */
+        .catch(function (err) {
+          /* Silencio: la pantalla ya está pintada con la cache.
+             Salvo SESION_SIN_PARTNER (Tanda 2): ahí el ACCESO ya
+             vive en el área — tampoco se repinta nada. */
         });
     }
 
@@ -879,7 +885,6 @@
           state.datos = fresco;
           guardarOriginales(fresco);
           repoblar(fresco);
-          refrescarSesion(fresco);
 
           var pCache = partner();
           if (pCache && window.Partner && window.Partner.cachePerfil) {
@@ -1532,22 +1537,6 @@
       renderGps();
     }
 
-    function refrescarSesion(fresco) {
-      /* La lista de selección se repinta en cada carga con datos
-         del servidor; aquí solo se alivia la copia local. */
-      try {
-        if (Array.isArray(window.PARTNERS)) {
-          var p = partner();
-          for (var i = 0; i < window.PARTNERS.length; i++) {
-            if (String(window.PARTNERS[i].id) === String(p.id)) {
-              window.PARTNERS[i].nombre = fresco.nombre || window.PARTNERS[i].nombre;
-              break;
-            }
-          }
-        }
-      } catch (_) {}
-    }
-
     /* ============================================================
        AVATAR · C2: el WebP nace EN EL TELÉFONO. Recorte cuadrado
        centrado a 512px, calidad 0.82 — el original pesado jamás
@@ -1638,7 +1627,6 @@
               window.Partner.cachePerfil.guardar(pAvatar.id, state.datos);
             }
           }
-          refrescarSesionAvatar(nueva);
           estadoFoto('Foto actualizada.', 'ok');
           _aviso('Foto actualizada');
         })
@@ -1655,22 +1643,9 @@
         });
     }
 
-    function refrescarSesionAvatar(nueva) {
-      try {
-        if (Array.isArray(window.PARTNERS)) {
-          var p = partner();
-          for (var i = 0; i < window.PARTNERS.length; i++) {
-            if (String(window.PARTNERS[i].id) === String(p.id)) {
-              window.PARTNERS[i].avatar = nueva || window.PARTNERS[i].avatar;
-              break;
-            }
-          }
-        }
-      } catch (_) {}
-    }
-
     return {
       pintar: pintar
     };
 
   })();
+

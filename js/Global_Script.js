@@ -23,7 +23,8 @@
      La página de GAS inyecta TOKEN_SESION al servirse; la página
      de GitHub Pages no puede: lo pide POR DATOS con abrirSesion
      (la única acción que no exige token). Devuelve token (1h)
-     + SISTEMA + partners (lo que doGet inyecta en el HTML).
+     + SISTEMA (Tanda 2: SIN la lista de partners — el acceso es
+     con credenciales; lo que doGet inyecta en el HTML).
      Un solo vuelo: las llamadas concurrentes comparten la promesa.
      ============================================================ */
   var _promesaSesion = null;
@@ -63,9 +64,6 @@
         }
         if (data && data.sistema && !window.SISTEMA) {
           window.SISTEMA = data.sistema;
-        }
-        if (data && Array.isArray(data.partners)) {
-          window.PARTNERS = data.partners;
         }
         return data;
       });
@@ -204,7 +202,6 @@
   var PILDORA_DESDE_REINTENTO = 2;
 
   var ACCIONES_IDEMPOTENTES = {
-    partners: true,
     perfil:   true   /* lectura; el guardar y el upload NO reintentan solos */
   };
 
@@ -292,6 +289,22 @@
       })
       .catch(function (err) {
         var msg = (err && err.message) || 'ERROR_DESCONOCIDO';
+
+        if (msg === 'SESION_SIN_PARTNER') {
+          /* Tanda 2 · la puerta respondió que el token ya no
+             lleva ligazón (expiró la sesión ligada o el token
+             es anónimo tras el guardia de TOKEN_INVALIDO): el
+             partner vuelve AL ACCESO — sin reintento ni
+             pantalla de error. El token muere aquí: el próximo
+             asegurarSesion trae uno anónimo fresco. */
+          window.TOKEN_SESION = '';
+          if (window.Partner &&
+              typeof window.Partner.sesionExpirada === 'function') {
+            window.Partner.sesionExpirada();
+          }
+          _ocultarReconectando();
+          throw err;
+        }
 
         if (msg === 'TOKEN_INVALIDO') {
           var intentos = _contarReloadToken();

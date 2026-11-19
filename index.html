@@ -3,9 +3,10 @@
 ARCHIVO:         index.html (GitHub Pages · espejo del Index.html de GAS)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Misma estructura que el Index de GAS, pero estática:
-                 SISTEMA y PARTNERS llegan POR DATOS (abrirSesion
-                 vía POST al /exec) y los fragments viven en css/
-                 y js/. OG de la tarjeta social en el <head>
+                 SISTEMA llega POR DATOS (abrirSesion vía POST
+                 al /exec) y los fragments viven en css/ y js/.
+                 Tanda 2 · LOGIN: SIN PARTNERS — la lista dejó de
+                 ser pública; el acceso es con credenciales. OG de la tarjeta social en el <head>
                  (estático — el scraper de WhatsApp/Telegram no
                  ejecuta JS; la imagen es el og-servypartner.png
                  de este repo y la URL canónica la de Pages).
@@ -13,7 +14,7 @@ RESPONSABILIDAD: Misma estructura que el Index de GAS, pero estática:
                  izquierda y el Menú Global a la derecha — el
                  lienzo NO lleva título de pestaña. Sin GA4 (la
                  Partner P1 no lleva analítica propia).
-VERSIÓN:         1.3
+VERSIÓN:         1.4
 ENCABEZADOS:     Solo describen lo que funciona HOY. El historial
                  de tandas vive en la bitácora del taller.
 DEPENDENCIAS:    css/*.css + js/*.js (misma carpeta), manifest.json,
@@ -148,10 +149,9 @@ DEPENDENCIAS:    css/*.css + js/*.js (misma carpeta), manifest.json,
   <script>
     /* La página es estática (GitHub Pages). La sesión llega
        POR DATOS: abrirSesion entrega TOKEN_SESION, SISTEMA y
-       PARTNERS. URL /exec de LA PARTNER (despliegue vigente,
+       URL /exec de LA PARTNER (despliegue vigente,
        pegada por orden del dueño 18-nov): */
     window.TOKEN_SESION  = '';
-    window.PARTNERS      = [];
     window.URL_EXEC      = "https://script.google.com/macros/s/AKfycbydc1a1H6nYU1P6d9_daDQ8XOIRzkySrGyiAxS3Pw4HkXYdOBRpeyEQgEetLEwx1d-7FQ/exec";
   </script>
 

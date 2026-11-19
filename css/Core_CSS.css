@@ -1,20 +1,20 @@
-
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Core_CSS.html
-ESPEJO GITHUB:   github/css/Core_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
-                 maestra, campos y botones de campo, placeholders,
-                 SISTEMA SKELETON .skl, marca de la cabecera, modo
-                 móvil del lienzo y notificación flotante).
-VERSIÓN:         1.7
-CAMBIOS:         Correcciones 9 (19-nov): .botonCampo — texto AZUL
-                 unificado en todos los botones de campo (activo
-                 .textoPrimario · inactivo .textoSecundario, el
-                 mismo azul; la inactividad la marca la opacidad).
-                 Historial: correcciones 8 (nacen .campoEditable y
-                 .botonCampo) · 5 · 4 · 3 · bitácora del taller.
+                 maestra, campos y botones de campo, ANATOMÍA
+                 genérica del formulario, placeholders, SISTEMA
+                 SKELETON .skl, marca de la cabecera, modo móvil
+                 del lienzo y notificación flotante).
+VERSIÓN:         1.8
+CAMBIOS:         Tanda 2 · LOGIN: el Core recibe la anatomía
+                 genérica del formulario (form-field/label/
+                 errorForm/bloque/ojito/submit) — dos pantallas
+                 la usan. Historial: correcciones 9 (.botonCampo
+                 texto azul unificado) · 8 (nacen .campoEditable
+                 y .botonCampo) · 5 · 4 · 3 · bitácora del
+                 taller.
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 ════════════════════════════════════════════════════════════════════*/
 
@@ -280,6 +280,219 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     font-weight: var(--weight-textoSecundario);
     opacity: 0.45;
     cursor: not-allowed;
+  }
+
+  /* ============================================================
+     ANATOMÍA DEL FORMULARIO · genérica desde la Tanda 2 (nació
+     en Perfil_CSS con el lienzo v2 y hoy la usan DOS pantallas:
+     el ACCESO y el Perfil — acta §1: cuando una pieza sirve a
+     dos pantallas vive CENTRAL en el Core).
+     · .form-field — el wrapper del campo: relativo (el título
+       y el ojito viven dentro) y sin pestañeo al tocar.
+     · .form-label — el título SENTADO ENCIMA del borde
+       (correcciones 8) y JUSTO CON EL BORDE IZQUIERDO
+       (correcciones 10, orden del dueño): left 0, sin padding.
+       El borde (gris, azul del foco o rojo del inválido) queda
+       DEBAJO del título y ya NO lo cruza ni lo bloquea. El
+       FOCO manda por focus-within también en los flujos.
+     · .errorForm — el error DEBAJO del campo.
+     · .form-bloque — el ritmo del reglamento (correcciones
+       10/11): ENTRE CAMPOS 16px desde el borde inferior de un
+       input hasta la etiqueta siguiente (el hueco lleva DENTRO
+       la fila del título: calc con su letra); ENTRE BLOQUES
+       32px de margen + 32px de relleno SIN línea divisoria.
+     · .form-input.con-ojo — el hueco para el ojito; [disabled]
+       — letra apagada.
+     · .ojito — click SOSTENIDO (orden del dueño): mantener
+       presionado MUESTRA la clave, SOLTAR la vuelve a ocultar.
+     · .form-submit — la píldora primaria con su CICLO COMPLETO:
+       INACTIVO nace y vuelve · ACTIVO · .procesando con
+       SPINNER blanco · .exito píldora verde con CHECK.
+     ============================================================ */
+  .errorForm {
+    display: block;
+    margin-top: 6px;
+    padding: 7px 10px;
+    border-radius: 8px;
+    background: #fef2f2;
+    color: #991b1b;
+    font-size: var(--size-cita);
+    font-weight: var(--weight-cita);
+    line-height: 1.4;
+    text-align: left;
+  }
+  .errorForm[hidden] { display: none; }
+
+  .form-field {
+    position: relative;
+    /* MUERE EL PESTAÑEO (orden del dueño): al tocar el campo no
+       debe encenderse NINGÚN flash de fondo. */
+    -webkit-tap-highlight-color: transparent;
+    margin-bottom: 0;
+  }
+
+  .form-bloque {
+    display: flex;
+    flex-direction: column;
+    gap: calc(16px + (1.2 * var(--size-cita)));
+  }
+  .form-bloque + .form-bloque {
+    margin-top: 32px;
+    padding-top: 32px;
+  }
+
+  .form-input.con-ojo { padding-right: 46px; }
+  .form-input[disabled] {
+    color: #94a3b8;
+    cursor: not-allowed;
+  }
+
+  .form-label {
+    position: absolute;
+    left: 0;
+    top: 0;
+    transform: translateY(-100%);
+    font-size: var(--size-cita);
+    font-weight: var(--weight-cita);
+    color: #94a3b8;
+    pointer-events: none;
+    padding: 0;
+    line-height: 1.2;
+    transition: color 0.2s ease;
+    z-index: 1;
+  }
+  .form-field.activo .form-label {
+    color: var(--color-primario-medio);
+  }
+  .form-field:focus-within .form-label {
+    color: var(--color-primario-medio);
+  }
+  .form-field.invalido .form-label {
+    color: #dc2626;
+  }
+  .form-field .form-input:focus {
+    border-color: var(--color-primario);
+  }
+  .form-field.invalido .form-input {
+    border-color: #dc2626;
+  }
+
+  .ojito {
+    position: absolute;
+    right: 8px;
+    top: 22.5px;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    transition: color 0.15s ease;
+  }
+  .ojito svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+    pointer-events: none;
+  }
+  .ojito.presionado { color: var(--color-primario); }
+  .ojito[disabled] {
+    color: #cbd5e1;
+    cursor: not-allowed;
+  }
+
+  .form-submit {
+    width: 100%;
+    margin-top: 0;
+    padding: 15px 22px;
+    border: none;
+    border-radius: 999px;
+    font-family: inherit;
+    font-size: var(--size-botonPrimario);
+    font-weight: var(--weight-botonPrimario);
+    letter-spacing: -0.1px;
+    color: var(--color-botonPrimario);
+    cursor: pointer;
+    background: linear-gradient(135deg,
+      var(--color-primario) 0%, var(--color-primario-medio) 100%);
+    transition: opacity 0.2s, filter 0.2s, background 0.25s ease, box-shadow 0.25s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+    text-align: center;
+    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.30);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .form-submit:disabled {
+    opacity: 0.42;
+    cursor: not-allowed;
+    filter: grayscale(0.35);
+    box-shadow: none;
+  }
+  .form-submit.procesando { opacity: 1; filter: none; }
+  .form-submit.exito {
+    background: #16a34a;
+    box-shadow: 0 6px 14px rgba(22, 163, 74, 0.30);
+    opacity: 1;
+    filter: none;
+  }
+  .form-submit-texto {
+    flex: 0 1 auto;
+    text-align: center;
+  }
+
+  /* SPINNER DENTRO DEL BOTÓN (solo .procesando). */
+  .form-submit-spinner {
+    display: none;
+    width: 15px;
+    height: 15px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+    animation: btnGiro 0.8s linear infinite;
+  }
+  @keyframes btnGiro { to { transform: rotate(360deg); } }
+  .form-submit.procesando .form-submit-spinner { display: inline-block; }
+
+  /* CHECK DE ÉXITO (solo .exito): entra con un pequeño pop. */
+  .form-submit-check {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: #ffffff;
+    animation: checkPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .form-submit-check[hidden] { display: none; }
+  .form-submit-check svg {
+    width: 100%;
+    height: 100%;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  @keyframes checkPop {
+    0%   { transform: scale(0.4); opacity: 0; }
+    100% { transform: scale(1);   opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .form-submit-check { animation: none; }
+    .form-submit-spinner { animation-duration: 2s; }
   }
 
   /* ============================================================
@@ -684,3 +897,4 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
   @media (prefers-reduced-motion: reduce) {
     .pildoraReconectando .pildora-giro { animation-duration: 2s; }
   }
+

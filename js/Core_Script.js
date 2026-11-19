@@ -1,12 +1,22 @@
 
 
   /* ============================================================
-     PARTNER · sesión del partner (pantalla de selección CADA carga)
+     PARTNER · pantalla de ACCESO + sesión del partner (Tanda 2)
+     Cada carga abre en el ACCESO (acta): marca + pregunta + el
+     formulario que el acta §1 prometió — donde estaba la lista
+     de partners entran CORREO + CLAVE + Entrar. El correo ES el
+     usuario de la Partner (columna CORREO de la tabla). El
+     éxito del login trae el TOKEN LIGADO (partner+dispositivo)
+     y la identidad del partner; desde ahí el idPartner lo pone
+     la puerta del backend DESDE EL TOKEN (nunca el cliente).
+     La sesión vive en sessionStorage y NO sobrevive al cierre
+     (acta). El IDPARTNER es interno: jamás se muestra (acta).
      ============================================================ */
   window.Partner = (function () {
 
     var KEY_SESION = 'partner_sesion';
     var actual = null;
+    var accesoEnCurso = false;
 
     /* ============================================================
        LLAVE DE SESIÓN · CACHE DEL PERFIL (L2)
@@ -54,21 +64,10 @@
       catch (_) {}
     }
 
-    function lista() {
-      return Array.isArray(window.PARTNERS) ? window.PARTNERS : [];
-    }
-
-    function buscar(id) {
-      var listaP = lista();
-      for (var i = 0; i < listaP.length; i++) {
-        if (String(listaP[i].id) === String(id)) return listaP[i];
-      }
-      return null;
-    }
-
-    function inicialDe(nombre) {
-      var s = String(nombre || '').trim();
-      return s ? s.charAt(0).toUpperCase() : '?';
+    function _esc_(texto) {
+      return String(texto == null ? '' : texto)
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
     }
 
     /* ============================================================
@@ -96,10 +95,18 @@
         (cola ? '<span class="header-marca-partner">' + _esc_(cola) + '</span>' : '');
     }
 
-    /* La lista de selección: marca arriba, pregunta y tarjetas.
-       El ID viaja en data-id para la app (interno, jamás texto
-       visible). Sin partners: pantalla vacía con reintentar. */
-    function pintarSeleccion() {
+    /* ============================================================
+       PANTALLA DE ACCESO · la pintura del acta §1 intacta (marca
+       arriba, caja central, botón principal abajo): donde estaba
+       la LISTA de partners entran los CAMPOS del acta — correo
+       (el usuario) + clave (con ojito sostenido) + botón Entrar.
+       Las clases viven CENTRALES en el Core (anatomía genérica
+       de la Tanda 2): el formulario hereda el reglamento del
+       dueño completo — 45px, título encima del borde justo con
+       el borde izquierdo, 16px de aire input→etiqueta. Cero
+       texto suelto: todo sale de SISTEMA.arranque.
+       ============================================================ */
+    function pintarAcceso() {
       var area = document.getElementById('pantallaArea');
       if (!area) return;
 
@@ -120,110 +127,214 @@
           (idxCola <= 0 && idxCloud > 0 ? '<span class="marca-cloud">' + _esc_(marca.substring(idxCloud)) + '</span>' : '') +
         '</div>' +
         '<p class="seleccion-pregunta subtitulo">' + _esc_(pregunta) + '</p>' +
-        '<div class="seleccion-lista">';
+        '<form class="acceso-form" id="formAcceso" novalidate>' +
+          '<div class="form-bloque">' +
 
-      var partners = lista();
-      if (!partners.length) {
-        html += '<div class="seleccion-vacia">' +
-                  '<p class="textoPrimario">' + _esc_(arranque.sinPartners || 'No hay partners registrados en la base de datos.') + '</p>' +
-                  '<p class="textoSecundario" style="margin:6px 0 0">' + _esc_(arranque.sinPartnersSub || 'Revisa la conexión e intenta de nuevo.') + '</p>' +
-                  '<button type="button" class="seleccion-reintentar" id="btnReintentarSeleccion">' +
-                    _esc_(arranque.reintentar || 'Reintentar') +
-                  '</button>' +
-                '</div>';
-      } else {
-        partners.forEach(function (p) {
-          var avatar = '';
-          if (p.avatar) {
-            avatar = '<img src="' + _esc_(p.avatar) + '" alt="" loading="lazy">';
-          } else {
-            avatar = '<span class="partner-avatar-inicial">' + _esc_(inicialDe(p.nombre)) + '</span>';
-          }
-          html +=
-            '<button type="button" class="partner-card" data-id="' + _esc_(p.id) + '">' +
-              '<span class="partner-avatar">' + avatar + '</span>' +
-              '<span class="partner-nombre textoPrimario">' + _esc_(String(p.nombre || '').trim() || '—') + '</span>' +
-            '</button>';
-        });
-      }
+            '<div class="form-field" id="fieldAccesoCorreo">' +
+              '<input type="email" id="inputAccesoCorreo" placeholder=" " class="form-input campoEditable" maxlength="100" autocomplete="email">' +
+              '<label for="inputAccesoCorreo" class="form-label">' + _esc_(arranque.correo || 'Correo Electrónico') + '</label>' +
+              '<div class="errorForm" hidden></div>' +
+            '</div>' +
 
-      html += '</div></div>';
+            '<div class="form-field" id="fieldAccesoClave">' +
+              '<input type="password" id="inputAccesoClave" placeholder=" " class="form-input campoEditable con-ojo" autocomplete="current-password">' +
+              '<label for="inputAccesoClave" class="form-label">' + _esc_(arranque.clave || 'Clave') + '</label>' +
+              '<button type="button" class="ojito" id="ojitoAcceso" data-glifo="ojo" aria-label="' + _esc_(arranque.ojo || 'Mostrar la clave mientras se mantiene presionado') + '"></button>' +
+              '<div class="errorForm" hidden></div>' +
+            '</div>' +
+
+            /* El botón principal del acta (píldora abajo) nace
+               INACTIVO: despierta con correo válido + clave. */
+            '<button type="submit" class="form-submit" id="btnAccesoEntrar" disabled>' +
+              '<span class="form-submit-spinner" aria-hidden="true"></span>' +
+              '<span class="form-submit-texto">' + _esc_(arranque.entrar || 'Entrar') + '</span>' +
+            '</button>' +
+
+          '</div>' +
+        '</form>' +
+      '</div>';
 
       area.innerHTML = html;
-      engancharSeleccion();
+      if (typeof window.pintarGlifos === 'function') window.pintarGlifos(area);
+      engancharAcceso();
     }
 
-    function engancharSeleccion() {
+    /* Error DEBAJO del campo (molde del errorForm del Perfil):
+       texto + marca inválida; vacío = limpiar. */
+    function _errorCampo_(field, texto) {
+      if (!field) return;
+      var caja = field.querySelector('.errorForm');
+      if (caja) {
+        caja.textContent = texto || '';
+        caja.hidden = !texto;
+      }
+      field.classList.toggle('invalido', !!texto);
+    }
+
+    /* El correo pasa por la MISMA regla del backend
+       (validarEmail de Seguridad.gs). */
+    function _correoValido_(correo) {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(correo || '').trim());
+    }
+
+    function engancharAcceso() {
       var area = document.getElementById('pantallaArea');
       if (!area) return;
 
-      var cards = area.querySelectorAll('.partner-card');
-      for (var i = 0; i < cards.length; i++) {
-        if (cards[i].dataset.bound === '1') continue;
-        cards[i].dataset.bound = '1';
-        cards[i].addEventListener('click', function () {
-          var id = this.getAttribute('data-id');
-          if (!id) return;
-          seleccionar(id);
+      var form    = area.querySelector('#formAcceso');
+      var fCorreo = area.querySelector('#fieldAccesoCorreo');
+      var fClave  = area.querySelector('#fieldAccesoClave');
+      var iCorreo = area.querySelector('#inputAccesoCorreo');
+      var iClave  = area.querySelector('#inputAccesoClave');
+      var btn     = area.querySelector('#btnAccesoEntrar');
+      if (!form || !iCorreo || !iClave || !btn) return;
+
+      /* El título azul «activo» cuando el campo vive escrito
+         (molde del Perfil); cada tecla limpia el error propio. */
+      var vigiar = function (input, field) {
+        input.addEventListener('input', function () {
+          field.classList.toggle('activo', !!String(input.value || '').trim());
+          _errorCampo_(field, '');
+          despertar();
         });
-      }
-
-      var btn = document.getElementById('btnReintentarSeleccion');
-      if (btn && btn.dataset.bound !== '1') {
-        btn.dataset.bound = '1';
-        btn.addEventListener('click', function () {
-          recargarPartners();
-        });
-      }
-    }
-
-    /* Sin partners: la lista se pide POR DATOS de nuevo (fresca,
-       saltando el caché de arranque de la página). */
-    function recargarPartners() {
-      postBackend('partners')
-        .then(function (data) {
-          if (data && Array.isArray(data.partners)) {
-            window.PARTNERS = data.partners;
-          }
-          pintarSeleccion();
-        })
-        .catch(function () {});
-    }
-
-    function _esc_(texto) {
-      return String(texto == null ? '' : texto)
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-    }
-
-    function seleccionar(id) {
-      var p = buscar(id);
-      if (!p) return;
-
-      actual = {
-        id:     String(p.id),
-        nombre: String(p.nombre || '').trim(),
-        avatar: String(p.avatar || '').trim()
       };
 
-      try { sessionStorage.setItem(KEY_SESION, JSON.stringify(actual)); } catch (_) {}
+      /* El botón nace INACTIVO: despierta SOLO con correo
+         válido + clave escrita. */
+      var despertar = function () {
+        btn.disabled = !(_correoValido_(iCorreo.value) &&
+                         String(iClave.value || '').length > 0);
+      };
 
-      try {
-        document.dispatchEvent(new CustomEvent('partner:sesion', { detail: { partner: actual } }));
-      } catch (_) {}
+      vigiar(iCorreo, fCorreo);
+      vigiar(iClave, fClave);
+      _engancharOjito_(area.querySelector('#ojitoAcceso'), iClave);
 
-      abrirEsqueleto();
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        iniciarSesion(iCorreo, iClave, fClave, btn);
+      });
     }
 
-    /* El menú global la llama: la elección muere aquí y la app
-       vuelve a la pantalla de selección (CADA carga, acta).
-       La cabecera queda intacta: siempre viste la marca. */
-    function cerrarSesion() {
-      actual = null;
-      try { sessionStorage.removeItem(KEY_SESION); } catch (_) {}
+    /* OJITO SOSTENIDO (orden del dueño, molde del Perfil):
+       pointerdown muestra, soltar/salir/cancelar oculta. Sin
+       toggle: ver mientras presionas. El long-press del móvil
+       no abre menú ni selección. */
+    function _engancharOjito_(btn, input) {
+      if (!btn || !input || btn.dataset.bound === '1') return;
+      btn.dataset.bound = '1';
 
-      /* La cache del perfil muere con la sesión: otro partner
-         en este dispositivo no hereda datos que no son suyos. */
+      var mostrar = function (e) {
+        e.preventDefault();
+        btn.classList.add('presionado');
+        input.setAttribute('type', 'text');
+      };
+      var ocultar = function () {
+        btn.classList.remove('presionado');
+        input.setAttribute('type', 'password');
+      };
+
+      btn.addEventListener('pointerdown', mostrar);
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) {
+        btn.addEventListener(ev, ocultar);
+      });
+      btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
+    }
+
+    /* ============================================================
+       EL LOGIN (Tanda 2): correo + clave → iniciarSesion. El
+       backend verifica contra la columna CLAVE (migrando el
+       sembrado a mano al hash), aplica el bloqueo y devuelve el
+       TOKEN LIGADO + la identidad (id · nombre · avatar — capa
+       7: nada más viaja). El botón hace su ciclo: .procesando
+       con spinner → al error vuelve despertado; al éxito, la
+       app abre el esqueleto con el footer.
+       ============================================================ */
+    function iniciarSesion(iCorreo, iClave, fClave, btn) {
+      if (accesoEnCurso) return;
+      var correo = String(iCorreo.value || '').trim();
+      var clave  = String(iClave.value || '');
+
+      /* El botón solo despierta con datos válidos; si igual
+         llegara un submit raro, muere aquí sin texto suelto. */
+      if (!_correoValido_(correo) || !clave) return;
+
+      accesoEnCurso = true;
+      btn.disabled = true;
+      btn.classList.add('procesando');
+      _errorCampo_(fClave, '');
+
+      postBackend('iniciarSesion', { correo: correo, clave: clave })
+        .then(function (data) {
+          accesoEnCurso = false;
+          btn.classList.remove('procesando');
+
+          var p = (data && data.partner) || {};
+          if (!data || !data.token || !p.id) {
+            throw new Error('ACCESO_INVALIDO');
+          }
+
+          /* EL TOKEN LIGADO manda desde ahora: el idPartner de
+             todas las acciones lo pone la puerta del backend
+             DESDE el token (nunca el cliente). */
+          window.TOKEN_SESION = data.token;
+
+          actual = {
+            id:     String(p.id),
+            nombre: String(p.nombre || '').trim(),
+            avatar: String(p.avatar || '').trim()
+          };
+          try { sessionStorage.setItem(KEY_SESION, JSON.stringify(actual)); } catch (_) {}
+
+          try {
+            document.dispatchEvent(new CustomEvent('partner:sesion', { detail: { partner: actual } }));
+          } catch (_) {}
+
+          /* La cache del perfil nace limpia: los datos que
+             llegan son de ESTA sesión (otro partner en este
+             dispositivo no hereda nada). */
+          cachePerfilLimpiar();
+
+          abrirEsqueleto();
+        })
+        .catch(function (err) {
+          accesoEnCurso = false;
+          btn.classList.remove('procesando');
+          btn.disabled = false;
+
+          var arranque = (window.SISTEMA && window.SISTEMA.arranque) || {};
+          var msg = String((err && err.message) || '');
+
+          if (msg === 'ACCESO_BLOQUEADO' || msg.indexOf('RATE_LIMIT') === 0) {
+            _errorCampo_(fClave, arranque.accesoBloqueado ||
+              'Demasiados intentos fallidos. Espera unos minutos y prueba de nuevo.');
+          } else if (msg === 'ACCESO_INVALIDO' || msg === 'CORREO_INVALIDO' ||
+                     msg === 'CAMPO_VACIO:clave' || msg === 'LONGITUD_INVALIDA:clave') {
+            /* UN SOLO error para correo ausente y clave mala —
+               sin pistas de reconocimiento (capa del kit). */
+            _errorCampo_(fClave, arranque.accesoInvalido ||
+              'Correo o clave incorrectos. Vuelve a intentarlo.');
+          } else {
+            _errorCampo_(fClave, arranque.accesoRed ||
+              'No se pudo conectar. Revisa tu conexión e intenta de nuevo.');
+          }
+        });
+    }
+
+    /* ============================================================
+       SESIÓN EXPIRADA / CERRAR SESIÓN (Tanda 2)
+       SESION_SIN_PARTNER (la puerta respondió que el token ya
+       no lleva ligazón) y el «Cambiar de partner» del menú
+       vuelven AQUÍ: la pantalla de acceso, limpia. cerrarSesion
+       además MATA el token ligado en el servidor (fire-and-
+       forget: si falla, el token expira solo). La cache del
+       perfil muere con la sesión: otro partner en este
+       dispositivo no hereda datos que no son suyos.
+       ============================================================ */
+    function sesionExpirada() {
+      actual = null;
+      window.TOKEN_SESION = '';
+      try { sessionStorage.removeItem(KEY_SESION); } catch (_) {}
       cachePerfilLimpiar();
 
       var footer = document.getElementById('podioFooter');
@@ -231,7 +342,19 @@
 
       if (window.Podio) window.Podio.reiniciar();
 
-      pintarSeleccion();
+      pintarAcceso();
+    }
+
+    function cerrarSesion() {
+      /* Solo si HUBO sesión ligada: en el arranque el token es
+         el anónimo de doGet y NO se toca (es el que la app usa). */
+      if (actual && window.TOKEN_SESION) {
+        try {
+          postBackend('cerrarSesion', {}, { mudo: true })
+            .catch(function () {});
+        } catch (_) {}
+      }
+      sesionExpirada();
     }
 
     /* ============================================================
@@ -248,9 +371,8 @@
     }
 
     return {
-      lista:            lista,
-      seleccionar:      seleccionar,
       cerrarSesion:     cerrarSesion,
+      sesionExpirada:   sesionExpirada,
       pintarMarcaHeader: pintarMarcaHeader,
       cachePerfil: {
         leer:    cachePerfilLeer,
@@ -430,11 +552,11 @@
         : Promise.resolve();
 
       pre.then(function () {
-        /* CADA carga abre en la pantalla de selección (acta):
+        /* CADA carga abre en la pantalla de ACCESO (acta):
            el lienzo entra primero (cabecera + área + footer),
            se pinta la MARCA de la cabecera (ServyPartner con
            los colores oficiales), cerrarSesion limpia cualquier
-           sesión local y monta la lista de partners. */
+           sesión local y monta el ACCESO (correo + clave). */
         inyectarLienzo();
         if (window.Partner &&
             typeof window.Partner.pintarMarcaHeader === 'function') {
@@ -464,3 +586,4 @@
     }
 
   })();
+

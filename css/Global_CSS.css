@@ -1,12 +1,12 @@
-
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Global_CSS.html
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Menú global + guía PWA + puntero touch (PC) +
-                 exclusivos de la Partner: pantalla de selección,
-                 footer podio 5, pantallas durmientes.
-VERSIÓN:         1.3
+                 exclusivos de la Partner: pantalla de ACCESO
+                 (marca + pregunta — el formulario vive en el
+                 Core), footer podio 5, pantallas durmientes.
+VERSIÓN:         1.4
 DEPENDENCIAS:    Core_CSS.html (variables y clases maestras)
 ════════════════════════════════════════════════════════════════════*/
 
@@ -707,10 +707,14 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras)
   }
 
   /* ============================================================
-     EXCLUSIVO DE LA PARTNER · PANTALLA DE SELECCIÓN DE PARTNER
-     Cada carga de la app abre aquí (la elección no sobrevive al
-     cierre — orden del acta). Marca arriba, pregunta y la lista
-     de partners (avatar + nombre; el ID jamás se muestra).
+     EXCLUSIVO DE LA PARTNER · PANTALLA DE ACCESO (Tanda 2)
+     Cada carga de la app abre aquí (la sesión no sobrevive al
+     cierre — orden del acta). Marca arriba y pregunta; donde
+     estaba la LISTA de partners entran los CAMPOS del acta
+     (correo + clave + botón Entrar) — las clases del formulario
+     viven CENTRALIZADAS en el Core (anatomía genérica de la
+     Tanda 2) y el flujo en Core_Script. El CSS de la lista
+     (cards/vacía/reintentar) MURIÓ con la lista.
      ============================================================ */
   .seleccion-wrap {
     flex: 1 1 auto;
@@ -749,90 +753,6 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras)
   .seleccion-pregunta {
     margin: 0 0 16px;
   }
-  .seleccion-lista {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .partner-card {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    width: 100%;
-    padding: 12px 14px;
-    border: 1.2px solid #e2e8f0;
-    border-radius: 16px;
-    background: #ffffff;
-    cursor: pointer;
-    font-family: inherit;
-    text-align: left;
-    -webkit-tap-highlight-color: transparent;
-    transition: border-color 0.15s ease, background-color 0.15s ease,
-                box-shadow 0.15s ease;
-  }
-  .partner-card:active {
-    border-color: var(--color-primario);
-    background: #EFF6FF;
-    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.14);
-  }
-  .partner-avatar {
-    flex-shrink: 0;
-    width: 52px;
-    height: 52px;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 1.6px solid var(--color-primario);
-    background: var(--color-primario-claro);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--color-primario-medio);
-  }
-  .partner-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .partner-avatar-inicial {
-    font-size: var(--size-inicial-card);
-    font-weight: var(--weight-marca-media);
-    line-height: 1;
-  }
-  .partner-nombre {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: var(--weight-enfasis);
-  }
-  .seleccion-vacia {
-    padding: 26px 16px;
-    background: #ffffff;
-    border: 1.5px dashed #cbd5e1;
-    border-radius: 16px;
-    text-align: center;
-  }
-  .seleccion-reintentar {
-    margin: 14px auto 0;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 11px 26px;
-    border: none;
-    border-radius: 999px;
-    background: var(--color-primario);
-    color: #ffffff;
-    font-family: inherit;
-    font-size: var(--size-botonPrimario);
-    font-weight: var(--weight-botonPrimario);
-    letter-spacing: -0.1px;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.30);
-  }
-  .seleccion-reintentar:active { opacity: 0.85; }
 
   /* ============================================================
      EXCLUSIVO DE LA PARTNER · FOOTER PODIO 5

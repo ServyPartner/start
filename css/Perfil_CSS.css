@@ -12,14 +12,15 @@ RESPONSABILIDAD: Pantalla PERFIL v2: héroe del avatar + TARJETA
                  botones cuadrados 45×45 de glifo (enviar · check)
                  + ojito y checks + ciclo visual del botón
                  GUARDAR + skeleton con medidas reales.
-VERSIÓN:         2.1
-CAMBIOS:         Correcciones 11: fuera las 3 LÍNEAS DIVISORIAS
-                 entre bloques — el ritmo 32 margen + 32 relleno
-                 queda intacto (64px caja a caja), solo muere el
-                 border-top. Historial: correcciones 10
-                 (reglamento: títulos al borde izquierdo · 16px
-                 input→etiqueta) · 9 · 8 (45px, título encima del
-                 borde, GPS en bloque dirección, fila OTP 50/50).
+VERSIÓN:         2.2
+CAMBIOS:         Tanda 2 · LOGIN: la anatomía genérica migra al
+                 Core_CSS (dos pantallas la usan); quedan los
+                 componentes propios del Perfil. Ritmo intacto
+                 (16px · 32+32 sin línea · títulos al borde
+                 izquierdo). Historial: correcciones 11 (fuera
+                 las divisorias) · 10 (reglamento) · 9 · 8 (45px,
+                 título encima del borde, GPS en bloque
+                 dirección, fila OTP 50/50).
 DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
                  sistema .skl), Global_CSS.html (pantalla-area),
                  Perfil_Script.html
@@ -208,159 +209,16 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   }
 
   /* ============================================================
-     CAMPOS DEL FORMULARIO · la vestidura vive CENTRALIZADA en el
-     Core (.campoEditable, correcciones 8): 45px — la altura del
-     campo preguntas del lienzo del post del original —, borde
-     gris tenue 1px #e2e8f0, esquinas 12px, SIN fondo y texto
-     .textoPrimario. Aquí solo quedan los estados de la pantalla.
-     El ESPACIO entre bloques lo manda .form-bloque.
+     CAMPOS DEL FORMULARIO · la vestidura Y la anatomía viven
+     CENTRALIZADAS en el Core (.campoEditable desde las
+     correcciones 8; la ANATOMÍA genérica — .form-field ·
+     .form-label · .errorForm · .form-bloque · .ojito ·
+     .form-submit — migró al Core en la Tanda 2: la usa TAMBIÉN
+     la pantalla de ACCESO). Aquí solo queda .perfil-form, el
+     contenedor de los 4 bloques del lienzo, y los componentes
+     propios de la pantalla.
      ============================================================ */
   .perfil-form { display: flex; flex-direction: column; }
-
-  .errorForm {
-    display: block;
-    margin-top: 6px;
-    padding: 7px 10px;
-    border-radius: 8px;
-    background: #fef2f2;
-    color: #991b1b;
-    font-size: var(--size-cita);
-    font-weight: var(--weight-cita);
-    line-height: 1.4;
-    text-align: left;
-  }
-  .errorForm[hidden] { display: none; }
-
-  .form-field {
-    position: relative;
-    /* MUERE EL PESTAÑEO (orden del dueño): al tocar el campo no
-       debe encenderse NINGÚN flash de fondo. */
-    -webkit-tap-highlight-color: transparent;
-    /* SEPARACIÓN REGLEMENTARIA (correcciones 10, orden del
-       dueño, valores EXACTOS): el aire entre campos lo manda
-       el GAP del bloque — 16px desde el borde INFERIOR de un
-       input hasta la ETIQUETA del siguiente. Como el título
-       vive ENCIMA del borde (una fila de 1.2 × su letra), el
-       hueco entre cajas lo lleva DENTRO: el gap del bloque es
-       16px + esa fila (calc en .form-bloque). */
-    margin-bottom: 0;
-  }
-
-  /* ============================================================
-     BLOQUES DEL FORMULARIO · los 4 bloques del lienzo: 1·
-     eslogan + dirección + GPS · 2· correo + Solicitar/Ingresar
-     código · 3· clave actual + nueva clave · 4· Guardar.
-     SEPARACIÓN ENTRE BLOQUES — ritmo del reglamento (correcciones
-     10) SIN la línea: correcciones 11 (orden del dueño) FUERA las
-     3 líneas divisorias — queda 32px de MARGEN superior + 32px de
-     RELLENO superior, SIN border-top (64px de caja a caja).
-     DENTRO del bloque, el GAP lleva la regla de campos: 16px
-     de aire desde el borde inferior de un input hasta la
-     etiqueta siguiente — más la fila del título que vive
-     encima del borde (1.2 × su letra), que el hueco lleva
-     DENTRO: calc(16px + (1.2 * var(--size-cita))).
-     ============================================================ */
-  .form-bloque {
-    display: flex;
-    flex-direction: column;
-    gap: calc(16px + (1.2 * var(--size-cita)));
-  }
-  .form-bloque + .form-bloque {
-    margin-top: 32px;
-    padding-top: 32px;
-  }
-
-  /* La vestidura base la manda .campoEditable (Core_CSS). Solo
-     quedan aquí el ancho del ojito y los estados; la separación
-     la manda el gap del bloque (reglamento de las correcciones
-     10). */
-  .form-input.con-ojo { padding-right: 46px; }
-  .form-input[disabled] {
-    color: #94a3b8;
-    cursor: not-allowed;
-  }
-
-  /* ============================================================
-     LABEL · SENTADO ENCIMA del borde (correcciones 8) y JUSTO
-     CON EL BORDE IZQUIERDO (correcciones 10, orden del dueño):
-     el título es letra gris apoyada SOBRE el borde superior del
-     campo y arranca EXACTO en el borde IZQUIERDO del campo —
-     left 0 y fuera el padding (los 14px + 6px viejos lo metían
-     hacia dentro). El borde (gris, azul del foco o rojo del
-     inválido) queda DEBAJO del título y ya NO lo cruza ni lo
-     bloquea. Gris de siempre; azul oficial con el foco; rojo
-     si el campo es inválido. El FOCO manda por focus-within
-     también en los campos de los flujos (correo · clave · GPS).
-     ============================================================ */
-  .form-label {
-    position: absolute;
-    left: 0;
-    top: 0;
-    transform: translateY(-100%);
-    font-size: var(--size-cita);
-    font-weight: var(--weight-cita);
-    color: #94a3b8;
-    pointer-events: none;
-    padding: 0;
-    line-height: 1.2;
-    transition: color 0.2s ease;
-    z-index: 1;
-  }
-  .form-field.activo .form-label {
-    color: var(--color-primario-medio);
-  }
-  .form-field:focus-within .form-label {
-    color: var(--color-primario-medio);
-  }
-  .form-field.invalido .form-label {
-    color: #dc2626;
-  }
-  .form-field .form-input:focus {
-    border-color: var(--color-primario);
-  }
-  .form-field.invalido .form-input {
-    border-color: #dc2626;
-  }
-
-  /* ============================================================
-     OJITO · click SOSTENIDO (orden del dueño): mantener
-     presionado MUESTRA la clave, SOLTAR la vuelve a ocultar.
-     No es un toggle: es ver mientras presionas. El botón vive
-     dentro del campo, centrado sobre los 45px de .campoEditable,
-     y cuando está presionado se viste del azul del sistema.
-     ============================================================ */
-  .ojito {
-    position: absolute;
-    right: 8px;
-    top: 22.5px;
-    transform: translateY(-50%);
-    width: 36px;
-    height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: none;
-    background: transparent;
-    color: #64748b;
-    cursor: pointer;
-    padding: 0;
-    -webkit-tap-highlight-color: transparent;
-    user-select: none;
-    -webkit-user-select: none;
-    -webkit-touch-callout: none;
-    transition: color 0.15s ease;
-  }
-  .ojito svg {
-    width: 20px;
-    height: 20px;
-    display: block;
-    pointer-events: none;
-  }
-  .ojito.presionado { color: var(--color-primario); }
-  .ojito[disabled] {
-    color: #cbd5e1;
-    cursor: not-allowed;
-  }
 
   /* ============================================================
      CHECKS DE FUERZA DE LA CLAVE · viven DEBAJO del campo
@@ -601,104 +459,6 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     margin-bottom: 10px;
   }
   .gps-listo-linea .correo-check { width: 16px; height: 16px; flex-shrink: 0; }
-
-  /* ============================================================
-     BOTÓN GUARDAR · submit píldora con el TEXTO CENTRADO y su
-     CICLO COMPLETO (orden del dueño):
-     · INACTIVO (disabled, atenuado): nace así y vuelve así.
-     · ACTIVO (azul pleno): solo con cambios en el formulario.
-     · .procesando: SPINNER blanco mientras viaja la escritura.
-     · .exito: píldora verde con CHECK y vuelve inactivo solo.
-     ============================================================ */
-  .form-submit {
-    width: 100%;
-    /* ESPACIO AL BOTÓN (orden del dueño): el ritmo lo manda el
-       bloque — el mismo aire ENTRE BLOQUES del reglamento
-       (correcciones 10): 32px de margen + línea divisoria 1px
-       + 32px de relleno. El botón no lleva título encima: el
-       aire desde la línea divisoria es puro. */
-    margin-top: 0;
-    padding: 15px 22px;
-    border: none;
-    border-radius: 999px;
-    font-family: inherit;
-    font-size: var(--size-botonPrimario);
-    font-weight: var(--weight-botonPrimario);
-    letter-spacing: -0.1px;
-    color: var(--color-botonPrimario);
-    cursor: pointer;
-    background: linear-gradient(135deg,
-      var(--color-primario) 0%, var(--color-primario-medio) 100%);
-    transition: opacity 0.2s, filter 0.2s, background 0.25s ease, box-shadow 0.25s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-    text-align: center;
-    box-shadow: 0 6px 14px rgba(37, 99, 235, 0.30);
-    -webkit-tap-highlight-color: transparent;
-  }
-  .form-submit:disabled {
-    opacity: 0.42;
-    cursor: not-allowed;
-    filter: grayscale(0.35);
-    box-shadow: none;
-  }
-  .form-submit.procesando { opacity: 1; filter: none; }
-  .form-submit.exito {
-    background: #16a34a;
-    box-shadow: 0 6px 14px rgba(22, 163, 74, 0.30);
-    opacity: 1;
-    filter: none;
-  }
-  .form-submit-texto {
-    flex: 0 1 auto;
-    text-align: center;
-  }
-
-  /* SPINNER DENTRO DEL BOTÓN (solo .procesando). */
-  .form-submit-spinner {
-    display: none;
-    width: 15px;
-    height: 15px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.35);
-    border-top-color: #ffffff;
-    animation: btnGiro 0.8s linear infinite;
-  }
-  @keyframes btnGiro { to { transform: rotate(360deg); } }
-  .form-submit.procesando .form-submit-spinner { display: inline-block; }
-
-  /* CHECK DE ÉXITO (solo .exito): entra con un pequeño pop. */
-  .form-submit-check {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 18px;
-    height: 18px;
-    flex-shrink: 0;
-    color: #ffffff;
-    animation: checkPop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  }
-  .form-submit-check[hidden] { display: none; }
-  .form-submit-check svg {
-    width: 100%;
-    height: 100%;
-    stroke: currentColor;
-    fill: none;
-    stroke-width: 2.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-  }
-  @keyframes checkPop {
-    0%   { transform: scale(0.4); opacity: 0; }
-    100% { transform: scale(1);   opacity: 1; }
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .form-submit-check { animation: none; }
-    .form-submit-spinner { animation-duration: 2s; }
-  }
 
   /* ============================================================
      SKELETON DE LA PANTALLA · silueta del lienzo v2 REAL al
