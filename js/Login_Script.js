@@ -161,6 +161,14 @@
                   '<input type="password" id="inputAccesoClave" placeholder=" " class="form-input campoEditable con-ojo" autocomplete="current-password">' +
                   '<label for="inputAccesoClave" class="form-label">' + _esc_(arranque.clave || 'Clave') + '</label>' +
                   '<button type="button" class="ojito" id="ojitoAcceso" data-glifo="ojo" aria-label="' + _esc_(arranque.ojo || 'Mostrar la clave mientras se mantiene presionado') + '"></button>' +
+                  /* CHECKS DE FUERZA bajo la CLAVE del acceso (orden
+                     del dueño, correcciones 13): el MISMO componente
+                     central — .clave-checks del Core + la fuente
+                     única CHECKS_CLAVE — que el Perfil y la
+                     recuperación. Marca en vivo, INFORMATIVO: no
+                     gobierna Entrar (la clave existente entra tal
+                     cual; las reglas mandan solo en claves NUEVAS). */
+                  '<div class="clave-checks" id="accesoChecks">' + checkHtml + '</div>' +
                   '<div class="errorForm" hidden></div>' +
                 '</div>' +
 
@@ -188,7 +196,7 @@
                 '<h2 class="acceso-paso-titulo titulo">' + _esc_(rec.titulo1 || 'Recuperar clave') + '</h2>' +
                 '<div class="form-field" id="fieldRecupCorreo">' +
                   '<input type="email" id="inputRecupCorreo" placeholder=" " class="form-input campoEditable" maxlength="100" autocomplete="email">' +
-                  '<label for="inputRecupCorreo" class="form-label">' + _esc_(rec.correo || 'Correo Electrónico') + '</label>' +
+                  '<label for="inputRecupCorreo" class="form-label">' + _esc_(arranque.correo || 'Correo Electrónico') + '</label>' +
                   '<div class="errorForm" hidden></div>' +
                 '</div>' +
                 '<button type="submit" class="form-submit" id="btnRecupEnviar" disabled>' +
@@ -255,6 +263,7 @@
 
       if (typeof window.pintarGlifos === 'function') window.pintarGlifos(area);
       enganchar();
+      renderChecksAcceso();
     }
 
     /* ============================================================
@@ -271,6 +280,7 @@
         iCorreo:  area.querySelector('#inputAccesoCorreo'),
         iClave:   area.querySelector('#inputAccesoClave'),
         btnEntrar:area.querySelector('#btnAccesoEntrar'),
+        accesoChecks: area.querySelector('#accesoChecks'),
         btnRecuperar: area.querySelector('#btnRecuperar'),
         formRec1: area.querySelector('#vistaRecup1'),
         fRecCorreo:  area.querySelector('#fieldRecupCorreo'),
@@ -305,7 +315,10 @@
                                   String(el.iClave.value || '').length > 0);
       };
       vigiar(el.iCorreo, el.fCorreo, despertar);
-      vigiar(el.iClave, el.fClave, despertar);
+      vigiar(el.iClave, el.fClave, function () {
+        despertar();
+        renderChecksAcceso();
+      });
       _engancharOjito_(area.querySelector('#ojitoAcceso'), el.iClave);
 
       el.vistaAcceso.addEventListener('submit', function (e) {
@@ -365,6 +378,12 @@
       return !!(window.Validaciones && window.Validaciones.email(correo));
     }
 
+    /* El POOL ÚNICO de avisos de clave (SISTEMA.claves — 03
+       Constantes.gs): el MISMO texto que pinta el Perfil. */
+    function _claves_() {
+      return (window.SISTEMA && window.SISTEMA.claves) || {};
+    }
+
     /* ============================================================
        CHECKS DE FUERZA (reutilizados del Perfil): el validador
        central enciende los checks en vivo mientras se teclea;
@@ -384,6 +403,21 @@
 
       if (el.btnRecGuardar && !recupEnCurso) {
         el.btnRecGuardar.disabled = !res.ok;
+      }
+    }
+
+    /* CHECKS DEL ACCESO (el MISMO componente, correcciones 13):
+       encienden en vivo mientras se teclea la clave del acceso.
+       INFORMATIVOS — no gobiernan Entrar (las reglas de fuerza
+       solo mandan en claves NUEVAS; aquí la clave ya existe). */
+    function renderChecksAcceso() {
+      if (!el.accesoChecks || !el.iClave) return;
+
+      var res = window.Validaciones.validarClaveNueva(el.iClave.value);
+      var items = el.accesoChecks.querySelectorAll('.clave-check');
+      for (var i = 0; i < items.length; i++) {
+        items[i].classList.toggle('cumple',
+          !!res.checks[items[i].getAttribute('data-regla')]);
       }
     }
 
@@ -541,7 +575,8 @@
       var res = window.Validaciones.validarClaveNueva(el.iRecClave.value, recupCorreo);
       renderChecksRecup();
       if (!res.ok) {
-        _errorCampo_(el.fRecClave, _mensajeClave_(res, rec));
+        _errorCampo_(el.fRecClave,
+          window.Validaciones.mensajeClave(res, _claves_()));
         return;
       }
 
@@ -592,36 +627,31 @@
         });
     }
 
-    /* Los errores del flujo de recuperación (textos de 03
-       Constantes.gs — cero texto suelto). */
+    /* Los errores del flujo de recuperación: los textos propios
+       del OTP salen de SISTEMA.arranque.recuperar y los avisos
+       de CLAVE del POOL ÚNICO SISTEMA.claves — el mismo que
+       pinta el Perfil (cero texto suelto, cero duplicado). */
     function _errorRecuperacion_(err, rec) {
       var msg = String((err && err.message) || '');
-      if (msg === 'OTP_INCORRECTO')          return rec.errCodigo     || 'El código no coincide. Vuelve a intentarlo.';
-      if (msg === 'OTP_EXPIRADO')            return rec.errExpirado   || 'El código expiró. Solicita uno nuevo.';
-      if (msg === 'OTP_INTENTOS_AGOTADOS')   return rec.errIntentos   || 'Demasiados intentos. Solicita un código nuevo.';
-      if (msg.indexOf('RATE_LIMIT') === 0)   return rec.errLimite     || 'Demasiadas solicitudes. Espera unos minutos y prueba de nuevo.';
-      if (msg === 'SIN_VERIFICACION_OTP')    return rec.errExpirado   || 'El código expiró. Solicita uno nuevo.';
-      if (msg === 'CLAVE_DEBIL:longitud' || msg === 'CLAVE_DEBIL:mayuscula' ||
-          msg === 'CLAVE_DEBIL:minuscula' || msg === 'CLAVE_DEBIL:numero' ||
-          msg === 'CLAVE_DEBIL:simbolo')   return rec.errClave      || 'La clave todavía no cumple las reglas.';
-      if (msg === 'CLAVE_IGUAL_CORREO')      return rec.errIgualCorreo || 'La clave no puede ser igual a tu correo.';
-      if (msg === 'CLAVE_PROHIBIDA')         return rec.errProhibida  || 'Esa clave está en la lista de prohibidas.';
-      if (msg === 'SISTEMA_OCUPADO')         return rec.errOcupado    || 'El sistema está ocupado. Intenta en unos segundos.';
-      if (msg === 'CORREO_NO_ENVIADO' || msg === 'ACCESO_INVALIDO') {
-        return rec.errRed || 'No se pudo conectar. Revisa tu conexión e intenta de nuevo.';
+      var arranque = (window.SISTEMA && window.SISTEMA.arranque) || {};
+      var claves = _claves_();
+      if (msg === 'OTP_INCORRECTO')        return rec.errCodigo;
+      if (msg === 'OTP_EXPIRADO')          return rec.errExpirado;
+      if (msg === 'OTP_INTENTOS_AGOTADOS') return rec.errIntentos;
+      if (msg.indexOf('RATE_LIMIT') === 0) return rec.errLimite;
+      if (msg === 'SIN_VERIFICACION_OTP')  return rec.errExpirado;
+      if (msg.indexOf('CLAVE_DEBIL:') === 0) {
+        return claves.errFalta
+          ? String(claves.errFalta).replace('{regla}',
+              window.Validaciones.textoRegla(
+                msg.substring('CLAVE_DEBIL:'.length)))
+          : 'Falta: ' + window.Validaciones.textoRegla(
+              msg.substring('CLAVE_DEBIL:'.length));
       }
-      return rec.errRed || 'No se pudo conectar. Revisa tu conexión e intenta de nuevo.';
-    }
-
-    /* El mensaje de la clave nueva bajo el campo (molde del
-       Perfil): el motivo exacto que el validador central
-       entrega. */
-    function _mensajeClave_(res, rec) {
-      if (res.vacio)       return rec.errVacia       || 'Escribe tu clave nueva.';
-      if (res.largo)       return rec.errLarga       || 'Demasiado larga (máximo 40 caracteres).';
-      if (res.igualCorreo) return rec.errIgualCorreo || 'La clave no puede ser igual a tu correo.';
-      if (res.prohibida)   return rec.errProhibida   || 'Esa clave está en la lista de prohibidas.';
-      return rec.errClave || 'La clave todavía no cumple las reglas.';
+      if (msg === 'CLAVE_IGUAL_CORREO')    return claves.errIgualCorreo;
+      if (msg === 'CLAVE_PROHIBIDA')       return claves.errProhibida;
+      if (msg === 'SISTEMA_OCUPADO')       return claves.errOcupado;
+      return arranque.accesoRed;
     }
 
     /* ============================================================

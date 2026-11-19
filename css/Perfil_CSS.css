@@ -12,13 +12,7 @@ RESPONSABILIDAD: Pantalla PERFIL v2: héroe del avatar + TARJETA
                  botones cuadrados 45×45 de glifo (enviar · check)
                  + ojito y checks + ciclo visual del botón
                  GUARDAR + skeleton con medidas reales.
-VERSIÓN:         2.3
-CAMBIOS:         Correcciones 12: los checks de fuerza de la
-                 clave migran al Core_CSS (la recuperación del
-                 login reutiliza el componente). Historial:
-                 Tanda 2 · correcciones 11 · 10 · 9 · 8 (45px,
-                 título encima del borde, GPS en bloque
-                 dirección, fila OTP 50/50).
+VERSIÓN:         2.4
 DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
                  sistema .skl), Global_CSS.html (pantalla-area),
                  Perfil_Script.html

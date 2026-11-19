@@ -159,6 +159,35 @@
       return res;
     }
 
+    /* ---------- AVISOS DE CLAVE · MAPEO ÚNICO (correcciones 13,
+       orden del dueño: los mismos avisos ya creados, nada
+       duplicado) -------------------------------------------- */
+    /* El texto de cada regla de fuerza (la fuente ya vive aquí:
+       CHECKS_CLAVE). */
+    function textoRegla(regla) {
+      for (var i = 0; i < CHECKS_CLAVE.length; i++) {
+        if (CHECKS_CLAVE[i].regla === regla) return CHECKS_CLAVE[i].texto;
+      }
+      return 'una regla de fuerza';
+    }
+
+    /* El aviso bajo el campo «Nueva clave» para UN resultado de
+       validarClaveNueva. `t` = SISTEMA.claves (03 Constantes.gs —
+       el POOL ÚNICO que comparten el Perfil y el LOGIN). */
+    function mensajeClave(res, t) {
+      if (res.vacio)       return t.errVacia;
+      if (res.largo)       return t.errLarga;
+      if (res.corta)       return t.errCorta;
+      if (res.igualCorreo) return t.errIgualCorreo;
+      if (res.prohibida)   return t.errProhibida;
+      if (res.falta) {
+        return t.errFalta
+          ? String(t.errFalta).replace('{regla}', textoRegla(res.falta))
+          : 'Falta: ' + textoRegla(res.falta);
+      }
+      return t.errGuardar;
+    }
+
     /* Clave ACTUAL (la puerta de identidad): obligatoria en su
        paso, sin reglas de fuerza (es la que ya existe). */
     function validarClaveActual(valorCrudo) {
@@ -192,6 +221,8 @@
       validarCodigoOtp:   validarCodigoOtp,
       validarClaveActual: validarClaveActual,
       validarClaveNueva:  validarClaveNueva,
+      textoRegla:         textoRegla,
+      mensajeClave:       mensajeClave,
       validarUbicacionGps: validarUbicacionGps
     };
 

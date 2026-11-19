@@ -5,15 +5,11 @@ PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
                  maestra, .tituloApp, campos y botones de campo,
                  ANATOMÍA genérica del formulario, checks de
-                 clave, placeholders, SISTEMA SKELETON .skl,
+                 fuerza de la clave (el acceso, su recuperación y
+                 el Perfil), placeholders, SISTEMA SKELETON .skl,
                  marca de la cabecera, modo móvil del lienzo y
                  notificación flotante).
-VERSIÓN:         1.9
-CAMBIOS:         Correcciones 12: redondeos 8px · .botonCampo
-                 peso 600 y fondo translúcido · nace .tituloApp ·
-                 .clave-checks entra al Core. Historial: Tanda 2
-                 · LOGIN · correcciones 9 · 8 · 5 · 4 · 3 ·
-                 bitácora del taller.
+VERSIÓN:         2.0
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 ════════════════════════════════════════════════════════════════════*/
 

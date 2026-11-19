@@ -1395,16 +1395,17 @@
           _glifoBoton(el.btnClaveVerificar, 'enviar');
 
           var msg = (err && err.message) || '';
+          var claves = _claves_();
           if (msg === 'CLAVE_ACTUAL_INVALIDA') {
-            errorCampo(el.fieldClaveActual, 'La clave actual no coincide.');
+            errorCampo(el.fieldClaveActual, claves.errActual);
           } else if (msg.indexOf('RATE_LIMIT') === 0) {
-            errorCampo(el.fieldClaveActual, 'Demasiados intentos. Espera un momento.');
+            errorCampo(el.fieldClaveActual, claves.errVerifTope);
           } else if (msg === 'SISTEMA_OCUPADO') {
-            errorCampo(el.fieldClaveActual, 'El sistema está ocupado. Intenta en unos segundos.');
+            errorCampo(el.fieldClaveActual, claves.errOcupado);
           } else if (msg === 'TOKEN_INVALIDO') {
             /* el puente ya repuso la sesión */
           } else {
-            errorCampo(el.fieldClaveActual, 'No se pudo verificar. Intenta de nuevo.');
+            errorCampo(el.fieldClaveActual, claves.errVerifRed);
             console.error('[Perfil] verificación de clave falló:', msg);
           }
         });
@@ -1418,7 +1419,8 @@
       var res = window.Validaciones.validarClaveNueva(
         el.inputClaveNueva.value, correoActual());
       if (!res.ok) {
-        errorCampo(el.fieldClaveNueva, _mensajeClave(res));
+        errorCampo(el.fieldClaveNueva,
+          window.Validaciones.mensajeClave(res, _claves_()));
         return;
       }
 
@@ -1444,56 +1446,53 @@
           errorCampo(el.fieldClaveActual, '');
 
           haptic([30, 20, 30]);
-          _aviso('Clave actualizada');
+          _aviso(_claves_().exito);
         })
         .catch(function (err) {
           state.claveEnCurso = false;
           renderClaveChecks();
 
           var msg = (err && err.message) || '';
+          var claves = _claves_();
           if (msg === 'CLAVE_ACTUAL_INVALIDA') {
-            errorCampo(el.fieldClaveActual, 'La clave actual ya no coincide. Verifícala de nuevo.');
+            errorCampo(el.fieldClaveActual, claves.errActual);
             /* La puerta se cierra de verdad: la identidad debe
                re-verificarse antes del siguiente intento. */
             cerrarPuertaClave();
             el.btnClaveVerificar.disabled = false;
           } else if (msg.indexOf('CLAVE_DEBIL:') === 0) {
             errorCampo(el.fieldClaveNueva,
-              'Falta: ' + _textoRegla(msg.substring('CLAVE_DEBIL:'.length)));
+              claves.errFalta.replace('{regla}',
+                window.Validaciones.textoRegla(
+                  msg.substring('CLAVE_DEBIL:'.length))));
           } else if (msg === 'CLAVE_IGUAL_CORREO') {
-            errorCampo(el.fieldClaveNueva, 'No puede ser igual a tu correo.');
+            errorCampo(el.fieldClaveNueva, claves.errIgualCorreo);
           } else if (msg === 'CLAVE_PROHIBIDA') {
-            errorCampo(el.fieldClaveNueva, 'Esa clave es demasiado común. Elige otra.');
+            errorCampo(el.fieldClaveNueva, claves.errProhibida);
           } else if (msg === 'LONGITUD_INVALIDA:claveNueva') {
-            errorCampo(el.fieldClaveNueva, 'Demasiado larga (máximo 40 caracteres).');
+            errorCampo(el.fieldClaveNueva, claves.errLarga);
           } else if (msg.indexOf('RATE_LIMIT') === 0) {
-            errorCampo(el.fieldClaveNueva, 'Llegaste al tope de cambios de hoy. Intenta mañana.');
+            errorCampo(el.fieldClaveNueva, claves.errTope);
           } else if (msg === 'SISTEMA_OCUPADO') {
-            errorCampo(el.fieldClaveNueva, 'El sistema está ocupado. Intenta en unos segundos.');
+            errorCampo(el.fieldClaveNueva, claves.errOcupado);
           } else if (msg === 'TOKEN_INVALIDO') {
             /* el puente ya repuso la sesión */
           } else {
-            errorCampo(el.fieldClaveNueva, 'No se pudo guardar la clave. Intenta de nuevo.');
+            errorCampo(el.fieldClaveNueva, claves.errGuardar);
             console.error('[Perfil] cambio de clave falló:', msg);
           }
         });
     }
 
-    function _textoRegla(regla) {
-      for (var i = 0; i < CHECKS_CLAVE.length; i++) {
-        if (CHECKS_CLAVE[i].regla === regla) return CHECKS_CLAVE[i].texto;
-      }
-      return 'una regla de fuerza';
-    }
-
-    function _mensajeClave(res) {
-      if (res.vacio)       return 'Escribe la nueva clave.';
-      if (res.largo)       return 'Demasiado larga (máximo 40 caracteres).';
-      if (res.corta)       return 'Al menos 8 caracteres.';
-      if (res.igualCorreo) return 'No puede ser igual a tu correo.';
-      if (res.prohibida)   return 'Esa clave es demasiado común. Elige otra.';
-      if (res.falta)       return 'Falta: ' + _textoRegla(res.falta);
-      return 'Revisa este dato.';
+    /* El POOL ÚNICO de avisos de clave (SISTEMA.claves — 03
+       Constantes.gs): el MISMO texto que pinta la recuperación
+       del LOGIN. El mapeo resultado→aviso vive en el módulo
+       central (window.Validaciones.mensajeClave) y el nombre de
+       cada regla de fuerza en window.Validaciones.textoRegla —
+       las copias locales murieron (correcciones 13, orden del
+       dueño: reutilizar, cero textos duplicados). */
+    function _claves_() {
+      return (window.SISTEMA && window.SISTEMA.claves) || {};
     }
 
     /* ============================================================

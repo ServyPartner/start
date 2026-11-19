@@ -1,4 +1,5 @@
-(function() {
+
+  (function() {
     function actualizarHora() {
       var ahora = new Date();
       var horas = ahora.getHours();
