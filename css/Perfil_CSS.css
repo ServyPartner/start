@@ -1,19 +1,21 @@
-
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Perfil_CSS.html
-ESPEJO GITHUB:   github/css/Perfil_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Pantalla PERFIL v2: héroe del avatar + TARJETA
                  SELLADA con candado + separador «DATOS EDITABLES»
-                 + campos TRANSPARENTES del molde Reserva + GPS
-                 sin caja (el botón SOLO con su texto, tipografía
-                 .botonSecundario) + correo con LÁPIZ cuadrado y
-                 fila OTP (solicitar + Ingresar Código) + clave
-                 con botones cuadrados de glifo (enviar · check)
+                 + campos .campoEditable de 45px (la altura del
+                 campo preguntas del original) + GPS DENTRO del
+                 bloque de dirección (botón .botonCampo) + correo
+                 con LÁPIZ cuadrado y fila OTP 50/50 (Solicitar
+                 código .botonCampo + Ingresar Código) + clave con
+                 botones cuadrados 45×45 de glifo (enviar · check)
                  + ojito y checks + ciclo visual del botón
                  GUARDAR + skeleton con medidas reales.
-VERSIÓN:         1.7
+VERSIÓN:         1.8
+CAMBIOS:         Correcciones 8: 45px en campos y botones, título
+                 ENCIMA del borde (sin cruce con el foco), GPS en
+                 el bloque de dirección, fila OTP a partes iguales.
 DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
                  sistema .skl), Global_CSS.html (pantalla-area),
                  Perfil_Script.html
@@ -202,11 +204,11 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   }
 
   /* ============================================================
-     CAMPOS DEL FORMULARIO (vestidura del dueño, intacta):
-     SIN FONDO — transparente sobre el lienzo — con BORDE GRIS
-     TENUE MUY DELGADO (1px, el #e2e8f0 del molde) y ESQUINAS
-     REDONDEADAS 12px. La altura 52px y el margen 14px son del
-     sheet de reserva del original (intocables).
+     CAMPOS DEL FORMULARIO · la vestidura vive CENTRALIZADA en el
+     Core (.campoEditable, correcciones 8): 45px — la altura del
+     campo preguntas del lienzo del post del original —, borde
+     gris tenue 1px #e2e8f0, esquinas 12px, SIN fondo y texto
+     .textoPrimario. Aquí solo quedan los estados de la pantalla.
      El ESPACIO entre bloques lo manda .form-bloque.
      ============================================================ */
   .perfil-form { display: flex; flex-direction: column; }
@@ -243,27 +245,8 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   .form-bloque { display: flex; flex-direction: column; }
   .form-bloque + .form-bloque { margin-top: 28px; }
 
-  .form-input {
-    width: 100%;
-    height: 52px;
-    padding: 0 14px;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    background-color: transparent;
-    -webkit-tap-highlight-color: transparent;
-    font-size: var(--size-textoPrimario);
-    font-weight: var(--weight-textoPrimario);
-    color: #0f172a;
-    outline: none;
-    font-family: inherit;
-    transition: border-color 0.2s ease;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  .form-input:focus {
-    border-color: var(--color-primario);
-  }
-  /* Los campos con OJITO reservan el ancho del botón. */
+  /* La vestidura base la manda .campoEditable (Core_CSS). Solo
+     quedan aquí el ancho del ojito y los estados. */
   .form-input.con-ojo { padding-right: 46px; }
   .form-input[disabled] {
     color: #94a3b8;
@@ -271,17 +254,19 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   }
 
   /* ============================================================
-     LABEL · vive EN EL BORDE del campo y SIN FONDO (orden del
-     dueño): el título es solo letra sentada sobre el borde.
-     Gris de siempre; azul oficial con el foco; rojo si el
-     campo es inválido. El FOCO manda por focus-within también
-     en los campos de los flujos (correo · clave · GPS).
+     LABEL · SENTADO ENCIMA del borde (correcciones 8, orden del
+     dueño): el título es letra gris apoyada SOBRE el borde
+     superior del campo — el borde (gris, azul del foco o rojo
+     del inválido) queda DEBAJO del título y ya NO lo cruza ni
+     lo bloquea. Gris de siempre; azul oficial con el foco; rojo
+     si el campo es inválido. El FOCO manda por focus-within
+     también en los campos de los flujos (correo · clave · GPS).
      ============================================================ */
   .form-label {
     position: absolute;
     left: 14px;
     top: 0;
-    transform: translateY(-50%);
+    transform: translateY(-100%);
     font-size: var(--size-cita);
     font-weight: var(--weight-cita);
     color: #94a3b8;
@@ -311,13 +296,13 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
      OJITO · click SOSTENIDO (orden del dueño): mantener
      presionado MUESTRA la clave, SOLTAR la vuelve a ocultar.
      No es un toggle: es ver mientras presionas. El botón vive
-     dentro del campo, centrado sobre los 52px, y cuando está
-     presionado se viste del azul del sistema.
+     dentro del campo, centrado sobre los 45px de .campoEditable,
+     y cuando está presionado se viste del azul del sistema.
      ============================================================ */
   .ojito {
     position: absolute;
     right: 8px;
-    top: 26px;
+    top: 22.5px;
     transform: translateY(-50%);
     width: 36px;
     height: 36px;
@@ -429,13 +414,14 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   }
   .perfil-btn-fantasma:active { opacity: 0.7; }
   /* ============================================================
-     FILAS DE CAMPO + BOTÓN CUADRADO (correcciones 7, orden del
-     dueño): la clave actual/nueva y el correo pierden sus
-     botones secundarios de abajo — cada campo lleva a su
-     DERECHA el botón CUADRADO 42×42 blanco (esquinas 12px,
-     la vestidura de los campos) con el GLIFO del original:
+     FILAS DE CAMPO + BOTÓN CUADRADO (correcciones 7/8): la clave
+     actual/nueva y el correo no llevan botones secundarios abajo
+     — cada campo lleva a su DERECHA el botón CUADRADO (esquinas
+     12px, la vestidura de los campos) con el GLIFO del original:
      el «enviar» de Preguntas y respuestas (clave) y el lápiz
      (correo). Sin texto: solo icono; apagado en gris tenue.
+     Correcciones 8: MISMA ALTURA que los campos (.campoEditable,
+     45×45) — el cuadrado se alinea perfecto con el campo.
      ============================================================ */
   .clave-fila,
   .correo-fila {
@@ -447,11 +433,10 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   .correo-fila .form-field { flex: 1; min-width: 0; }
 
   .perfil-btn-send {
-    width: 42px;
-    height: 42px;
+    width: 45px;
+    height: 45px;
     padding: 0;
     flex-shrink: 0;
-    margin-top: 5px;   /* centrado contra los 52px del campo */
     border: 1px solid rgba(0, 0, 0, 0.08);
     border-radius: 12px;
     background-color: #ffffff;
@@ -481,11 +466,15 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   .perfil-btn-send.verificada { color: #16a34a; }
 
   /* ============================================================
-     FILA OTP DEL CORREO (correcciones 7): EN UNA SOLA FILA, el
-     botón de TEXTO «Solicitar código de validación» con la
-     tipografía centralizada .botonSecundario (16px · 400 ·
-     #7A828A — igual que el original) + el campo «Ingresar
-     Código». Ambos nacen INACTIVOS.
+     FILA OTP DEL CORREO (correcciones 7/8): EN UNA SOLA FILA, el
+     botón «Solicitar código» (.botonCampo — azul clarito del
+     trío, texto .textoPrimario) y el campo «Ingresar Código»
+     (.campoEditable) REPARTEN EL ANCHO EN PARTES IGUALES (orden
+     del dueño). Ambos nacen INACTIVOS y miden lo mismo (45px).
+     El reparto va EXPLÍCITO a mitades exactas (50% − media
+     separación): los navegadores no dejan encoger un <button>
+     con padding dentro de un flex (Chrome lo midió: 205/175),
+     así que el ancho se fija — mismo resultado en el teléfono.
      ============================================================ */
   .correo-otp-fila {
     display: flex;
@@ -493,30 +482,19 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     gap: 10px;
     margin-top: 2px;
   }
-  .otp-campo { flex: 0 0 108px; margin-bottom: 0; }
+  .otp-campo { flex: 0 0 calc(50% - 5px); margin-bottom: 0; }
   .correo-solicitar {
-    flex: 1;
-    min-width: 0;
-    padding: 6px 0;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    text-align: center;
-    font-family: inherit;
-    -webkit-tap-highlight-color: transparent;
-    transition: opacity 0.2s ease;
+    flex: 0 0 calc(50% - 5px);
+    /* La vestidura la manda .botonCampo (Core_CSS). */
   }
   .correo-solicitar[disabled] { opacity: 0.45; cursor: not-allowed; }
   /* ACTIVO (correo válido en edición): el azul oficial manda
-     sobre el gris de .botonSecundario — el estado se VE. */
+     sobre el .textoPrimario de .botonCampo — el estado se VE. */
   .correo-solicitar.activo {
     color: var(--color-primario) !important;
     font-weight: var(--weight-enfasis) !important;
   }
   .correo-solicitar.activo:active { opacity: 0.7; }
-  @media (max-width: 355px) {
-    .correo-otp-fila { flex-wrap: wrap; }
-  }
 
   /* ============================================================
      CORREO · el campo vive en .correo-fila (lápiz cuadrado a la
@@ -536,14 +514,15 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   }
 
   /* ============================================================
-     UBICACIÓN GPS · SIN TÍTULO y SIN CAJA (orden del dueño,
-     correcciones 7): el bloque no lleva label y el contenedor no
-     dibuja rectángulo — el botón «Capturar ubicación GPS» va SOLO
-     con su texto interno, centrado, con la tipografía centralizada
-     .botonSecundario (16px · 400 · #7A828A, la del original).
-     La captura lee el GPS DEL TELÉFONO con el partner en su
-     local; el mini mapa (iframe de embed SIN API key) es la
-     verificación visual del punto y conserva su marco propio.
+     UBICACIÓN GPS · PARTE DEL BLOQUE DE DIRECCIÓN (correcciones
+     8, orden del dueño): el botón «Capturar ubicación GPS» vive
+     DENTRO del bloque de campos de dirección — NO separado — y
+     se viste con la tipografía central .botonCampo (misma
+     altura y forma que los campos, fondo azul clarito del trío,
+     texto .textoPrimario). Sin título de campo: la captura lee
+     el GPS DEL TELÉFONO con el partner en su local; el mini mapa
+     (iframe de embed SIN API key) es la verificación visual del
+     punto y conserva su marco propio.
      ============================================================ */
   .gps-caja {
     -webkit-tap-highlight-color: transparent;
@@ -555,19 +534,11 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     line-height: 1.5;
     padding: 4px 0;
   }
-  /* SOLO texto: sin borde, sin fondo, sin chapa — la tipografía
-     la manda la clase maestra .botonSecundario (el elemento la
-     lleva en el HTML). */
+  /* La vestidura la manda .botonCampo (Core_CSS); aquí solo el
+     ancho del bloque. */
   .gps-btn-capturar {
-    display: block;
+    display: flex;
     width: 100%;
-    padding: 8px 0;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    text-align: center;
-    font-family: inherit;
-    -webkit-tap-highlight-color: transparent;
     transition: opacity 0.15s ease;
   }
   .gps-btn-capturar:active { opacity: 0.7; }
@@ -702,9 +673,10 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   /* ============================================================
      SKELETON DE LA PANTALLA · silueta del lienzo v2 REAL:
      círculo del avatar, TARJETA sellada, separador, campos de
-     52px (eslogan · dirección · GPS alto · correo · clave ×2)
-     y píldora del botón. Las formas las viste el sistema .skl
-     del Core. Hoy solo actúa en la PRIMERA lectura sin cache.
+     45px (.campoEditable: eslogan · dirección · GPS · correo ·
+     clave ×2) y píldora del botón. Las formas las viste el
+     sistema .skl del Core. Hoy solo actúa en la PRIMERA lectura
+     sin cache.
      ============================================================ */
   .skl-avatar {
     width: 104px;
@@ -724,12 +696,12 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     margin: 18px 0 22px;
   }
   .skl-campo {
-    height: 52px;
+    height: 45px;
     border-radius: 12px;
     margin-bottom: 14px;
   }
   .skl-campo-alto {
-    height: 78px;
+    height: 45px;
     border-radius: 12px;
     margin-bottom: 14px;
   }
@@ -771,3 +743,4 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     box-shadow: 0 6px 14px rgba(37, 99, 235, 0.30);
   }
   .perfil-estado .perfil-reintentar:active { opacity: 0.85; }
+

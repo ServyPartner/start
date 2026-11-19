@@ -1,18 +1,17 @@
-
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Core_CSS.html
-ESPEJO GITHUB:   github/css/Core_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
-                 maestra, placeholders, SISTEMA SKELETON .skl,
-                 marca de la cabecera, modo móvil del lienzo y
-                 notificación flotante).
-VERSIÓN:         1.5
-CAMBIOS:         Correcciones 5 (18-nov): tokens badgeNuevo
-                 (11px · 600) repareados — la píldora «Pronto» los
-                 usaba sin que existieran. Historial: correcciones
-                 4 · 3 · bitácora del taller.
+                 maestra, campos y botones de campo, placeholders,
+                 SISTEMA SKELETON .skl, marca de la cabecera, modo
+                 móvil del lienzo y notificación flotante).
+VERSIÓN:         1.6
+CAMBIOS:         Correcciones 8 (19-nov): nacen .campoEditable y
+                 .botonCampo (45px, la altura del campo preguntas
+                 del original; .botonCampo con el azul clarito del
+                 trío). Historial: correcciones 5 · 4 · 3 ·
+                 bitácora del taller.
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 ════════════════════════════════════════════════════════════════════*/
 
@@ -203,6 +202,60 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     font-weight: var(--weight-badge) !important;
     line-height: 1.2 !important;
     letter-spacing: 0.5px !important;
+  }
+
+  /* ============================================================
+     CAMPOS Y BOTONES DE CAMPO (correcciones 8, orden del dueño):
+     tipografías CENTRALES de los campos de datos y de los botones
+     que viven pegados a ellos (GPS · Solicitar código). SIN
+     !important a propósito: los estados de cada pantalla (foco
+     azul, inválido, activo, deshabilitado) visten POR ENCIMA.
+     · ALTURA 45px = la del CAMPO PREGUNTAS del lienzo del post
+       del original (Pregunta_CSS.html: input de 42px + borde
+       1.5px del wrap = 45px de caja visible).
+     · BORDES INTACTOS: mismo peso y mismo color que traen los
+       campos (1px #e2e8f0).
+     · .campoEditable — el texto del campo va con la tipografía
+       .textoPrimario (14px · 300 · #1f2937).
+     · .botonCampo — misma altura y misma forma de los campos,
+       borde del mismo peso y color, FONDO en el azul clarito del
+       trío oficial (#DBEAFE) y texto .textoPrimario.
+     ============================================================ */
+  .campoEditable {
+    width: 100%;
+    height: 45px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background-color: transparent;
+    -webkit-tap-highlight-color: transparent;
+    font-family: inherit;
+    font-size: var(--size-textoPrimario);
+    font-weight: var(--weight-textoPrimario);
+    color: var(--color-textoPrimario);
+    line-height: 1.2;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    transition: border-color 0.2s ease;
+  }
+  .botonCampo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 45px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background-color: var(--color-primario-claro);
+    font-family: inherit;
+    font-size: var(--size-textoPrimario);
+    font-weight: var(--weight-textoPrimario);
+    color: var(--color-textoPrimario);
+    line-height: 1.2;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.2s ease;
   }
 
   /* ============================================================
@@ -607,3 +660,4 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
   @media (prefers-reduced-motion: reduce) {
     .pildoraReconectando .pildora-giro { animation-duration: 2s; }
   }
+

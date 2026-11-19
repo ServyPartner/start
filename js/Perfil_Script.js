@@ -298,12 +298,14 @@
         ? '<img src="' + _esc_(perfil.avatar) + '" alt="Foto del partner">'
         : '<span class="perfil-avatar-inicial">' + _esc_(inicialDe(perfil.nombre)) + '</span>';
 
-      /* CAMPO DEL MOLDE RESERVA (vestidura del dueño): 52px,
-         label en el borde, error DEBAJO. Hoy solo eslogan y
-         dirección — la tarjeta sellada no lleva inputs. */
+      /* CAMPO DEL MOLDE RESERVA (vestidura del dueño): 45px
+         (.campoEditable del Core — la altura del campo preguntas
+         del original), título ENCIMA del borde, error DEBAJO.
+         Hoy solo eslogan y dirección — la tarjeta sellada no
+         lleva inputs. */
       var campo = function (id, etiqueta, valor, atributos) {
         return '<div class="form-field" id="field' + id + '">' +
-                 '<input type="text" id="input' + id + '" placeholder=" " class="form-input" value="' +
+                 '<input type="text" id="input' + id + '" placeholder=" " class="form-input campoEditable" value="' +
                    _esc_(valor || '') + '"' + (atributos || '') + '>' +
                  '<label for="input' + id + '" class="form-label">' + _esc_(etiqueta) + '</label>' +
                  '<div class="errorForm" hidden></div>' +
@@ -367,38 +369,36 @@
 
             /* BLOQUE 1 · Eslogan + Dirección Local (los ÚNICOS
                que el Guardar escribe; títulos SIN «(Opcional)»
-               — orden del dueño). */
+               — orden del dueño) + UBICACIÓN GPS: el botón
+               «Capturar ubicación GPS» es PARTE de este bloque
+               de dirección — NO va separado (orden del dueño,
+               correcciones 8) — y se viste con .botonCampo.
+               Sin título de campo; su cuerpo lo pinta
+               renderGps() según la dirección. */
             '<div class="form-bloque">' +
               campo('Eslogan', 'Eslogan', perfil.esloganPartner,
                     ' maxlength="120"') +
               campo('Direccion', 'Dirección Local', perfil.direccion,
                     ' maxlength="200" autocomplete="street-address"') +
-            '</div>' +
-
-            /* BLOQUE 2 · Ubicación GPS — SIN título y SIN caja
-               (orden del dueño): el botón va SOLO con su texto
-               interno. Su cuerpo lo pinta renderGps() según la
-               dirección. */
-            '<div class="form-bloque">' +
               '<div class="form-field" id="fieldUbicacion">' +
                 '<div class="gps-caja" id="gpsCaja"></div>' +
                 '<div class="errorForm" hidden></div>' +
               '</div>' +
             '</div>' +
 
-            /* BLOQUE 3 · Correo Electrónico — LÁPIZ (orden del
+            /* BLOQUE 2 · Correo Electrónico — LÁPIZ (orden del
                dueño, correcciones 7): con datos el campo queda
                INACTIVO y el lápiz CUADRADO activo a la derecha;
                vacío se escribe directo y el lápiz duerme. Debajo,
-               EN UNA FILA, «Solicitar código de validación»
-               (.botonSecundario, INACTIVO al nacer) + el campo
-               «Ingresar Código» del OTP (INACTIVO al nacer).
-               Editar = verificar, SIEMPRE: los estados los manda
-               actualizarCorreoFlujo(). */
+               EN UNA FILA A PARTES IGUALES (correcciones 8),
+               «Solicitar código» (.botonCampo, INACTIVO al nacer)
+               + el campo «Ingresar Código» del OTP (INACTIVO al
+               nacer). Editar = verificar, SIEMPRE: los estados
+               los manda actualizarCorreoFlujo(). */
             '<div class="form-bloque">' +
               '<div class="correo-fila">' +
                 '<div class="form-field" id="fieldCorreo">' +
-                  '<input type="email" id="inputCorreo" placeholder=" " class="form-input" maxlength="100" autocomplete="email" value="' +
+                  '<input type="email" id="inputCorreo" placeholder=" " class="form-input campoEditable" maxlength="100" autocomplete="email" value="' +
                     _esc_(correoActual()) + '">' +
                   '<label for="inputCorreo" class="form-label">Correo Electrónico</label>' +
                   '<div class="errorForm" hidden></div>' +
@@ -406,27 +406,28 @@
                 '<button type="button" class="perfil-btn-send" id="btnCorreoEditar" data-glifo="lapiz" aria-label="Editar correo" disabled></button>' +
               '</div>' +
               '<div class="correo-otp-fila">' +
-                '<button type="button" class="correo-solicitar botonSecundario" id="btnCorreoSolicitar" disabled>Solicitar código de validación</button>' +
+                '<button type="button" class="correo-solicitar botonCampo" id="btnCorreoSolicitar" disabled>Solicitar código</button>' +
                 '<div class="form-field otp-campo" id="fieldOtp">' +
-                  '<input type="text" id="inputOtp" placeholder=" " class="form-input" disabled maxlength="6" inputmode="numeric" autocomplete="one-time-code">' +
+                  '<input type="text" id="inputOtp" placeholder=" " class="form-input campoEditable" disabled maxlength="6" inputmode="numeric" autocomplete="one-time-code">' +
                   '<label for="inputOtp" class="form-label">Ingresar Código</label>' +
                   '<div class="errorForm" hidden></div>' +
                 '</div>' +
               '</div>' +
             '</div>' +
 
-            /* BLOQUE 4 · Clave de Usuario — write-only: la clave
+            /* BLOQUE 3 · Clave de Usuario — write-only: la clave
                guardada JAMÁS viaja al teléfono. Puerta de
                identidad + nueva clave UNA vez + checks vivos
                debajo del campo (solamente ahí) + ojito sostenido.
                SIN botones secundarios abajo (orden del dueño,
                correcciones 7): cada campo lleva a su derecha el
                botón CUADRADO con el glifo enviar — el mismo de la
-               sección «Preguntas y respuestas» del original. */
+               sección «Preguntas y respuestas» del original — a
+               la MISMA altura del campo (correcciones 8). */
             '<div class="form-bloque">' +
               '<div class="clave-fila">' +
                 '<div class="form-field" id="fieldClaveActual">' +
-                  '<input type="password" id="inputClaveActual" placeholder=" " class="form-input con-ojo" autocomplete="current-password">' +
+                  '<input type="password" id="inputClaveActual" placeholder=" " class="form-input campoEditable con-ojo" autocomplete="current-password">' +
                   '<label for="inputClaveActual" class="form-label">Clave actual</label>' +
                   '<button type="button" class="ojito" id="ojitoClaveActual" data-glifo="ojo" aria-label="Mostrar la clave mientras se mantiene presionado"></button>' +
                   '<div class="errorForm" hidden></div>' +
@@ -435,7 +436,7 @@
               '</div>' +
               '<div class="clave-fila">' +
                 '<div class="form-field" id="fieldClaveNueva">' +
-                  '<input type="password" id="inputClaveNueva" placeholder=" " class="form-input con-ojo" disabled autocomplete="new-password">' +
+                  '<input type="password" id="inputClaveNueva" placeholder=" " class="form-input campoEditable con-ojo" disabled autocomplete="new-password">' +
                   '<label for="inputClaveNueva" class="form-label">Nueva clave</label>' +
                   '<button type="button" class="ojito" id="ojitoClaveNueva" data-glifo="ojo" disabled aria-label="Mostrar la nueva clave mientras se mantiene presionado"></button>' +
                   '<div class="clave-checks" id="claveChecks">' + checkHtml + '</div>' +
@@ -445,7 +446,7 @@
               '</div>' +
             '</div>' +
 
-            /* BLOQUE 5 · Guardar cambios (eslogan + dirección) —
+            /* BLOQUE 4 · Guardar cambios (eslogan + dirección) —
                nace INACTIVO: solo despierta con cambios reales.
                El correo, la clave y el punto GPS NO pasan por
                aquí: son acciones sensibles que se comprometen
@@ -1000,11 +1001,11 @@
         return;
       }
 
-      /* ACTIVO · sin punto aún: el botón SOLO con su texto
-         interno, centrado, tipografía .botonSecundario — sin
-         rectángulo y sin título (orden del dueño). */
+      /* ACTIVO · sin punto aún: el botón «Capturar ubicación
+         GPS» PARTE del bloque de dirección (correcciones 8) y
+         vestido con la tipografía central .botonCampo. */
       el.gpsCaja.innerHTML =
-        '<button type="button" class="gps-btn-capturar botonSecundario" id="btnGpsCapturar">Capturar ubicación GPS</button>';
+        '<button type="button" class="gps-btn-capturar botonCampo" id="btnGpsCapturar">Capturar ubicación GPS</button>';
       var cap = document.getElementById('btnGpsCapturar');
       if (cap) cap.addEventListener('click', capturarGps);
     }
@@ -1083,8 +1084,8 @@
     /* ============================================================
        CORREO · LÁPIZ (correcciones 7, orden del dueño). Una sola
        tela sin pasos: el campo con su lápiz CUADRADO a la derecha
-       y debajo, EN UNA FILA, «Solicitar código de validación» +
-       «Ingresar Código».
+       y debajo, EN UNA FILA A PARTES IGUALES (correcciones 8),
+       «Solicitar código» + «Ingresar Código».
        · Con datos: campo INACTIVO, lápiz ACTIVO (tocarlo entra a
          edición; tocarlo de nuevo regresa al sellado — sin botón
          cancelar).
@@ -1135,7 +1136,7 @@
       el.btnCorreoSolicitar.disabled = !activo;
       el.btnCorreoSolicitar.classList.toggle('activo', activo);
       if (!state.correoEnCurso) {
-        el.btnCorreoSolicitar.textContent = 'Solicitar código de validación';
+        el.btnCorreoSolicitar.textContent = 'Solicitar código';
       }
 
       /* INGRESAR CÓDIGO · vivo SI Y SOLO SI se solicitó un
@@ -1660,3 +1661,4 @@
     };
 
   })();
+
