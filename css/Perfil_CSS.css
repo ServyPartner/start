@@ -11,11 +11,13 @@ RESPONSABILIDAD: Pantalla PERFIL v2: héroe del avatar + TARJETA
                  código .botonCampo + Ingresar Código) + clave con
                  botones cuadrados 45×45 de glifo (enviar · check)
                  + ojito y checks + ciclo visual del botón
-                 GUARDAR + skeleton con medidas reales.
-VERSIÓN:         2.4
-DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
-                 sistema .skl), Global_CSS.html (pantalla-area),
-                 Perfil_Script.html
+                 GUARDAR + skeleton con medidas reales. Las LETRAS
+                 de la pantalla (avatar, tarjeta, separador, GPS,
+                 estado de la foto) viven en Tipografia_CSS.html.
+VERSIÓN:         2.5
+DEPENDENCIAS:    Core_CSS.html (trío azul y controles),
+                 Tipografia_CSS.html (la letra),
+                 Global_CSS.html (pantalla-area), Perfil_Script.html
 ════════════════════════════════════════════════════════════════════*/
 
   /* ============================================================
@@ -63,11 +65,9 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     object-fit: cover;
     display: block;
   }
-  .perfil-avatar-inicial {
-    font-size: var(--size-inicial-avatar);
-    font-weight: var(--weight-marca-media);
-    line-height: 1;
-  }
+  /* .perfil-avatar-inicial (la INICIAL del nombre mientras no
+     hay foto — 38px · 700) vive CENTRAL en Tipografia_CSS.html
+     (correcciones 15, orden del dueño). */
   .perfil-foto-btn {
     position: absolute;
     right: -4px;
@@ -97,16 +97,9 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     height: 18px;
     display: block;
   }
-  .perfil-foto-estado {
-    font-size: var(--size-cita);
-    font-weight: var(--weight-cita);
-    color: var(--color-textoSecundario);
-    line-height: 1.4;
-    min-height: 15px;
-    text-align: center;
-  }
-  .perfil-foto-estado.ok    { color: #16a34a; }
-  .perfil-foto-estado.error { color: #dc2626; }
+  /* .perfil-foto-estado (11px · 400 · #64748B · .ok verde ·
+     .error rojo) vive CENTRAL en Tipografia_CSS.html
+     (correcciones 15, orden del dueño). */
 
   /* Input de archivo fuera de la vista: solo se toca por el
      botón de la cámara. */
@@ -151,24 +144,10 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     border-bottom: 1px solid #f1f5f9;
   }
   .tarjeta-fila:last-child { border-bottom: none; }
-  .tarjeta-label {
-    display: block;
-    font-size: var(--size-cita);
-    font-weight: var(--weight-cita);
-    color: #94a3b8;
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-    margin-bottom: 3px;
-  }
-  .tarjeta-valor {
-    display: block;
-    font-size: var(--size-textoPrimario);
-    font-weight: var(--weight-textoPrimario);
-    color: #1f2937;
-    line-height: 1.45;
-    word-break: break-word;
-  }
-  .tarjeta-valor.vacio { color: #cbd5e1; }
+  /* Las LETRAS de la TARJETA SELLADA viven CENTRALIZADAS en
+     Tipografia_CSS.html (correcciones 15, orden del dueño):
+     .tarjeta-label (11px · 400 · #94a3b8, MAYÚSCULAS) y
+     .tarjeta-valor (14px · 300 · #1f2937 · .vacio #cbd5e1). */
 
   /* ============================================================
      SEPARADOR «DATOS EDITABLES» · el lápiz encabeza la zona
@@ -192,21 +171,18 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     height: 100%;
     display: block;
   }
-  .sep-texto {
-    font-size: var(--size-cita);
-    font-weight: var(--weight-cita);
-    color: #64748b;
-    letter-spacing: 1.2px;
-    text-transform: uppercase;
-  }
+  /* .sep-texto (11px · 400 · #64748b, MAYÚSCULAS) vive CENTRAL
+     en Tipografia_CSS.html (correcciones 15, orden del dueño). */
 
   /* ============================================================
      CAMPOS DEL FORMULARIO · la vestidura Y la anatomía viven
      CENTRALIZADAS en el Core (.campoEditable desde las
      correcciones 8; la ANATOMÍA genérica — .form-field ·
-     .form-label · .errorForm · .form-bloque · .ojito ·
+     .tituloCampo · .errorForm · .form-bloque · .ojito ·
      .form-submit — migró al Core en la Tanda 2: la usa TAMBIÉN
-     la pantalla de ACCESO). Aquí solo queda .perfil-form, el
+     la pantalla de ACCESO; el título del campo es HOY
+     .tituloCampo (renombre del dueño, correcciones 15, vive en
+     Tipografia_CSS.html). Aquí solo queda .perfil-form, el
      contenedor de los 4 bloques del lienzo, y los componentes
      propios de la pantalla.
      ============================================================ */
@@ -375,13 +351,9 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   .gps-caja {
     -webkit-tap-highlight-color: transparent;
   }
-  .gps-inactivo {
-    font-size: var(--size-textoSecundario);
-    font-weight: var(--weight-textoSecundario);
-    color: #94a3b8;
-    line-height: 1.5;
-    padding: 4px 0;
-  }
+  /* .gps-inactivo (el mensaje con el GPS dormido, 14px · 300 ·
+     #94a3b8) vive CENTRAL en Tipografia_CSS.html (correcciones
+     15, orden del dueño). */
   /* La vestidura la manda .botonCampo (Core_CSS) — letra azul
      unificada y presión incluidas; aquí solo el ancho. */
   .gps-btn-capturar {
@@ -396,15 +368,9 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     display: block;
     background: #f8fafc;
   }
-  .gps-coords {
-    margin-top: 8px;
-    text-align: center;
-    font-size: var(--size-cita);
-    font-weight: var(--weight-cita);
-    color: #64748b;
-    letter-spacing: 0.5px;
-  }
-  .gps-coords-listo { margin-top: 0; flex: 1; text-align: left; }
+  /* .gps-coords (11px · 400 · #64748b) y su variante
+     .gps-coords-listo viven CENTRAL en Tipografia_CSS.html
+     (correcciones 15, orden del dueño). */
   .gps-acciones {
     display: flex;
     align-items: center;

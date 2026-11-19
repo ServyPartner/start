@@ -2,93 +2,45 @@
 
 ARCHIVO:         Core_CSS.html
 PROYECTO:        INGeniusCloud | ServyPartner
-RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
-                 maestra, .tituloApp, campos y botones de campo,
-                 ANATOMÍA genérica del formulario, checks de
-                 fuerza de la clave (el acceso, su recuperación y
-                 el Perfil) con su CAMBIO DE GLIFO: INACTIVO el
-                 check simple · ACTIVO el círculo cortado
-                 (checkCirculo), placeholders, SISTEMA SKELETON .skl,
-                 marca de la cabecera, modo móvil del lienzo y
-                 notificación flotante).
-VERSIÓN:         2.1
-DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
+RESPONSABILIDAD: CSS núcleo de la Partner (trío azul oficial,
+                 campos y botones de campo, ANATOMÍA genérica del
+                 formulario con la píldora .form-submit SIN letra
+                 — su letra es la maestra .botonPrimario —,
+                 contenedor .clave-checks, SISTEMA SKELETON .skl,
+                 modo móvil del lienzo y notificación flotante).
+                 Los TOKENS DE LETRA y las clases de tipografía
+                 viven CENTRALIZADOS en Tipografia_CSS.html.
+VERSIÓN:         2.2
+DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app;
+                 la letra vive en Tipografia_CSS.html)
 ════════════════════════════════════════════════════════════════════*/
 
   *{ box-sizing: border-box; }
 
   :root {
-    --font-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-
-    --size-tituloPost: 24px;      --weight-tituloPost: 300;      --color-tituloPost: #1f2937;
-    --size-titulo: 22px;          --weight-titulo: 300;          --color-titulo: #1f2937;
-    --size-subtitulo: 18px;       --weight-subtitulo: 300;       --color-subtitulo: #1f2937;
-    --size-textoPrimario: 14px;   --weight-textoPrimario: 300;   --color-textoPrimario: #1f2937;
-    --size-textoSecundario: 14px; --weight-textoSecundario: 300; --color-textoSecundario: #64748B;
-    --size-cita: 11px;            --weight-cita: 400;            --color-cita: #1f2937;
-    --size-enlaces: 13px;         --weight-enlaces: 400;         --color-enlaces: #2563EB;
-    --size-botonPrimario: 16px;   --weight-botonPrimario: 400;   --color-botonPrimario: #FFFFFF;
-    --size-botonSecundario: 16px; --weight-botonSecundario: 400; --color-botonSecundario: #7A828A;
-    --size-badge: 9px;            --weight-badge: 700;
-    --size-badgeNuevo: 11px;      --weight-badgeNuevo: 600;   /* píldora «Pronto» — molde del original, repareado correcciones 5 */
-
     /* COLOR PRIMARIO · el AZUL oficial de la Partner vive
-       CENTRALIZADO aquí (mismo trato que las variables de
-       tipografía). Trío del acta, intocable:
+       CENTRALIZADO aquí. Trío del acta, intocable:
        #2563EB oficial · #1D4ED8 medio · #DBEAFE claro.
        Consumidores: var(--color-primario), var(--color-primario-medio),
-       var(--color-primario-claro) — nada de azules sueltos. */
+       var(--color-primario-claro) — nada de azules sueltos.
+       Los TOKENS DE LETRA (familia Inter, tamaños, pesos y
+       colores de letra) viven CENTRALIZADOS en Tipografia_CSS.html
+       (correcciones 15, orden del dueño: la tipografía en un
+       solo archivo). Muertos como huérfanos: --weight/-color-
+       tituloPost · --size/-weight-badge · --size/-weight-
+       chipsFiltros · --color-cita · --size-marca-cola ·
+       --size-inicial-card · --size-ui-2/3. */
     --color-primario: #2563EB;
     --color-primario-medio: #1D4ED8;
     --color-primario-claro: #DBEAFE;
-
-    /* CHIPS · letras propias de los dos carriles de chips
-       (molde del original: la clase solo manda tamaño y peso;
-       el color lo viste cada elemento). */
-    --size-chipsFiltros: 14px;    --weight-chipsFiltros: 300;
-    --size-chipsFormulario: 12px; --weight-chipsFormulario: 300;
-
-    /* ============================================================
-       FAMILIA MARCA · tamaños y pesos de los wordmarks («Servy-
-       Partner», «INGeniusCloud»), iniciales de avatar, chevron
-       del menú y píldoras de aviso. ÚNICO sitio donde viven:
-       cambiar aquí cambia las tres pantallas que los visten
-       (audit tipografías — correcciones 4).
-       ============================================================ */
-    --size-marca-app: 2.6rem;       /* wordmark del «Acerca de» */
-    --size-marca-fila: 34px;        /* wordmark de pantalla completa (selección · carga) */
-    --size-marca-cola: 26px;        /* cola «Partner» del wordmark de pantalla */
-    --size-marca-eslogan: 0.86rem;  /* eslogan del wordmark */
-    --size-marca-empresa: 0.76rem;  /* eslogan de la empresa */
-    --size-chevron-menu: 1.1rem;    /* chevron de los ítems del menú */
-    --size-inicial-avatar: 38px;    /* inicial grande del avatar Perfil */
-    --size-inicial-card: 20px;      /* inicial chica de las tarjetas de selección */
-    --size-avisopildora: 13px;      /* píldora de reconexión */
-
-    --weight-marca-fuerte: 900;     /* la parte fuerte del wordmark */
-    --weight-marca-media: 700;      /* la parte media del wordmark */
-    --weight-marca-suave: 400;      /* la cola del wordmark */
-    --weight-medio: 500;            /* textos de apoyo de marca/fecha */
-    --weight-enfasis: 600;          /* énfasis de UI (nombres, píldoras) */
-    --weight-enfasis-fuerte: 700;   /* énfasis fuerte (soporte, errores, h2) */
-    --size-textoH2: 16px;           /* h2 dentro del texto enriquecido (legal) */
-    --size-icono-aviso: 48px;       /* pictograma de las pantallas de error */
-
-    /* ============================================================
-       FAMILIA UI · tamaños recurrentes de sheets y controles
-       (referencia única: cambiar aquí cambia todo el sistema)
-       ============================================================ */
-    --size-ui-1: 0.72rem;
-    --size-ui-2: 0.78rem;
-    --size-ui-3: 0.82rem;
   }
 
   html, body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
-    font-family: var(--font-main) !important;
-    -webkit-font-smoothing: antialiased;
+    /* La LETRA del documento (familia Inter + suavizado) vive
+       CENTRALIZADA en Tipografia_CSS.html. */
     /* SIN SCROLL VISIBLE (orden del dueño): la app no muestra
        scroll ni vertical ni horizontal — igual que el original,
        que esconde la barra en TODOS sus contenedores. */
@@ -108,101 +60,15 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
   }
 
   /* ============================================================
-     CLASES MAESTRAS DE TIPOGRAFÍA (las mismas del original —
-     el texto de la Partner nace con estas clases; regla del
-     dueño: cero tipografías harcodeadas)
+     CLASES MAESTRAS DE TIPOGRAFÍA → Tipografia_CSS.html
+     (correcciones 15, orden del dueño: la tipografía vive
+     CENTRALIZADA en un solo archivo). MURIERON aquí por huérfanas
+     (sin un solo uso en la Partner): .tituloPost · .botonSecundario
+     · .badge · .cita · .chipsFiltros — y con ellas sus tokens
+     muertos. Las MAESTRAS vivas (.titulo · .subtitulo ·
+     .textoPrimario · .textoSecundario · .enlacesOpciones ·
+     .botonPrimario · .chipsFormulario) viven en Tipografia_CSS.
      ============================================================ */
-  .tituloPost {
-    font-size: var(--size-tituloPost) !important;
-    font-weight: var(--weight-tituloPost) !important;
-    color: var(--color-tituloPost) !important;
-    line-height: 1.2 !important;
-    letter-spacing: -0.5px !important;
-    text-align: left !important;
-  }
-  .titulo {
-    font-size: var(--size-titulo) !important;
-    font-weight: var(--weight-titulo) !important;
-    color: var(--color-titulo) !important;
-    line-height: 1.2 !important;
-    letter-spacing: -0.5px !important;
-    text-align: left !important;
-  }
-  .subtitulo {
-    font-size: var(--size-subtitulo) !important;
-    font-weight: var(--weight-subtitulo) !important;
-    color: var(--color-subtitulo) !important;
-    line-height: 1.3 !important;
-    letter-spacing: 0px !important;
-    text-align: left !important;
-  }
-  .textoPrimario, .textoPrimario p, .textoPrimario li, .textoPrimario div {
-    font-size: var(--size-textoPrimario) !important;
-    font-weight: var(--weight-textoPrimario) !important;
-    color: var(--color-textoPrimario) !important;
-    line-height: 1.6 !important;
-    letter-spacing: 0px !important;
-  }
-  .textoPrimario strong, .textoPrimario b { font-weight: var(--weight-enfasis) !important; }
-  .textoPrimario em, .textoPrimario i { font-style: italic !important; }
-  .textoPrimario h2 {
-    font-size: var(--size-textoH2) !important;
-    font-weight: var(--weight-enfasis) !important;
-    color: #1f2937 !important;
-    margin: 16px 0 8px 0 !important;
-  }
-  .textoSecundario, .textoSecundario * {
-    font-size: var(--size-textoSecundario) !important;
-    font-weight: var(--weight-textoSecundario) !important;
-    color: var(--color-textoSecundario) !important;
-    line-height: 1.6 !important;
-    letter-spacing: 0px !important;
-  }
-  .textoSecundario strong, .textoSecundario b { font-weight: var(--weight-enfasis) !important; }
-  .cita {
-    font-size: var(--size-cita) !important;
-    font-weight: var(--weight-cita) !important;
-    color: var(--color-cita) !important;
-    line-height: 1.4 !important;
-    letter-spacing: 0px !important;
-  }
-  .enlacesOpciones {
-    font-size: var(--size-enlaces) !important;
-    font-weight: var(--weight-enlaces) !important;
-    color: var(--color-enlaces) !important;
-    line-height: 1.2 !important;
-    letter-spacing: 0px !important;
-    background: transparent !important;
-    border: none !important;
-    padding: 0 !important;
-    text-decoration: underline !important;
-    text-decoration-style: dotted !important;
-    text-decoration-thickness: 1.5px !important;
-    text-underline-offset: 4px !important;
-    cursor: pointer !important;
-    margin: 0 !important;
-    align-self: flex-start !important;
-  }
-  .botonPrimario {
-    font-size: var(--size-botonPrimario) !important;
-    font-weight: var(--weight-botonPrimario) !important;
-    color: var(--color-botonPrimario) !important;
-    line-height: 1.2 !important;
-    letter-spacing: -0.1px !important;
-  }
-  .botonSecundario {
-    font-size: var(--size-botonSecundario) !important;
-    font-weight: var(--weight-botonSecundario) !important;
-    color: var(--color-botonSecundario) !important;
-    line-height: 1.2 !important;
-    letter-spacing: -0.1px !important;
-  }
-  .badge {
-    font-size: var(--size-badge) !important;
-    font-weight: var(--weight-badge) !important;
-    line-height: 1.2 !important;
-    letter-spacing: 0.5px !important;
-  }
 
   /* ============================================================
      CAMPOS Y BOTONES DE CAMPO (correcciones 8, orden del dueño):
@@ -289,35 +155,9 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     cursor: not-allowed;
   }
 
-  /* ============================================================
-     TIPOGRAFÍA .tituloApp (correcciones 12, orden del dueño) ·
-     el wordmark «ServyPartner» COMO TÍTULO DE PANTALLA: las
-     mismas características del título ServyPartner de la
-     cabecera del lienzo (.header-marca) — Servy azul fuerte +
-     cola gris suave, tracking -0.6px, línea 1.1 — pero de pie
-     SOLO y CENTRADO horizontalmente. La viste el LOGIN (el
-     texto lo pinta Login_Script desde SISTEMA.identidad — cero
-     texto duro). Las mitades: .tituloApp-servy / .tituloApp-cola.
-     ============================================================ */
-  .tituloApp {
-    display: flex;
-    align-items: baseline;
-    justify-content: center;
-    margin: 0;
-    font-size: var(--size-tituloPost);
-    line-height: 1.1;
-    letter-spacing: -0.6px;
-    user-select: none;
-    -webkit-user-select: none;
-  }
-  .tituloApp .tituloApp-servy {
-    color: var(--color-primario);
-    font-weight: var(--weight-marca-fuerte);
-  }
-  .tituloApp .tituloApp-cola {
-    color: var(--color-textoSecundario);
-    font-weight: var(--weight-marca-suave);
-  }
+  /* EL WORDMARK .tituloApp (el «ServyPartner» COMO TÍTULO DE
+     PANTALLA del login) vive CENTRAL en Tipografia_CSS.html con
+     las demás tipografías de marca. */
 
   /* ============================================================
      ANATOMÍA DEL FORMULARIO · genérica desde la Tanda 2 (nació
@@ -326,12 +166,13 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
      dos pantallas vive CENTRAL en el Core).
      · .form-field — el wrapper del campo: relativo (el título
        y el ojito viven dentro) y sin pestañeo al tocar.
-     · .form-label — el título SENTADO ENCIMA del borde
+     · .tituloCampo — el título SENTADO ENCIMA del borde
        (correcciones 8) y JUSTO CON EL BORDE IZQUIERDO
        (correcciones 10, orden del dueño): left 0, sin padding.
-       El borde (gris, azul del foco o rojo del inválido) queda
-       DEBAJO del título y ya NO lo cruza ni lo bloquea. El
-       FOCO manda por focus-within también en los flujos.
+       Es el RENOMBRE del dueño (correcciones 15) y vive CENTRAL
+       en Tipografia_CSS.html con su
+       letra y sus tres tintes (gris · azul del foco · rojo del
+       inválido).
      · .errorForm — el error DEBAJO del campo.
      · .form-bloque — el ritmo del reglamento (correcciones
        10/11): ENTRE CAMPOS 16px desde el borde inferior de un
@@ -344,7 +185,12 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
        presionado MUESTRA la clave, SOLTAR la vuelve a ocultar.
      · .form-submit — la píldora primaria con su CICLO COMPLETO:
        INACTIVO nace y vuelve · ACTIVO · .procesando con
-       SPINNER blanco · .exito píldora verde con CHECK.
+       SPINNER blanco · .exito píldora verde con CHECK. SIN
+       LETRA PROPIA (correcciones 15, orden del dueño: la
+       tipografía .form-submit estaba REPETIDA — era el calco
+       exacto de .botonPrimario — y MURIÓ): la letra la sirve la
+       maestra .botonPrimario en el HTML
+       (class="form-submit botonPrimario").
      ============================================================ */
   .errorForm {
     display: block;
@@ -384,29 +230,8 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     cursor: not-allowed;
   }
 
-  .form-label {
-    position: absolute;
-    left: 0;
-    top: 0;
-    transform: translateY(-100%);
-    font-size: var(--size-cita);
-    font-weight: var(--weight-cita);
-    color: #94a3b8;
-    pointer-events: none;
-    padding: 0;
-    line-height: 1.2;
-    transition: color 0.2s ease;
-    z-index: 1;
-  }
-  .form-field.activo .form-label {
-    color: var(--color-primario-medio);
-  }
-  .form-field:focus-within .form-label {
-    color: var(--color-primario-medio);
-  }
-  .form-field.invalido .form-label {
-    color: #dc2626;
-  }
+  /* .tituloCampo vive CENTRAL en
+     Tipografia_CSS.html — letra, posición y sus tres tintes. */
   .form-field .form-input:focus {
     border-color: var(--color-primario);
   }
@@ -457,6 +282,13 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
      regla enciende su check al cumplirse y se apaga si se
      rompe, en tiempo real mientras se teclea.
      ============================================================ */
+  /* CONTENEDOR de los checks · las letras viven en
+     Tipografia_CSS.html como .checkClave (renombre del dueño,
+     correcciones 15) con su CAMBIO DE
+     GLIFO: INACTIVO el check simple · ACTIVO el círculo
+     cortado checkCirculo (Iconos). El COMPONENTE lo fabrica
+     Validaciones_Script (checksClaveHtml — plantilla única) y
+     lo visten el ACCESO, su recuperación y el Perfil. */
   .clave-checks {
     display: flex;
     flex-wrap: wrap;
@@ -464,36 +296,6 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     margin: 8px 2px 0;
     padding: 0;
   }
-  .clave-check {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: var(--size-cita);
-    font-weight: var(--weight-cita);
-    color: #94a3b8;
-    transition: color 0.15s ease;
-  }
-  .clave-check .ck {
-    width: 12px;
-    height: 12px;
-    color: #cbd5e1;
-    transition: color 0.15s ease;
-  }
-  .clave-check .ck svg { width: 100%; height: 100%; display: block; }
-  .clave-check.cumple { color: #16a34a; }
-  .clave-check.cumple .ck { color: #16a34a; }
-
-  /* EL CAMBIO DE GLIFO (correcciones 14, orden del dueño):
-     INACTIVO = el check simple (el que ya existía) · ACTIVO =
-     el CÍRCULO CORTADO checkCirculo (Iconos): el círculo que
-     la palomita atraviesa y corta. Cada check cambia de glifo
-     SOLO cuando su regla se cumple — y el swap lo pinta AQUÍ,
-     en el CSS del componente: las tres claves que visten
-     .clave-checks (acceso · recuperación · Perfil) cambian
-     solas, cero código nuevo por pantalla. */
-  .clave-check .ck-circulo { display: none; }
-  .clave-check.cumple .ck { display: none; }
-  .clave-check.cumple .ck-circulo { display: block; }
 
   .form-submit {
     width: 100%;
@@ -501,11 +303,14 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     padding: 15px 22px;
     border: none;
     border-radius: 999px;
+    /* SIN LETRA PROPIA (correcciones 15, orden del dueño): la
+       tipografía .form-submit estaba REPETIDA — era el calco
+       exacto de .botonPrimario (16px · 400 · blanco · -0.1px) —
+       y MURIÓ. La letra la sirve la maestra .botonPrimario en
+       el HTML (class="form-submit botonPrimario"). La familia
+       Inter se queda aquí: los <button> NO heredan la familia
+       del documento solos. */
     font-family: inherit;
-    font-size: var(--size-botonPrimario);
-    font-weight: var(--weight-botonPrimario);
-    letter-spacing: -0.1px;
-    color: var(--color-botonPrimario);
     cursor: pointer;
     background: linear-gradient(135deg,
       var(--color-primario) 0%, var(--color-primario-medio) 100%);
@@ -580,34 +385,10 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     .form-submit-spinner { animation-duration: 2s; }
   }
 
-  /* ============================================================
-     CHIPS MAESTROS (molde) · SOLO tamaño y peso — el color lo
-     viste cada elemento y sus estados.
-     ============================================================ */
-  .chipsFiltros {
-    font-size: var(--size-chipsFiltros) !important;
-    font-weight: var(--weight-chipsFiltros) !important;
-  }
-  .chipsFormulario {
-    font-size: var(--size-chipsFormulario) !important;
-    font-weight: var(--weight-chipsFormulario) !important;
-  }
-
-  /* ============================================================
-     PLACEHOLDERS · voz única en toda la app
-     ============================================================ */
-  ::placeholder {
-    color: var(--color-textoSecundario) !important;
-    font-weight: var(--weight-textoSecundario) !important;
-    font-size: var(--size-textoSecundario) !important;
-    opacity: 1 !important;
-  }
-  ::-webkit-input-placeholder {
-    color: var(--color-textoSecundario) !important;
-    font-weight: var(--weight-textoSecundario) !important;
-    font-size: var(--size-textoSecundario) !important;
-    opacity: 1 !important;
-  }
+  /* CHIPS MAESTROS → Tipografia_CSS.html: .chipsFormulario vive
+     en el catálogo de letra; .chipsFiltros MURIÓ (sin uso en la
+     Partner, orden del dueño). Los PLACEHOLDERS (voz única de
+     toda la app) también viven en Tipografia_CSS.html. */
 
   /* ============================================================
      MODO MÓVIL Y LIENZO
@@ -637,37 +418,11 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 
   .lienzo-wrap { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; }
 
-  /* ============================================================
-     MARCA DE LA CABECERA · «ServyPartner» con los colores
-     oficiales (los mismos del «Acerca de» y de la pantalla de
-     selección): Servy en el AZUL del Core y Partner en gris.
-     PEGADA COMO UNA SOLA PALABRA (orden del dueño, correcciones
-     4): las dos partes heredan el MISMO tamaño y la MISMA
-     altura del contenedor (muere el 19px y el margen que
-     separaba la cola) — cada una con su color independiente.
-     Vive a la IZQUIERDA de la fila de cabecera, siempre visible
-     — el lienzo ya no lleva título de pestaña (orden del dueño).
-     El texto sale de SISTEMA.identidad (03 Constantes.gs): la
-     lógica de pintado vive en Core_Script (pintarMarcaHeader).
+  /* LA MARCA DE LA CABECERA (.header-marca, Servy azul + Partner
+     gris) vive CENTRAL en Tipografia_CSS.html con los demás
+     wordmarks; el texto sale de SISTEMA.identidad (03
+     Constantes.gs) y la pinta Core_Script (pintarMarcaHeader).
      ============================================================ */
-  .header-marca {
-    flex: 1 1 auto; min-width: 0;
-    margin: 0; padding: 7px 0 2px 8px;
-    display: flex; align-items: baseline;
-    line-height: 1.1;
-    letter-spacing: -0.6px;
-    font-size: var(--size-tituloPost);
-    user-select: none;
-    -webkit-user-select: none;
-  }
-  .header-marca .header-marca-servy {
-    color: var(--color-primario);
-    font-weight: var(--weight-marca-fuerte);
-  }
-  .header-marca .header-marca-partner {
-    color: #64748b;
-    font-weight: var(--weight-marca-suave);
-  }
 
   /* ============================================================
      SISTEMA SKELETON · carga de pantallas SIN spinner (orden del

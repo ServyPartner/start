@@ -157,7 +157,7 @@
 
                 '<div class="form-field" id="fieldAccesoCorreo">' +
                   '<input type="email" id="inputAccesoCorreo" placeholder=" " class="form-input campoEditable" maxlength="100" autocomplete="email">' +
-                  '<label for="inputAccesoCorreo" class="form-label">' + _esc_(arranque.correo || 'Correo Electrónico') + '</label>' +
+                  '<label for="inputAccesoCorreo" class="tituloCampo">' + _esc_(arranque.correo || 'Correo Electrónico') + '</label>' +
                   '<div class="errorForm" hidden></div>' +
                 '</div>' +
 
@@ -166,7 +166,7 @@
                    correo es válido — el input nace disabled. */
                 '<div class="form-field" id="fieldAccesoClave">' +
                   '<input type="password" id="inputAccesoClave" placeholder=" " class="form-input campoEditable con-ojo" autocomplete="current-password" disabled>' +
-                  '<label for="inputAccesoClave" class="form-label">' + _esc_(arranque.clave || 'Clave') + '</label>' +
+                  '<label for="inputAccesoClave" class="tituloCampo">' + _esc_(arranque.clave || 'Clave') + '</label>' +
                   '<button type="button" class="ojito" id="ojitoAcceso" data-glifo="ojo" aria-label="' + _esc_(arranque.ojo || 'Mostrar la clave mientras se mantiene presionado') + '"></button>' +
                   /* CHECKS DE FUERZA bajo la CLAVE del acceso (orden
                      del dueño, correcciones 13): el MISMO componente
@@ -189,7 +189,7 @@
                   '</button>' +
                 '</div>' +
 
-                '<button type="submit" class="form-submit" id="btnAccesoEntrar" disabled>' +
+                '<button type="submit" class="form-submit botonPrimario" id="btnAccesoEntrar" disabled>' +
                   '<span class="form-submit-spinner" aria-hidden="true"></span>' +
                   '<span class="form-submit-texto">' + _esc_(arranque.entrar || 'Entrar') + '</span>' +
                 '</button>' +
@@ -203,10 +203,10 @@
                 '<h2 class="acceso-paso-titulo titulo">' + _esc_(rec.titulo1 || 'Recuperar clave') + '</h2>' +
                 '<div class="form-field" id="fieldRecupCorreo">' +
                   '<input type="email" id="inputRecupCorreo" placeholder=" " class="form-input campoEditable" maxlength="100" autocomplete="email">' +
-                  '<label for="inputRecupCorreo" class="form-label">' + _esc_(arranque.correo || 'Correo Electrónico') + '</label>' +
+                  '<label for="inputRecupCorreo" class="tituloCampo">' + _esc_(arranque.correo || 'Correo Electrónico') + '</label>' +
                   '<div class="errorForm" hidden></div>' +
                 '</div>' +
-                '<button type="submit" class="form-submit" id="btnRecupEnviar" disabled>' +
+                '<button type="submit" class="form-submit botonPrimario" id="btnRecupEnviar" disabled>' +
                   '<span class="form-submit-spinner" aria-hidden="true"></span>' +
                   '<span class="form-submit-texto">' + _esc_(rec.enviarCodigo || 'Enviar código') + '</span>' +
                 '</button>' +
@@ -225,10 +225,10 @@
                 '<p class="acceso-paso-nota textoSecundario" id="recupNota"></p>' +
                 '<div class="form-field" id="fieldRecupCodigo">' +
                   '<input type="text" id="inputRecupCodigo" placeholder=" " class="form-input campoEditable" maxlength="6" inputmode="numeric" autocomplete="one-time-code">' +
-                  '<label for="inputRecupCodigo" class="form-label">' + _esc_(rec.codigo || 'Ingresar Código') + '</label>' +
+                  '<label for="inputRecupCodigo" class="tituloCampo">' + _esc_(rec.codigo || 'Ingresar Código') + '</label>' +
                   '<div class="errorForm" hidden></div>' +
                 '</div>' +
-                '<button type="submit" class="form-submit" id="btnRecupVerificar" disabled>' +
+                '<button type="submit" class="form-submit botonPrimario" id="btnRecupVerificar" disabled>' +
                   '<span class="form-submit-spinner" aria-hidden="true"></span>' +
                   '<span class="form-submit-texto">' + _esc_(rec.verificar || 'Verificar código') + '</span>' +
                 '</button>' +
@@ -247,12 +247,12 @@
                 '<h2 class="acceso-paso-titulo titulo">' + _esc_(rec.titulo3 || 'Nueva clave') + '</h2>' +
                 '<div class="form-field" id="fieldRecupClave">' +
                   '<input type="password" id="inputRecupClave" placeholder=" " class="form-input campoEditable con-ojo" autocomplete="new-password">' +
-                  '<label for="inputRecupClave" class="form-label">' + _esc_(rec.nuevaClave || 'Nueva clave') + '</label>' +
+                  '<label for="inputRecupClave" class="tituloCampo">' + _esc_(rec.nuevaClave || 'Nueva clave') + '</label>' +
                   '<button type="button" class="ojito" id="ojitoRecupClave" data-glifo="ojo" aria-label="' + _esc_(arranque.ojo || 'Mostrar la clave mientras se mantiene presionado') + '"></button>' +
                   '<div class="clave-checks" id="recupChecks">' + checkHtml + '</div>' +
                   '<div class="errorForm" hidden></div>' +
                 '</div>' +
-                '<button type="submit" class="form-submit" id="btnRecupGuardar" disabled>' +
+                '<button type="submit" class="form-submit botonPrimario" id="btnRecupGuardar" disabled>' +
                   '<span class="form-submit-spinner" aria-hidden="true"></span>' +
                   '<span class="form-submit-texto">' + _esc_(rec.guardar || 'Guardar clave') + '</span>' +
                   '<span class="form-submit-check" data-glifo="check" aria-hidden="true" hidden></span>' +
@@ -422,7 +422,7 @@
       var res = window.Validaciones.validarClaveNueva(
         el.iRecClave.value, recupCorreo);
 
-      var items = el.recupChecks.querySelectorAll('.clave-check');
+      var items = el.recupChecks.querySelectorAll('.checkClave');
       for (var i = 0; i < items.length; i++) {
         var regla = items[i].getAttribute('data-regla');
         items[i].classList.toggle('cumple', !!res.checks[regla]);
@@ -441,7 +441,7 @@
       if (!el.accesoChecks || !el.iClave) return;
 
       var res = window.Validaciones.validarClaveNueva(el.iClave.value);
-      var items = el.accesoChecks.querySelectorAll('.clave-check');
+      var items = el.accesoChecks.querySelectorAll('.checkClave');
       for (var i = 0; i < items.length; i++) {
         items[i].classList.toggle('cumple',
           !!res.checks[items[i].getAttribute('data-regla')]);

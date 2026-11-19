@@ -7,10 +7,10 @@ RESPONSABILIDAD: Pantalla de ACCESO (login): montaje exclusivo
                  14 —, centrado vertical de la caja, letra de
                  campos, enlace de recuperación, vistas del
                  flujo OTP). El formulario viste las clases
-                 centrales del Core.
-VERSIÓN:         1.2
-DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
-                 anatomía del formulario), Login_Script.html
+                 centrales (Core + Tipografia_CSS).
+VERSIÓN:         1.3
+DEPENDENCIAS:    Core_CSS.html (anatomía del formulario),
+                 Tipografia_CSS.html (la letra), Login_Script.html
 ════════════════════════════════════════════════════════════════════*/
 
   /* ============================================================
@@ -54,7 +54,7 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     flex-direction: column;
   }
 
-  /* EL TÍTULO · el wordmark .tituloApp del Core (Servy azul +
+  /* EL TÍTULO · el wordmark .tituloApp (Servy azul +
      Partner gris), CENTRADO horizontalmente por la propia clase
      central. FIJO ARRIBA (correcciones 14, orden del dueño):
      FUERA de la caja centrada — primer hijo del wrap, anclado

@@ -14,10 +14,13 @@ RESPONSABILIDAD: Misma estructura que el Index de GAS, pero estática:
                  izquierda y el Menú Global a la derecha — el
                  lienzo NO lleva título de pestaña. Sin GA4 (la
                  Partner P1 no lleva analítica propia).
-VERSIÓN:         1.4
+VERSIÓN:         1.5
 ENCABEZADOS:     Solo describen lo que funciona HOY. El historial
                  de tandas vive en la bitácora del taller.
-DEPENDENCIAS:    css/*.css + js/*.js (misma carpeta), manifest.json,
+DEPENDENCIAS:    css/*.css (Core_CSS + Tipografia_CSS — la letra
+                 centralizada, correcciones 15 — + Global_CSS +
+                 Perfil_CSS + Login_CSS + GitHub_Cromo) y
+                 js/*.js (misma carpeta), manifest.json,
                  sw.js, icon-192.png, icon-512.png, og-servypartner.png,
                  GitHub_Cromo.*,
                  Backend: 00 DoGet.gs (doPost con abrirSesion,
@@ -50,7 +53,7 @@ DEPENDENCIAS:    css/*.css + js/*.js (misma carpeta), manifest.json,
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="./css/Core_CSS.css"><link rel="stylesheet" href="./css/Global_CSS.css"><link rel="stylesheet" href="./css/Perfil_CSS.css"><link rel="stylesheet" href="./css/Login_CSS.css">
+  <link rel="stylesheet" href="./css/Core_CSS.css"><link rel="stylesheet" href="./css/Tipografia_CSS.css"><link rel="stylesheet" href="./css/Global_CSS.css"><link rel="stylesheet" href="./css/Perfil_CSS.css"><link rel="stylesheet" href="./css/Login_CSS.css">
 
 <!-- ═══ CROMO DE LA PÁGINA ESTÁTICA ═══ -->
   <meta name="theme-color" content="#2563EB">

@@ -304,7 +304,7 @@
         return '<div class="form-field" id="field' + id + '">' +
                  '<input type="text" id="input' + id + '" placeholder=" " class="form-input campoEditable" value="' +
                    _esc_(valor || '') + '"' + (atributos || '') + '>' +
-                 '<label for="input' + id + '" class="form-label">' + _esc_(etiqueta) + '</label>' +
+                 '<label for="input' + id + '" class="tituloCampo">' + _esc_(etiqueta) + '</label>' +
                  '<div class="errorForm" hidden></div>' +
                '</div>';
       };
@@ -397,7 +397,7 @@
                 '<div class="form-field" id="fieldCorreo">' +
                   '<input type="email" id="inputCorreo" placeholder=" " class="form-input campoEditable" maxlength="100" autocomplete="email" value="' +
                     _esc_(correoActual()) + '">' +
-                  '<label for="inputCorreo" class="form-label">Correo Electrónico</label>' +
+                  '<label for="inputCorreo" class="tituloCampo">Correo Electrónico</label>' +
                   '<div class="errorForm" hidden></div>' +
                 '</div>' +
                 '<button type="button" class="perfil-btn-send" id="btnCorreoEditar" data-glifo="lapiz" aria-label="Editar correo" disabled></button>' +
@@ -406,7 +406,7 @@
                 '<button type="button" class="correo-solicitar botonCampo" id="btnCorreoSolicitar" disabled>Solicitar código</button>' +
                 '<div class="form-field otp-campo" id="fieldOtp">' +
                   '<input type="text" id="inputOtp" placeholder=" " class="form-input campoEditable" disabled maxlength="6" inputmode="numeric" autocomplete="one-time-code">' +
-                  '<label for="inputOtp" class="form-label">Ingresar Código</label>' +
+                  '<label for="inputOtp" class="tituloCampo">Ingresar Código</label>' +
                   '<div class="errorForm" hidden></div>' +
                 '</div>' +
               '</div>' +
@@ -425,7 +425,7 @@
               '<div class="clave-fila">' +
                 '<div class="form-field" id="fieldClaveActual">' +
                   '<input type="password" id="inputClaveActual" placeholder=" " class="form-input campoEditable con-ojo" autocomplete="current-password">' +
-                  '<label for="inputClaveActual" class="form-label">Clave actual</label>' +
+                  '<label for="inputClaveActual" class="tituloCampo">Clave actual</label>' +
                   '<button type="button" class="ojito" id="ojitoClaveActual" data-glifo="ojo" aria-label="Mostrar la clave mientras se mantiene presionado"></button>' +
                   '<div class="errorForm" hidden></div>' +
                 '</div>' +
@@ -434,7 +434,7 @@
               '<div class="clave-fila">' +
                 '<div class="form-field" id="fieldClaveNueva">' +
                   '<input type="password" id="inputClaveNueva" placeholder=" " class="form-input campoEditable con-ojo" disabled autocomplete="new-password">' +
-                  '<label for="inputClaveNueva" class="form-label">Nueva clave</label>' +
+                  '<label for="inputClaveNueva" class="tituloCampo">Nueva clave</label>' +
                   '<button type="button" class="ojito" id="ojitoClaveNueva" data-glifo="ojo" disabled aria-label="Mostrar la nueva clave mientras se mantiene presionado"></button>' +
                   '<div class="clave-checks" id="claveChecks">' + checkHtml + '</div>' +
                   '<div class="errorForm" hidden></div>' +
@@ -1308,7 +1308,7 @@
       var res = window.Validaciones.validarClaveNueva(
         el.inputClaveNueva.value, correoActual());
 
-      var items = el.claveChecks.querySelectorAll('.clave-check');
+      var items = el.claveChecks.querySelectorAll('.checkClave');
       for (var i = 0; i < items.length; i++) {
         var regla = items[i].getAttribute('data-regla');
         items[i].classList.toggle('cumple', !!res.checks[regla]);
