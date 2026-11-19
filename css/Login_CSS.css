@@ -8,8 +8,11 @@ RESPONSABILIDAD: Pantalla de ACCESO (login): montaje exclusivo
                  movimientos al alternar vistas —, letra de
                  campos, enlace de recuperación, vistas del
                  flujo OTP). El formulario viste las clases
-                 centrales (Core + Tipografia_CSS).
-VERSIÓN:         1.4
+                 centrales (Core + Tipografia_CSS); los ERRORES
+                 viajan en la píldora .avisoError (Core_CSS ·
+                 Tipografia_CSS · Global_Script, correcciones
+                 17).
+VERSIÓN:         1.5
 DEPENDENCIAS:    Core_CSS.html (anatomía del formulario),
                  Tipografia_CSS.html (la letra), Login_Script.html
 ════════════════════════════════════════════════════════════════════*/

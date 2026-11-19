@@ -7,10 +7,11 @@ RESPONSABILIDAD: CSS núcleo de la Partner (trío azul oficial,
                  formulario con la píldora .form-submit SIN letra
                  — su letra es la maestra .botonPrimario —,
                  contenedor .clave-checks, SISTEMA SKELETON .skl,
-                 modo móvil del lienzo y notificación flotante).
+                 modo móvil del lienzo, notificación flotante
+                 azul y píldora de alerta .avisoError).
                  Los TOKENS DE LETRA y las clases de tipografía
                  viven CENTRALIZADOS en Tipografia_CSS.html.
-VERSIÓN:         2.2
+VERSIÓN:         2.3
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app;
                  la letra vive en Tipografia_CSS.html)
 ════════════════════════════════════════════════════════════════════*/
@@ -616,6 +617,89 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app;
       transition: opacity 0.2s ease, visibility 0s linear 0.2s;
     }
     .notificacionFlotante.visible {
+      transform: none;
+      transition: opacity 0.2s ease, visibility 0s;
+    }
+  }
+
+  /* ============================================================
+     PÍLDORA DE ALERTA · .avisoError (correcciones 17, orden del
+     dueño: «vamos a crear un aviso de alerta, con tiempo de
+     expiración … busca el formato en servy original»).
+     EL FORMATO TRAÍDO DEL ORIGINAL: la MISMA anatomía de
+     .notificacionFlotante (la voz única de los avisos de la
+     app) vestida de ERROR — hermana gemela, tinta distinta.
+     · POSICIÓN FIJA INFERIOR DERECHA incluida en la clase,
+       respeta el safe-area del móvil. El bottom 68px respeta la
+       barra de Safari.
+     · CRISTAL ROJO: fondo #fef2f2 translúcido + blur y borde
+       rojo claro — se adivina lo que hay detrás.
+     · TINTA ÚNICA #991b1b: la letra la sirve la tipografía
+       CENTRALIZADA .avisoError (Tipografia_CSS — tokens
+       --size/-weight/-color-avisoError: 14px · 300 · #991b1b)
+       y la ✕ viste la misma tinta.
+     · FORMA: PÍLDORA (misma caja: min-height 44px · padding
+       0 16px · radio 999px · max-width min(320px, 100vw - 32px)).
+     · EXPIRACIÓN: la ENCIENDE y la MATA window.avisoError
+       (Global_Script.html — se cierra sola a los 6 s o al
+       tocar la ✕). Va OCULTA por defecto: .visible la enciende.
+     ============================================================ */
+  .avisoError {
+    position: fixed !important;
+    right: 16px;
+    bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+    box-sizing: border-box;
+    min-height: 44px;
+    max-width: min(320px, calc(100vw - 32px));
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 16px;
+    background: rgba(254, 242, 242, 0.55) !important;
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(220, 38, 38, 0.35);
+    color: #991b1b;
+    border-radius: 999px !important;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18), 0 3px 10px rgba(15, 23, 42, 0.10);
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(12px);
+    pointer-events: none;
+    transition: opacity 0.28s ease, transform 0.28s ease, visibility 0s linear 0.28s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .avisoError.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: opacity 0.28s ease, transform 0.28s ease, visibility 0s;
+  }
+  .avisoError .avisoCerrar {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
+  .avisoError .avisoCerrar svg {
+    width: 12px;
+    height: 12px;
+    display: block;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .avisoError {
+      transform: none;
+      transition: opacity 0.2s ease, visibility 0s linear 0.2s;
+    }
+    .avisoError.visible {
       transform: none;
       transition: opacity 0.2s ease, visibility 0s;
     }

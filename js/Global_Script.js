@@ -375,6 +375,8 @@
   window.avisoFlotante = function (texto) {
     var previa = document.querySelector('.notificacionFlotante');
     if (previa) previa.parentNode.removeChild(previa);
+    var previaError = document.querySelector('.avisoError');
+    if (previaError) previaError.parentNode.removeChild(previaError);
 
     var d = document.createElement('div');
     d.className = 'notificacionFlotante visible';
@@ -396,6 +398,49 @@
     var btn = d.querySelector('.avisoCerrar');
     if (btn) btn.addEventListener('click', cerrar);
     setTimeout(cerrar, 4000);
+  };
+
+  /* ============================================================
+     AVISO DE ALERTA · window.avisoError (correcciones 17, orden
+     del dueño: «vamos a crear un aviso de alerta, con tiempo de
+     expiración … y lo vas a traer para mostrar el error en un
+     aviso de alerta»). LA VOZ DE LOS ERRORES: la píldora de
+     vidrio rojo .avisoError del Core (el MISMO formato traído
+     del original que .notificacionFlotante — posición inferior
+     derecha, tamaño, animación, ✕) con la letra centralizada
+     .avisoError (Tipografia_CSS). Entra subiendo, SE CIERRA
+     SOLA a los 6 s (TIEMPO DE EXPIRACIÓN — los errores del
+     login piden un aliento más de lectura que los avisos azules
+     de 4 s) o al tocar la ✕. role="alert": el teléfono la anuncia
+     de inmediato. La viste el LOGIN (acceso + recuperación);
+     toda la app la puede vestir — UNA sola copia.
+     ============================================================ */
+  window.avisoError = function (texto, ms) {
+    var previa = document.querySelector('.avisoError');
+    if (previa) previa.parentNode.removeChild(previa);
+    var previaAzul = document.querySelector('.notificacionFlotante');
+    if (previaAzul) previaAzul.parentNode.removeChild(previaAzul);
+
+    var d = document.createElement('div');
+    d.className = 'avisoError visible';
+    d.setAttribute('role', 'alert');
+    d.setAttribute('aria-live', 'assertive');
+    d.innerHTML =
+      '<span></span>' +
+      '<button type="button" class="avisoCerrar" aria-label="Cerrar" data-glifo="close"></button>';
+    d.querySelector('span').textContent = String(texto == null ? '' : texto);
+    document.body.appendChild(d);
+    if (typeof window.pintarGlifos === 'function') window.pintarGlifos(d);
+
+    var cerrar = function () {
+      d.classList.remove('visible');
+      setTimeout(function () {
+        if (d.parentNode) d.parentNode.removeChild(d);
+      }, 320);
+    };
+    var btn = d.querySelector('.avisoCerrar');
+    if (btn) btn.addEventListener('click', cerrar);
+    setTimeout(cerrar, ms || 6000);   /* expiración: 6 s por defecto */
   };
 
   /* ============================================================

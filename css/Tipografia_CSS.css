@@ -3,10 +3,11 @@
 ARCHIVO:         Tipografia_CSS.html
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Catálogo ÚNICO de la tipografía: tokens de letra,
-                 letra base, clases maestras, wordmarks, familia
-                 marca, letra del formulario (.tituloCampo ·
-                 .checkClave) y letras de texto de las pantallas.
-VERSIÓN:         1.1
+                 letra base, clases maestras, AVISO DE ERROR
+                 (.avisoError), wordmarks, familia marca, letra
+                 del formulario (.tituloCampo · .checkClave) y
+                 letras de texto de las pantallas.
+VERSIÓN:         1.2
 DEPENDENCIAS:    Ninguna (base; se incluye justo después de
                  Core_CSS.html)
 ════════════════════════════════════════════════════════════════════*/
@@ -48,6 +49,14 @@ DEPENDENCIAS:    Ninguna (base; se incluye justo después de
     --size-botonSecundario: 16px; --weight-botonSecundario: 400; --color-botonSecundario: #7A828A;
     --size-badgeNuevo: 11px;      --weight-badgeNuevo: 600;   /* píldora «Pronto» — consumen .dormida-pronto (Global_CSS) */
     --size-chipsFormulario: 12px; --weight-chipsFormulario: 300;
+
+    /* .avisoError — la letra de la píldora de alerta
+       (correcciones 17). Mismo cuerpo que la línea de la
+       notificación flotante del original (la maestra
+       .textoPrimario: 14px · 300) con TINTA DE ERROR roja — la
+       misma tinta de la caja .errorForm (#991b1b). El vidrio y
+       la posición de la píldora viven en Core_CSS.html. */
+    --size-avisoError: 14px;      --weight-avisoError: 300;  --color-avisoError: #991b1b;
 
     /* ============================================================
        FAMILIA MARCA · tamaños y pesos de los wordmarks
@@ -196,6 +205,36 @@ DEPENDENCIAS:    Ninguna (base; se incluye justo después de
   .chipsFormulario {
     font-size: var(--size-chipsFormulario) !important;
     font-weight: var(--weight-chipsFormulario) !important;
+  }
+
+  /* ============================================================
+     AVISO DE ERROR · TIPOGRAFÍA .avisoError (correcciones 17,
+     orden del dueño: «vamos a crear un aviso de alerta, con
+     tiempo de expiración … si no existe una tipografia
+     centralizada para eso, vamos a crearla y a llamarla
+     .avisoError»). LA LETRA vive aquí, CENTRALIZADA: mismo
+     cuerpo que la línea de la notificación flotante del
+     original ServyCloud (14px · 300) con la TINTA DE ERROR
+     #991b1b — la misma de la caja .errorForm (Core_CSS).
+     LA CAJA (píldora de vidrio rojo · posición fija inferior
+     derecha · tamaño · animación de entrada/salida · botón ✕)
+     vive en Core_CSS.html junto a su hermana
+     .notificacionFlotante — el FORMATO traído del original.
+     La ENCIENDE window.avisoError (Global_Script.html): se
+     cierra sola a los 6 s o al tocar la ✕. La viste el LOGIN
+     (errores del acceso y de la recuperación — correcciones
+     17); toda la app la puede vestir.
+     ============================================================ */
+  .avisoError {
+    font-size: var(--size-avisoError) !important;
+    font-weight: var(--weight-avisoError) !important;
+    color: var(--color-avisoError) !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0px !important;
+    text-align: left !important;
+  }
+  .avisoError .avisoCerrar {
+    color: var(--color-avisoError);
   }
 
   /* ============================================================

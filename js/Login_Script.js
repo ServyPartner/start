@@ -54,17 +54,13 @@
       }
     }
 
-    /* Error DEBAJO del campo (anatomía del Core, molde del
-       Perfil): texto + marca inválida; vacío = limpiar. */
-    function _errorCampo_(field, texto) {
-      if (!field) return;
-      var caja = field.querySelector('.errorForm');
-      if (caja) {
-        caja.textContent = texto || '';
-        caja.hidden = !texto;
-      }
-      field.classList.toggle('invalido', !!texto);
-    }
+    /* Error del login — CORRECCIONES 17: el aviso DEBAJO del
+       campo MURIÓ en esta pantalla (la caja .errorForm sigue
+       viva SOLO en el Perfil, que la pinta con su propio
+       módulo). Los errores del acceso y de la recuperación
+       viajan TODOS en la píldora de alerta .avisoError
+       (Global_Script.html — window.avisoError, con tiempo de
+       expiración). */
 
     /* OJITO SOSTENIDO (orden del dueño, molde del Perfil):
        pointerdown muestra, soltar/salir/cancelar oculta. Sin
@@ -160,7 +156,6 @@
                 '<div class="form-field" id="fieldAccesoCorreo">' +
                   '<input type="email" id="inputAccesoCorreo" placeholder=" " class="form-input campoEditable" maxlength="100" autocomplete="email">' +
                   '<label for="inputAccesoCorreo" class="tituloCampo">' + _esc_(arranque.correo || 'Correo Electrónico') + '</label>' +
-                  '<div class="errorForm" hidden></div>' +
                 '</div>' +
 
                 /* LA CLAVE nace INACTIVA (correcciones 14): la
@@ -174,11 +169,10 @@
                      del dueño, correcciones 13): el MISMO componente
                      central — .clave-checks del Core + la fuente
                      única CHECKS_CLAVE — que el Perfil y la
-                     recuperación. Marca en vivo, INFORMATIVO: no
-                     gobierna Entrar (la clave existente entra tal
-                     cual; las reglas mandan solo en claves NUEVAS). */
+                     recuperación. Marca en vivo y GOBIERNA Entrar
+                     (correcciones 17: el botón nace INACTIVO y solo
+                     despierta con las CINCO reglas pasando). */
                   '<div class="clave-checks" id="accesoChecks">' + checkHtml + '</div>' +
-                  '<div class="errorForm" hidden></div>' +
                 '</div>' +
 
                 /* RECUPERACIÓN (bitácora: «¿Olvidaste tu clave?»
@@ -206,7 +200,6 @@
                 '<div class="form-field" id="fieldRecupCorreo">' +
                   '<input type="email" id="inputRecupCorreo" placeholder=" " class="form-input campoEditable" maxlength="100" autocomplete="email">' +
                   '<label for="inputRecupCorreo" class="tituloCampo">' + _esc_(arranque.correo || 'Correo Electrónico') + '</label>' +
-                  '<div class="errorForm" hidden></div>' +
                 '</div>' +
                 '<button type="submit" class="form-submit botonPrimario" id="btnRecupEnviar" disabled>' +
                   '<span class="form-submit-spinner" aria-hidden="true"></span>' +
@@ -228,7 +221,6 @@
                 '<div class="form-field" id="fieldRecupCodigo">' +
                   '<input type="text" id="inputRecupCodigo" placeholder=" " class="form-input campoEditable" maxlength="6" inputmode="numeric" autocomplete="one-time-code">' +
                   '<label for="inputRecupCodigo" class="tituloCampo">' + _esc_(rec.codigo || 'Ingresar Código') + '</label>' +
-                  '<div class="errorForm" hidden></div>' +
                 '</div>' +
                 '<button type="submit" class="form-submit botonPrimario" id="btnRecupVerificar" disabled>' +
                   '<span class="form-submit-spinner" aria-hidden="true"></span>' +
@@ -252,7 +244,6 @@
                   '<label for="inputRecupClave" class="tituloCampo">' + _esc_(rec.nuevaClave || 'Nueva clave') + '</label>' +
                   '<button type="button" class="ojito" id="ojitoRecupClave" data-glifo="ojo" aria-label="' + _esc_(arranque.ojo || 'Mostrar la clave mientras se mantiene presionado') + '"></button>' +
                   '<div class="clave-checks" id="recupChecks">' + checkHtml + '</div>' +
-                  '<div class="errorForm" hidden></div>' +
                 '</div>' +
                 '<button type="submit" class="form-submit botonPrimario" id="btnRecupGuardar" disabled>' +
                   '<span class="form-submit-spinner" aria-hidden="true"></span>' +
@@ -310,32 +301,31 @@
 
       /* La letra del campo habla por estados: .activo cuando
          vive escrito (el CSS de Login_CSS viste los colores del
-         Core); cada tecla limpia el error propio. */
+         Core). Los errores ya NO se limpian aquí: viajan en la
+         píldora .avisoError que muere sola (correcciones 17). */
       var vigiar = function (input, field, extra) {
         input.addEventListener('input', function () {
           field.classList.toggle('activo', !!String(input.value || '').trim());
-          _errorCampo_(field, '');
           if (extra) extra();
         });
       };
 
       /* ---------- ACCESO ---------- */
-      var despertar = function () {
-        el.btnEntrar.disabled = !(_correoValido_(el.iCorreo.value) &&
-                                  String(el.iClave.value || '').length > 0);
-      };
       /* LA PUERTA (correcciones 14): cada tecla del CORREO abre
-         o cierra la CLAVE; nace cerrada (correo vacío). */
+         o cierra la CLAVE; nace cerrada (correo vacío). Cada
+         tecla reevalúa TAMBIÉN EL GOBIERNO del botón Entrar
+         (_puertaEntrar_ — correcciones 17). */
       vigiar(el.iCorreo, el.fCorreo, function () {
         _puertaClave_();
-        despertar();
+        _puertaEntrar_();
       });
       vigiar(el.iClave, el.fClave, function () {
-        despertar();
         renderChecksAcceso();
+        _puertaEntrar_();
       });
       _engancharOjito_(el.ojitoAcceso, el.iClave);
       _puertaClave_();   /* estado inicial: correo vacío → CERRADA */
+      _puertaEntrar_();  /* estado inicial: botón INACTIVO */
 
       el.vistaAcceso.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -348,7 +338,6 @@
         el.iRecCorreo.value = String(el.iCorreo.value || '').trim();
         el.fRecCorreo.classList.toggle('activo', !!el.iRecCorreo.value);
         el.btnRecEnviar.disabled = !_correoValido_(el.iRecCorreo.value);
-        _errorCampo_(el.fRecCorreo, '');
         mostrarVista('vistaRecup1');
         try { el.iRecCorreo.focus(); } catch (_) {}
       });
@@ -407,6 +396,24 @@
       el.ojitoAcceso.disabled = !abierta;
     }
 
+    /* EL GOBIERNO DEL BOTÓN ENTRAR (correcciones 17, orden del
+       dueño: «el boton entrar inicia inactivo, y para que se
+       active debe tener la 5 validaciones que estan abajo del
+       campo clave activadas»). Vive a nivel del módulo: las
+       teclas lo llaman y los retornos de error lo REEVALÚAN —
+       el botón nunca despierta más de la cuenta. Solo despierta
+       con el correo válido, la PUERTA abierta y LAS CINCO
+       REGLAS DE FUERZA pasando (las mismas que marcan en vivo
+       los checks). */
+    function _puertaEntrar_() {
+      if (!el.btnEntrar || !el.iClave) return;
+      var res = window.Validaciones.validarClaveNueva(el.iClave.value);
+      el.btnEntrar.disabled = !(_correoValido_(el.iCorreo.value) &&
+                                !el.iClave.disabled &&
+                                String(el.iClave.value || '').length > 0 &&
+                                res.ok);
+    }
+
     /* El POOL ÚNICO de avisos de clave (SISTEMA.claves — 03
        Constantes.gs): el MISMO texto que pinta el Perfil. */
     function _claves_() {
@@ -437,8 +444,9 @@
 
     /* CHECKS DEL ACCESO (el MISMO componente, correcciones 13):
        encienden en vivo mientras se teclea la clave del acceso.
-       INFORMATIVOS — no gobiernan Entrar (las reglas de fuerza
-       solo mandan en claves NUEVAS; aquí la clave ya existe). */
+       Desde correcciones 17 GOBIERNAN Entrar (orden del dueño):
+       la reevaluación vive en _puertaEntrar_ — el botón solo
+       despierta con las CINCO reglas pasando. */
     function renderChecksAcceso() {
       if (!el.accesoChecks || !el.iClave) return;
 
@@ -462,13 +470,14 @@
       var correo = String(el.iCorreo.value || '').trim();
       var clave  = String(el.iClave.value || '');
 
-      /* El botón solo despierta con datos válidos; si igual
+      /* El botón solo despierta con datos válidos (correo +
+         clave + LAS CINCO REGLAS — correcciones 17); si igual
          llegara un submit raro, muere aquí sin texto suelto. */
-      if (!_correoValido_(correo) || !clave) return;
+      var resPuerta = window.Validaciones.validarClaveNueva(clave);
+      if (!_correoValido_(correo) || !clave || !resPuerta.ok) return;
 
       accesoEnCurso = true;
       _ciclo_(el.btnEntrar, true);
-      _errorCampo_(el.fClave, '');
 
       postBackend('iniciarSesion', { correo: correo, clave: clave })
         .then(function (data) {
@@ -486,22 +495,25 @@
         .catch(function (err) {
           accesoEnCurso = false;
           _ciclo_(el.btnEntrar, false);
-          el.btnEntrar.disabled = false;
+          _puertaEntrar_();   /* el botón vuelve SOLO si las cinco reglas siguen pasando (c17) */
 
           var arranque = (window.SISTEMA && window.SISTEMA.arranque) || {};
           var msg = String((err && err.message) || '');
 
+          /* Los errores del login viajan TODOS en la píldora de
+             alerta .avisoError (correcciones 17) — con tiempo de
+             expiración; nada queda escrito bajo el campo. */
           if (msg === 'ACCESO_BLOQUEADO' || msg.indexOf('RATE_LIMIT') === 0) {
-            _errorCampo_(el.fClave, arranque.accesoBloqueado ||
+            window.avisoError(arranque.accesoBloqueado ||
               'Demasiados intentos fallidos. Espera unos minutos y prueba de nuevo.');
           } else if (msg === 'ACCESO_INVALIDO' || msg === 'CORREO_INVALIDO' ||
                      msg === 'CAMPO_VACIO:clave' || msg === 'LONGITUD_INVALIDA:clave') {
             /* UN SOLO error para correo ausente y clave mala —
                sin pistas de reconocimiento (capa del kit). */
-            _errorCampo_(el.fClave, arranque.accesoInvalido ||
+            window.avisoError(arranque.accesoInvalido ||
               'Correo o clave incorrectos. Vuelve a intentarlo.');
           } else {
-            _errorCampo_(el.fClave, arranque.accesoRed ||
+            window.avisoError(arranque.accesoRed ||
               'No se pudo conectar. Revisa tu conexión e intenta de nuevo.');
           }
         });
@@ -519,13 +531,12 @@
 
       recupCorreo = String(el.iRecCorreo.value || '').trim().toLowerCase();
       if (!_correoValido_(recupCorreo)) {
-        _errorCampo_(el.fRecCorreo, rec.errCorreo || 'Escribe un correo válido.');
+        window.avisoError(rec.errCorreo || 'Escribe un correo válido.');
         return;
       }
 
       recupEnCurso = true;
       _ciclo_(el.btnRecEnviar, true);
-      _errorCampo_(el.fRecCorreo, '');
 
       postBackend('recuperarClaveSolicitar', { correo: recupCorreo })
         .then(function () {
@@ -540,7 +551,6 @@
           el.iRecCodigo.value = '';
           el.fRecCodigo.classList.remove('activo');
           el.btnRecVerificar.disabled = true;
-          _errorCampo_(el.fRecCodigo, '');
           mostrarVista('vistaRecup2');
           try { el.iRecCodigo.focus(); } catch (_) {}
         })
@@ -548,7 +558,7 @@
           recupEnCurso = false;
           _ciclo_(el.btnRecEnviar, false);
           el.btnRecEnviar.disabled = false;
-          _errorCampo_(el.fRecCorreo, _errorRecuperacion_(err, rec));
+          window.avisoError(_errorRecuperacion_(err, rec));
         });
     }
 
@@ -561,7 +571,7 @@
 
       var res = window.Validaciones.validarCodigoOtp(el.iRecCodigo.value);
       if (!res.ok) {
-        _errorCampo_(el.fRecCodigo, res.vacio
+        window.avisoError(res.vacio
           ? (rec.errCodigoVacio || 'Escribe el código de 6 dígitos.')
           : (rec.errCodigoFormato || 'El código son 6 dígitos numéricos.'));
         return;
@@ -569,7 +579,6 @@
 
       recupEnCurso = true;
       _ciclo_(el.btnRecVerificar, true);
-      _errorCampo_(el.fRecCodigo, '');
 
       postBackend('recuperarClaveVerificar', { correo: recupCorreo, codigo: res.valor })
         .then(function () {
@@ -579,7 +588,6 @@
           el.iRecClave.value = '';
           el.fRecClave.classList.remove('activo');
           el.btnRecGuardar.disabled = true;
-          _errorCampo_(el.fRecClave, '');
           renderChecksRecup();
           mostrarVista('vistaRecup3');
           try { el.iRecClave.focus(); } catch (_) {}
@@ -588,7 +596,7 @@
           recupEnCurso = false;
           _ciclo_(el.btnRecVerificar, false);
           el.btnRecVerificar.disabled = false;
-          _errorCampo_(el.fRecCodigo, _errorRecuperacion_(err, rec));
+          window.avisoError(_errorRecuperacion_(err, rec));
         });
     }
 
@@ -604,14 +612,13 @@
       var res = window.Validaciones.validarClaveNueva(el.iRecClave.value, recupCorreo);
       renderChecksRecup();
       if (!res.ok) {
-        _errorCampo_(el.fRecClave,
+        window.avisoError(
           window.Validaciones.mensajeClave(res, _claves_()));
         return;
       }
 
       recupEnCurso = true;
       _ciclo_(el.btnRecGuardar, true);
-      _errorCampo_(el.fRecClave, '');
 
       postBackend('recuperarClaveGuardar', { correo: recupCorreo, claveNueva: res.valor })
         .then(function () {
@@ -641,7 +648,6 @@
             _puertaClave_();
             el.iClave.value = '';
             el.fClave.classList.remove('activo');
-            _errorCampo_(el.fClave, '');
             el.btnEntrar.disabled = true;
             mostrarVista('vistaAcceso');
 
@@ -655,7 +661,7 @@
           recupEnCurso = false;
           _ciclo_(el.btnRecGuardar, false);
           renderChecksRecup();
-          _errorCampo_(el.fRecClave, _errorRecuperacion_(err, rec));
+          window.avisoError(_errorRecuperacion_(err, rec));
         });
     }
 
