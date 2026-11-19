@@ -1,6 +1,8 @@
+
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Perfil_CSS.html
+ESPEJO GITHUB:   github/css/Perfil_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Pantalla PERFIL v2: héroe del avatar + TARJETA
                  SELLADA con candado + separador «DATOS EDITABLES»
@@ -12,10 +14,13 @@ RESPONSABILIDAD: Pantalla PERFIL v2: héroe del avatar + TARJETA
                  botones cuadrados 45×45 de glifo (enviar · check)
                  + ojito y checks + ciclo visual del botón
                  GUARDAR + skeleton con medidas reales.
-VERSIÓN:         1.8
-CAMBIOS:         Correcciones 8: 45px en campos y botones, título
-                 ENCIMA del borde (sin cruce con el foco), GPS en
-                 el bloque de dirección, fila OTP a partes iguales.
+VERSIÓN:         1.9
+CAMBIOS:         Correcciones 9: ritmo 28px entre campos · 42px
+                 entre los 4 bloques (aire del molde + fila del
+                 título); skeleton al mismo ritmo; fuera el
+                 .activo en negrita de «Solicitar código».
+                 Historial: correcciones 8 (45px, título encima
+                 del borde, GPS en bloque dirección, fila OTP 50/50).
 DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
                  sistema .skl), Global_CSS.html (pantalla-area),
                  Perfil_Script.html
@@ -232,21 +237,41 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     /* MUERE EL PESTAÑEO (orden del dueño): al tocar el campo no
        debe encenderse NINGÚN flash de fondo. */
     -webkit-tap-highlight-color: transparent;
-    /* MISMA SEPARACIÓN que el sheet de reserva del original:
-       14px entre campos del mismo bloque. */
-    margin-bottom: 14px;
+    /* SEPARACIÓN REGLEMENTARIA (correcciones 9, orden del
+       dueño): el aire entre campos lo manda el GAP del bloque
+       — 28px de caja a caja. La cuenta: el molde Reserva deja
+       14px de aire visible entre campos y AQUÍ el título vive
+       ENCIMA del borde (13px de fila), así que el hueco entre
+       cajas debe traer el título DENTRO: 13 + 14 ≈ 28px. Con
+       los 14px viejos el título se comía el aire y los campos
+       se veían apilados (1px de aire real). */
+    margin-bottom: 0;
   }
 
   /* ============================================================
-     BLOQUES DEL FORMULARIO: cada grupo de datos vive en su
-     .form-bloque y entre bloques hay MÁS ESPACIO que dentro
-     (28px contra 14px) — los grupos se leen como grupos.
+     BLOQUES DEL FORMULARIO · los 4 bloques del lienzo (orden del
+     dueño, correcciones 9): 1· eslogan + dirección + GPS ·
+     2· correo + Solicitar/Ingresar código · 3· clave actual +
+     nueva clave · 4· Guardar. La SEPARACIÓN ENTRE BLOQUES es la
+     reglamentaria del molde: los fieldsets del sheet Reserva
+     dejan 28px de aire visible entre grupos (14 de margen + 14
+     de padding). Aquí el primer título de cada bloque vive
+     encima de su caja (13px de fila) → el hueco entre bloques
+     es 13 + 28 ≈ 42px. DENTRO del bloque, el gap de 28px
+     reparte el aire reglamentario (14px) tras la fila del
+     título. Jerarquía legible: 15px de aire entre campos ·
+     29px entre bloques.
      ============================================================ */
-  .form-bloque { display: flex; flex-direction: column; }
-  .form-bloque + .form-bloque { margin-top: 28px; }
+  .form-bloque {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .form-bloque + .form-bloque { margin-top: 42px; }
 
   /* La vestidura base la manda .campoEditable (Core_CSS). Solo
-     quedan aquí el ancho del ojito y los estados. */
+     quedan aquí el ancho del ojito y los estados; la separación
+     la manda el gap del bloque (28px). */
   .form-input.con-ojo { padding-right: 46px; }
   .form-input[disabled] {
     color: #94a3b8;
@@ -480,21 +505,20 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     display: flex;
     align-items: center;
     gap: 10px;
-    margin-top: 2px;
+    /* La separación correo → fila OTP la manda el gap del
+       bloque (28px, correcciones 9): fuera el margen extra. */
+    margin-top: 0;
   }
   .otp-campo { flex: 0 0 calc(50% - 5px); margin-bottom: 0; }
   .correo-solicitar {
     flex: 0 0 calc(50% - 5px);
-    /* La vestidura la manda .botonCampo (Core_CSS). */
+    /* La vestidura COMPLETA la manda .botonCampo (Core_CSS,
+       correcciones 9): letra .textoPrimario AZUL activa ·
+       .textoSecundario con el MISMO azul + opacidad inactiva ·
+       presión 0.7. Aquí no queda NINGÚN estado: la tipografía
+       de los botones de campo es UNA para todos (orden del
+       dueño) — fuera el .activo en negrita de correcciones 8. */
   }
-  .correo-solicitar[disabled] { opacity: 0.45; cursor: not-allowed; }
-  /* ACTIVO (correo válido en edición): el azul oficial manda
-     sobre el .textoPrimario de .botonCampo — el estado se VE. */
-  .correo-solicitar.activo {
-    color: var(--color-primario) !important;
-    font-weight: var(--weight-enfasis) !important;
-  }
-  .correo-solicitar.activo:active { opacity: 0.7; }
 
   /* ============================================================
      CORREO · el campo vive en .correo-fila (lápiz cuadrado a la
@@ -534,14 +558,12 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     line-height: 1.5;
     padding: 4px 0;
   }
-  /* La vestidura la manda .botonCampo (Core_CSS); aquí solo el
-     ancho del bloque. */
+  /* La vestidura la manda .botonCampo (Core_CSS) — letra azul
+     unificada y presión incluidas; aquí solo el ancho. */
   .gps-btn-capturar {
     display: flex;
     width: 100%;
-    transition: opacity 0.15s ease;
   }
-  .gps-btn-capturar:active { opacity: 0.7; }
   .gps-mapa {
     width: 100%;
     height: 150px;
@@ -585,8 +607,9 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   .form-submit {
     width: 100%;
     /* ESPACIO AL BOTÓN (orden del dueño): el ritmo lo manda el
-       bloque — 14px del último campo + 28px del bloque = 42px,
-       EXACTAMENTE el mismo espacio entre bloques. */
+       bloque — 42px, EXACTAMENTE el mismo espacio entre bloques
+       (correcciones 9). El botón no lleva título encima: los
+       42px son aire puro desde la unidad anterior. */
     margin-top: 0;
     padding: 15px 22px;
     border: none;
@@ -671,12 +694,12 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   }
 
   /* ============================================================
-     SKELETON DE LA PANTALLA · silueta del lienzo v2 REAL:
-     círculo del avatar, TARJETA sellada, separador, campos de
-     45px (.campoEditable: eslogan · dirección · GPS · correo ·
-     clave ×2) y píldora del botón. Las formas las viste el
-     sistema .skl del Core. Hoy solo actúa en la PRIMERA lectura
-     sin cache.
+     SKELETON DE LA PANTALLA · silueta del lienzo v2 REAL al
+     MISMO RITMO que el formulario (correcciones 9): círculo del
+     avatar, TARJETA sellada, separador y los 4 BLOQUES de campos
+     de 45px (gap 28px dentro, 42px entre bloques) y píldora del
+     botón. Las formas las viste el sistema .skl del Core. Hoy
+     solo actúa en la PRIMERA lectura sin cache.
      ============================================================ */
   .skl-avatar {
     width: 104px;
@@ -695,15 +718,19 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     border-radius: 8px;
     margin: 18px 0 22px;
   }
+  .skl-bloque {
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  .skl-bloque + .skl-bloque { margin-top: 42px; }
   .skl-campo {
     height: 45px;
     border-radius: 12px;
-    margin-bottom: 14px;
   }
   .skl-campo-alto {
     height: 45px;
     border-radius: 12px;
-    margin-bottom: 14px;
   }
   .skl-boton {
     height: 52px;
@@ -743,4 +770,3 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     box-shadow: 0 6px 14px rgba(37, 99, 235, 0.30);
   }
   .perfil-estado .perfil-reintentar:active { opacity: 0.85; }
-

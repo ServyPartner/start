@@ -143,9 +143,11 @@
        ESTADOS DE PANTALLA · el skeleton SOLO existe para la
        primera lectura sin cache (L2): con la cache de sesión la
        pantalla nace pintada de golpe. La silueta es la del
-       lienzo v2 REAL: avatar + tarjeta sellada + separador +
-       eslogan · dirección · GPS (alto) · correo · clave ×2 +
-       botón (orden del dueño, Tanda 1).
+       lienzo v2 REAL con la MISMA estructura de 4 bloques del
+       formulario (correcciones 9): avatar + tarjeta sellada +
+       separador + eslogan · dirección · GPS (alto) · correo ·
+       OTP · clave ×2 · botón, al ritmo 28/42 que manda
+       Perfil_CSS.
        ============================================================ */
     function pintarCargando() {
       var area = document.getElementById('pantallaArea');
@@ -158,14 +160,26 @@
           '<div class="perfil-form">' +
             '<div class="skl skl-tarjeta"></div>' +
             '<div class="skl skl-separador"></div>' +
-            '<div class="skl skl-campo"></div>' +
-            '<div class="skl skl-campo"></div>' +
-            '<div class="skl skl-campo-alto"></div>' +
-            '<div class="skl skl-campo"></div>' +
-            '<div class="skl skl-campo"></div>' +
-            '<div class="skl skl-campo"></div>' +
-            '<div class="skl skl-campo"></div>' +
-            '<div class="skl skl-boton"></div>' +
+            /* BLOQUE 1 · eslogan + dirección + GPS */
+            '<div class="skl-bloque">' +
+              '<div class="skl skl-campo"></div>' +
+              '<div class="skl skl-campo"></div>' +
+              '<div class="skl skl-campo-alto"></div>' +
+            '</div>' +
+            /* BLOQUE 2 · correo + Solicitar + Ingresar código */
+            '<div class="skl-bloque">' +
+              '<div class="skl skl-campo"></div>' +
+              '<div class="skl skl-campo"></div>' +
+            '</div>' +
+            /* BLOQUE 3 · clave actual + nueva clave */
+            '<div class="skl-bloque">' +
+              '<div class="skl skl-campo"></div>' +
+              '<div class="skl skl-campo"></div>' +
+            '</div>' +
+            /* BLOQUE 4 · Guardar */
+            '<div class="skl-bloque">' +
+              '<div class="skl skl-boton"></div>' +
+            '</div>' +
           '</div>' +
         '</div>';
     }
@@ -1134,7 +1148,6 @@
         window.Validaciones.validarCorreoNuevo(
           String(el.inputCorreo.value || ''), correoActual()).ok;
       el.btnCorreoSolicitar.disabled = !activo;
-      el.btnCorreoSolicitar.classList.toggle('activo', activo);
       if (!state.correoEnCurso) {
         el.btnCorreoSolicitar.textContent = 'Solicitar código';
       }
@@ -1661,4 +1674,3 @@
     };
 
   })();
-

@@ -1,17 +1,20 @@
+
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Core_CSS.html
+ESPEJO GITHUB:   github/css/Core_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
                  maestra, campos y botones de campo, placeholders,
                  SISTEMA SKELETON .skl, marca de la cabecera, modo
                  móvil del lienzo y notificación flotante).
-VERSIÓN:         1.6
-CAMBIOS:         Correcciones 8 (19-nov): nacen .campoEditable y
-                 .botonCampo (45px, la altura del campo preguntas
-                 del original; .botonCampo con el azul clarito del
-                 trío). Historial: correcciones 5 · 4 · 3 ·
-                 bitácora del taller.
+VERSIÓN:         1.7
+CAMBIOS:         Correcciones 9 (19-nov): .botonCampo — texto AZUL
+                 unificado en todos los botones de campo (activo
+                 .textoPrimario · inactivo .textoSecundario, el
+                 mismo azul; la inactividad la marca la opacidad).
+                 Historial: correcciones 8 (nacen .campoEditable y
+                 .botonCampo) · 5 · 4 · 3 · bitácora del taller.
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 ════════════════════════════════════════════════════════════════════*/
 
@@ -219,7 +222,14 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
        .textoPrimario (14px · 300 · #1f2937).
      · .botonCampo — misma altura y misma forma de los campos,
        borde del mismo peso y color, FONDO en el azul clarito del
-       trío oficial (#DBEAFE) y texto .textoPrimario.
+       trío oficial (#DBEAFE) y UNA SOLA LETRA PARA TODOS
+       (correcciones 9, orden del dueño):
+       – ACTIVO: texto .textoPrimario en AZUL — el azul oficial
+         del trío (var(--color-primario)).
+       – INACTIVO: texto .textoSecundario con el MISMO azul — la
+         inactividad la marca la opacidad, no un color distinto;
+         así TODOS los botones de campo comparten el mismo color
+         de texto en sus dos estados.
      ============================================================ */
   .campoEditable {
     width: 100%;
@@ -251,11 +261,25 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     font-family: inherit;
     font-size: var(--size-textoPrimario);
     font-weight: var(--weight-textoPrimario);
-    color: var(--color-textoPrimario);
+    /* ACTIVO · el AZUL oficial de la Partner para la letra de
+       TODOS los botones de campo (correcciones 9, orden del
+       dueño: unificar el mismo color de los textos). */
+    color: var(--color-primario);
     line-height: 1.2;
     cursor: pointer;
     -webkit-tap-highlight-color: transparent;
     transition: opacity 0.2s ease;
+  }
+  /* Presión: feedback único de todos los botones de campo. */
+  .botonCampo:active:not([disabled]) { opacity: 0.7; }
+  /* INACTIVO · la letra pasa a .textoSecundario (14px · 300)
+     conservando el MISMO azul de todos los botones: la opacidad
+     la apaga, sin colores distintos ni hex sueltos. */
+  .botonCampo[disabled] {
+    font-size: var(--size-textoSecundario);
+    font-weight: var(--weight-textoSecundario);
+    opacity: 0.45;
+    cursor: not-allowed;
   }
 
   /* ============================================================
@@ -660,4 +684,3 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
   @media (prefers-reduced-motion: reduce) {
     .pildoraReconectando .pildora-giro { animation-duration: 2s; }
   }
-
