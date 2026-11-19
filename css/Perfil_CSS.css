@@ -4,13 +4,13 @@
 ARCHIVO:         Perfil_CSS.html
 ESPEJO GITHUB:   github/css/Perfil_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
-RESPONSABILIDAD: Pantalla PERFIL: héroe del avatar + formulario
-                 de campos TRANSPARENTES con borde gris tenue,
-                 esquinas redondeadas, label EN el borde SIN
-                 chapa, fila Municipio+Estado (foco azul sin
-                 fondo) + ciclo visual del botón GUARDAR +
-                 skeleton con medidas reales.
-VERSIÓN:         1.5
+RESPONSABILIDAD: Pantalla PERFIL v2: héroe del avatar + TARJETA
+                 SELLADA con candado + separador «DATOS EDITABLES»
+                 + campos TRANSPARENTES del molde Reserva + GPS
+                 con mini mapa + correo sellado con flujo OTP +
+                 clave con ojito y checks + ciclo visual del botón
+                 GUARDAR + skeleton con medidas reales.
+VERSIÓN:         1.6
 DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
                  sistema .skl), Global_CSS.html (pantalla-area),
                  Perfil_Script.html
@@ -117,11 +117,93 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   }
 
   /* ============================================================
-     CAMPOS DEL FORMULARIO (orden del dueño, correcciones 4):
+     TARJETA SELLADA · los datos que SOLO la central escribe
+     (molde de la imagen del dueño — ficha tipo negocio):
+     caja con borde gris tenue, candado arriba a la derecha y
+     cada dato como PAR etiqueta-chica / valor. El partner los
+     VE pero no los toca.
+     ============================================================ */
+  .perfil-tarjeta {
+    position: relative;
+    margin: 14px 0 4px;
+    padding: 16px 16px 6px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    background-color: transparent;
+  }
+  .tarjeta-sello {
+    position: absolute;
+    top: 13px;
+    right: 13px;
+    width: 18px;
+    height: 18px;
+    color: #94a3b8;
+  }
+  .tarjeta-sello svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .tarjeta-fila {
+    padding: 9px 0 11px;
+    border-bottom: 1px solid #f1f5f9;
+  }
+  .tarjeta-fila:last-child { border-bottom: none; }
+  .tarjeta-label {
+    display: block;
+    font-size: var(--size-cita);
+    font-weight: var(--weight-cita);
+    color: #94a3b8;
+    letter-spacing: 0.4px;
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+  .tarjeta-valor {
+    display: block;
+    font-size: var(--size-textoPrimario);
+    font-weight: var(--weight-textoPrimario);
+    color: #1f2937;
+    line-height: 1.45;
+    word-break: break-word;
+  }
+  .tarjeta-valor.vacio { color: #cbd5e1; }
+
+  /* ============================================================
+     SEPARADOR «DATOS EDITABLES» · el lápiz encabeza la zona
+     donde el partner SÍ escribe (molde de la imagen del dueño).
+     ============================================================ */
+  .perfil-separador {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 18px 0 22px;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .sep-icono {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    color: #64748b;
+  }
+  .sep-icono svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .sep-texto {
+    font-size: var(--size-cita);
+    font-weight: var(--weight-cita);
+    color: #64748b;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+  }
+
+  /* ============================================================
+     CAMPOS DEL FORMULARIO (vestidura del dueño, intacta):
      SIN FONDO — transparente sobre el lienzo — con BORDE GRIS
      TENUE MUY DELGADO (1px, el #e2e8f0 del molde) y ESQUINAS
-     REDONDEADAS 12px (las de antes). La altura 52px y el margen
-     14px son del sheet de reserva del original (intocables).
+     REDONDEADAS 12px. La altura 52px y el margen 14px son del
+     sheet de reserva del original (intocables).
      El ESPACIO entre bloques lo manda .form-bloque.
      ============================================================ */
   .perfil-form { display: flex; flex-direction: column; }
@@ -142,90 +224,21 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
 
   .form-field {
     position: relative;
-    /* MUERE EL PESTAÑEO (orden del dueño, correcciones 5): al
-       tocar el campo no debe encenderse NINGÚN flash de fondo —
-       el resaltado de toque del navegador queda apagado en el
-       campo y en el input que vive dentro. */
+    /* MUERE EL PESTAÑEO (orden del dueño): al tocar el campo no
+       debe encenderse NINGÚN flash de fondo. */
     -webkit-tap-highlight-color: transparent;
-    /* MISMA SEPARACIÓN que el sheet de reserva del original
-       (Reserva_CSS .form-field): 14px entre campos del mismo
-       bloque. El ESPACIO entre bloques lo manda .form-bloque. */
+    /* MISMA SEPARACIÓN que el sheet de reserva del original:
+       14px entre campos del mismo bloque. */
     margin-bottom: 14px;
   }
 
   /* ============================================================
-     BLOQUES DEL FORMULARIO (orden del dueño): cada grupo de
-     datos vive en su .form-bloque y entre bloques hay MÁS
-     ESPACIO que dentro (28px contra 14px) — los grupos se
-     leen como grupos.
+     BLOQUES DEL FORMULARIO: cada grupo de datos vive en su
+     .form-bloque y entre bloques hay MÁS ESPACIO que dentro
+     (28px contra 14px) — los grupos se leen como grupos.
      ============================================================ */
   .form-bloque { display: flex; flex-direction: column; }
   .form-bloque + .form-bloque { margin-top: 28px; }
-
-  /* ============================================================
-     FILA DOBLE (orden del dueño, correcciones 5): Municipio y
-     Estado comparten la MISMA fila — cada uno la mitad, misma
-     altura 52px y el MISMO ritmo de 14px del sheet de reserva.
-     ============================================================ */
-  .form-fila {
-    display: flex;
-    gap: 14px;
-    margin-bottom: 14px;
-  }
-  .form-fila .form-field {
-    flex: 1;
-    min-width: 0;
-    margin-bottom: 0;
-  }
-
-  /* ============================================================
-     CAMPO TELEFÓNICO · prefijo +58 fijo del molde Reserva.
-     Igual que los demás: transparente, borde gris tenue 1px,
-     esquinas redondeadas. El FOCO pinta el borde azul muy
-     delgado SIN cambiar el fondo (transparente, orden del
-     dueño).
-     ============================================================ */
-  .form-input-tel {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    height: 52px;
-    padding: 0 14px 0 0;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    background-color: transparent;
-    -webkit-tap-highlight-color: transparent;
-    transition: border-color 0.2s ease;
-  }
-  .form-input-tel:focus-within {
-    border-color: var(--color-primario);
-  }
-  .form-input-tel-input {
-    flex: 1;
-    height: 100%;
-    border: none;
-    background: transparent;
-    -webkit-tap-highlight-color: transparent;
-    padding: 0 0 0 14px;
-    font-size: var(--size-textoPrimario);
-    font-weight: var(--weight-textoPrimario);
-    color: #0f172a;
-    outline: none;
-    font-family: inherit;
-    -webkit-appearance: none;
-    appearance: none;
-  }
-  .form-prefijo {
-    padding: 0 2px 0 14px;
-    font-size: var(--size-textoPrimario);
-    font-weight: var(--weight-textoPrimario);
-    color: #64748b;
-    user-select: none;
-    opacity: 0;
-    transition: opacity 0.2s;
-  }
-  .form-field.activo    .form-prefijo { opacity: 1; }
-  .form-field.invalido  .form-prefijo   { color: #dc2626; }
 
   .form-input {
     width: 100%;
@@ -247,13 +260,19 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   .form-input:focus {
     border-color: var(--color-primario);
   }
+  /* Los campos con OJITO reservan el ancho del botón. */
+  .form-input.con-ojo { padding-right: 46px; }
+  .form-input[disabled] {
+    color: #94a3b8;
+    cursor: not-allowed;
+  }
 
   /* ============================================================
-     LABEL · vive EN EL BORDE del campo (orden del dueño) y SIN
-     FONDO (orden del dueño, correcciones 5): murió la chapa
-     blanca — el título es solo letra sentada sobre el borde,
-     nada de cajas de color. Color: gris de siempre; azul
-     oficial con el foco; rojo si el campo es inválido.
+     LABEL · vive EN EL BORDE del campo y SIN FONDO (orden del
+     dueño): el título es solo letra sentada sobre el borde.
+     Gris de siempre; azul oficial con el foco; rojo si el
+     campo es inválido. El FOCO manda por focus-within también
+     en los campos de los flujos (correo · clave · GPS).
      ============================================================ */
   .form-label {
     position: absolute;
@@ -267,52 +286,323 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     padding: 0 6px;
     line-height: 1.2;
     transition: color 0.2s ease;
+    z-index: 1;
   }
-
   .form-field.activo .form-label {
     color: var(--color-primario-medio);
   }
-
+  .form-field:focus-within .form-label {
+    color: var(--color-primario-medio);
+  }
   .form-field.invalido .form-label {
     color: #dc2626;
   }
-
-  /* El FOCO manda: aunque el campo esté inválido, si el partner
-     está escribiendo aquí se ve el borde azul delgado y el
-     fondo queda transparente (orden del dueño). */
   .form-field .form-input:focus {
     border-color: var(--color-primario);
   }
-  .form-field .form-input:focus ~ .form-label,
-  .form-field.activo .form-label {
-    color: var(--color-primario-medio);
-  }
-
-  /* INVÁLIDO · borde rojo delgado (sin fondos: la vestitura de
-     los campos es transparente). */
   .form-field.invalido .form-input {
     border-color: #dc2626;
   }
-  .form-field.invalido .form-input-tel {
-    border-color: #dc2626;
+
+  /* ============================================================
+     OJITO · click SOSTENIDO (orden del dueño): mantener
+     presionado MUESTRA la clave, SOLTAR la vuelve a ocultar.
+     No es un toggle: es ver mientras presionas. El botón vive
+     dentro del campo, centrado sobre los 52px, y cuando está
+     presionado se viste del azul del sistema.
+     ============================================================ */
+  .ojito {
+    position: absolute;
+    right: 8px;
+    top: 26px;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    transition: color 0.15s ease;
   }
+  .ojito svg {
+    width: 20px;
+    height: 20px;
+    display: block;
+    pointer-events: none;
+  }
+  .ojito.presionado { color: var(--color-primario); }
+  .ojito[disabled] {
+    color: #cbd5e1;
+    cursor: not-allowed;
+  }
+
+  /* ============================================================
+     CHECKS DE FUERZA DE LA CLAVE · viven DEBAJO del campo
+     «Nueva clave» SOLAMENTE (orden del dueño). Cada regla
+     enciende su check al cumplirse y se apaga si se rompe —
+     en tiempo real, mientras se teclea.
+     ============================================================ */
+  .clave-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin: 8px 2px 0;
+    padding: 0;
+  }
+  .clave-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: var(--size-cita);
+    font-weight: var(--weight-cita);
+    color: #94a3b8;
+    transition: color 0.15s ease;
+  }
+  .clave-check .ck {
+    width: 12px;
+    height: 12px;
+    color: #cbd5e1;
+    transition: color 0.15s ease;
+  }
+  .clave-check .ck svg { width: 100%; height: 100%; display: block; }
+  .clave-check.cumple { color: #16a34a; }
+  .clave-check.cumple .ck { color: #16a34a; }
+
+  /* ============================================================
+     BOTONES DE LOS FLUJOS · píldoras del sistema en tamaño
+     contenido (los flujos de correo/clave/GPS se confirman
+     DENTRO de su propio campo — son acciones sensibles que se
+     comprometen solas, como Google).
+     ============================================================ */
+  .perfil-btn-flujo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 22px;
+    border: none;
+    border-radius: 999px;
+    background: var(--color-primario);
+    color: var(--color-botonPrimario);
+    font-family: inherit;
+    font-size: var(--size-enlaces);
+    font-weight: var(--weight-enfasis);
+    letter-spacing: -0.1px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.2s ease;
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.28);
+  }
+  .perfil-btn-flujo:active { opacity: 0.85; }
+  .perfil-btn-flujo[disabled] {
+    opacity: 0.42;
+    cursor: not-allowed;
+    filter: grayscale(0.35);
+    box-shadow: none;
+  }
+  .perfil-btn-fantasma {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 18px;
+    border: none;
+    border-radius: 999px;
+    background: transparent;
+    color: var(--color-botonSecundario);
+    font-family: inherit;
+    font-size: var(--size-enlaces);
+    font-weight: var(--weight-enfasis);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.2s ease;
+  }
+  .perfil-btn-fantasma:active { opacity: 0.7; }
+  /* Ritmo del bloque de clave: los botones respiran como los
+     campos (14px del molde). */
+  .perfil-btn-bloque { margin-bottom: 14px; }
+  .perfil-enlace {
+    display: inline-flex;
+    align-items: center;
+    border: none;
+    background: transparent;
+    padding: 0;
+    font-family: inherit;
+    font-size: var(--size-enlaces);
+    font-weight: var(--weight-enlaces);
+    color: var(--color-enlaces);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .perfil-enlace:active { opacity: 0.7; }
+
+  /* ============================================================
+     CORREO SELLADO · texto fijo con su CHECK de verificado.
+     No hay modo de edición libre: editar = verificar, SIEMPRE.
+     El flujo OTP vive en el MISMO campo (paso a paso).
+     ============================================================ */
+  .correo-caja {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    height: 52px;
+    padding: 0 14px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background-color: transparent;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .correo-valor {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--size-textoPrimario);
+    font-weight: var(--weight-textoPrimario);
+    color: #0f172a;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .correo-valor.vacio { color: #cbd5e1; }
+  .correo-check {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+    color: #16a34a;
+  }
+  .correo-check svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+  .correo-cambiar {
+    margin: 8px 2px 0;
+  }
+  .correo-hint {
+    margin: 6px 2px 0;
+    font-size: var(--size-cita);
+    font-weight: var(--weight-cita);
+    color: var(--color-textoSecundario);
+    line-height: 1.45;
+  }
+  /* Cuando el flujo apila dos cajas (correo confirmado + código). */
+  .correo-nuevo-linea + .form-input {
+    margin-top: 10px;
+  }
+  .correo-flujo-acciones {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .correo-nuevo-linea {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    background-color: transparent;
+  }
+  .correo-nuevo-linea .correo-valor { color: var(--color-primario-medio); }
+
+  /* ============================================================
+     UBICACIÓN EN EL MAPA · nace BLOQUEADO (orden del dueño):
+     solo se activa si el partner escribió su Dirección Local.
+     La captura lee el GPS DEL TELÉFONO con el partner en su
+     local; el mini mapa (iframe de embed SIN API key) y el
+     enlace a Maps son la verificación visual del punto.
+     ============================================================ */
+  .gps-caja {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 12px 14px;
+    background-color: transparent;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .gps-inactivo {
+    font-size: var(--size-textoSecundario);
+    font-weight: var(--weight-textoSecundario);
+    color: #94a3b8;
+    line-height: 1.5;
+    padding: 4px 0;
+  }
+  .gps-btn-capturar {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 13px 16px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 10px;
+    background: transparent;
+    color: var(--color-primario);
+    font-family: inherit;
+    font-size: var(--size-enlaces);
+    font-weight: var(--weight-enfasis);
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  .gps-btn-capturar:active {
+    border-color: var(--color-primario);
+    background: rgba(37, 99, 235, 0.04);
+  }
+  .gps-mapa {
+    width: 100%;
+    height: 150px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    display: block;
+    background: #f8fafc;
+  }
+  .gps-coords {
+    margin-top: 8px;
+    text-align: center;
+    font-size: var(--size-cita);
+    font-weight: var(--weight-cita);
+    color: #64748b;
+    letter-spacing: 0.5px;
+  }
+  .gps-coords-listo { margin-top: 0; flex: 1; text-align: left; }
+  .gps-acciones {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  .gps-listo-linea {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .gps-listo-linea .correo-check { width: 16px; height: 16px; flex-shrink: 0; }
 
   /* ============================================================
      BOTÓN GUARDAR · submit píldora con el TEXTO CENTRADO y su
      CICLO COMPLETO (orden del dueño):
      · INACTIVO (disabled, atenuado): nace así y vuelve así.
      · ACTIVO (azul pleno): solo con cambios en el formulario.
-     · .procesando: SPINNER blanco dentro del botón mientras
-       viaja la escritura.
-     · .exito: píldora verde con CHECK — la sensación de que se
-       procesó todo con éxito — y vuelve inactivo solo.
+     · .procesando: SPINNER blanco mientras viaja la escritura.
+     · .exito: píldora verde con CHECK y vuelve inactivo solo.
      ============================================================ */
   .form-submit {
     width: 100%;
-    /* ESPACIO AL BOTÓN (orden del dueño, correcciones 5): el
-       ritmo lo manda el bloque — 14px del último campo + 28px
-       del bloque = 42px, EXACTAMENTE el mismo espacio que hay
-       entre bloques de campos. Fuera el margin-top extra. */
+    /* ESPACIO AL BOTÓN (orden del dueño): el ritmo lo manda el
+       bloque — 14px del último campo + 28px del bloque = 42px,
+       EXACTAMENTE el mismo espacio entre bloques. */
     margin-top: 0;
     padding: 15px 22px;
     border: none;
@@ -352,8 +642,7 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     text-align: center;
   }
 
-  /* SPINNER DENTRO DEL BOTÓN (solo .procesando): píldora azul,
-     spinner blanco — el guardado se siente en curso. */
+  /* SPINNER DENTRO DEL BOTÓN (solo .procesando). */
   .form-submit-spinner {
     display: none;
     width: 15px;
@@ -398,11 +687,11 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   }
 
   /* ============================================================
-     SKELETON DE LA PANTALLA · misma silueta que el contenido
-     real: círculo del avatar (104px), campos de 52px con sus
-     esquinas redondeadas y píldora del botón. Las formas las
-     viste el sistema .skl del Core. Hoy solo actúa en la
-     PRIMERA lectura sin cache (L2).
+     SKELETON DE LA PANTALLA · silueta del lienzo v2 REAL:
+     círculo del avatar, TARJETA sellada, separador, campos de
+     52px (eslogan · dirección · GPS alto · correo · clave ×2)
+     y píldora del botón. Las formas las viste el sistema .skl
+     del Core. Hoy solo actúa en la PRIMERA lectura sin cache.
      ============================================================ */
   .skl-avatar {
     width: 104px;
@@ -410,8 +699,24 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
     border-radius: 50%;
     margin: 0 auto;
   }
+  .skl-tarjeta {
+    height: 158px;
+    border-radius: 12px;
+    margin: 14px 0 4px;
+  }
+  .skl-separador {
+    height: 16px;
+    width: 42%;
+    border-radius: 8px;
+    margin: 18px 0 22px;
+  }
   .skl-campo {
     height: 52px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+  }
+  .skl-campo-alto {
+    height: 78px;
     border-radius: 12px;
     margin-bottom: 14px;
   }

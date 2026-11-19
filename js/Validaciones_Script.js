@@ -6,24 +6,37 @@
     var REGEX = {
       NO_DIGITO: /\D/g,
       CORREO:    /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/,
-      NOMBRE:    /^[A-Za-zÀ-ÿ\s'\-]+$/
+      NOMBRE:    /^[A-Za-zÀ-ÿ\s'\-]+$/,
+      CODIGO6:   /^\d{6}$/,
+      /* Punto GPS "lat,lng" — 6 decimales fijos (precisión
+         ~11 cm), tal como lo captura el GPS del teléfono. */
+      GPS:       /^-?\d{1,2}\.\d{6},-?\d{1,3}\.\d{6}$/
     };
 
     /* ---------- REGLAS DEL PERFIL (tabla sellada) ----------
-       telefonWhatsapp con las constantes del sheet de reserva
-       del original (Reserva_Valida: MIN 10 · MAX 11 números
-       locales — el +58 va fijo como prefijo visual). Obligatorio
-       y opcionales: los mismos que el backend exige en
-       accionGuardarPerfil (00 DoGet.gs). */
+       Solo los campos que el botón GUARDAR escribe. Ambos son
+       OPCIONALES (orden del dueño, Tanda 1: el «(Opcional)»
+       muere del título — la regla queda igual). La tarjeta
+       sellada (nombre · ciudad · municipio · estado · whatsapp)
+       no se edita desde aquí: sin regla, sin input. */
     var REGLAS_PERFIL = {
-      nombre:           { min: 2,   max: 80,  obligatorio: true  },
-      direccion:        { min: 0,   max: 200, obligatorio: false },
-      ciudad:           { min: 2,   max: 80,  obligatorio: true  },
-      municipio:        { min: 2,   max: 80,  obligatorio: true  },
-      estado:           { min: 2,   max: 80,  obligatorio: true  },
-      esloganPartner:   { min: 0,   max: 120, obligatorio: false },
-      telefonoWhatsapp: { min: 10,  max: 11,  obligatorio: true,  telefono: true }
+      direccion:      { min: 0, max: 200, obligatorio: false },
+      esloganPartner: { min: 0, max: 120, obligatorio: false }
     };
+
+    /* ---------- REGLAS DE LOS FLUJOS SENSIBLES (Tanda 1) ----
+       Correo y clave son OBLIGATORIOS (orden del dueño). La
+       fuerza de la clave: las CINCO reglas que encienden los
+       checks bajo el campo «Nueva clave». Lista de prohibidas:
+       espejo exacto de 02 Seguridad.gs. */
+    var CLAVE_MIN       = 8;
+    var CLAVE_MAX       = 40;
+    var CLAVE_PROHIBIDAS = [
+      '12345678', '123456789', '1234567890', 'password',
+      'contrasena', 'contraseña', 'clave123', 'partner123',
+      'qwerty123', 'abc12345', 'servycloud', 'servypartner',
+      'ingcloud', 'ingcloud2024'
+    ];
 
     /* ---------- Limpiadores puros ---------- */
     function limpiarTelefono(v) {
@@ -51,9 +64,7 @@
     /* ---------- VALIDADOR DE PERFIL · contrato único ----------
        Devuelve { ok:true, valor } cuando el campo pasa, o
        { ok:false, vacio|largo|corto } con el MOTIVO para que la
-       pantalla pinte su mensaje bajo el campo (molde R131).
-       El teléfono se mide SOLO en dígitos locales, sin el 0
-       inicial (una cifra de 7 números es «corto», no «vacío»). */
+       pantalla pinte su mensaje bajo el campo (molde R131). */
     function validarPerfilCampo(clave, valorCrudo) {
       var r = REGLAS_PERFIL[clave];
       if (!r) return { ok: false, vacio: true };
@@ -73,13 +84,101 @@
       return { ok: true, valor: v };
     }
 
+    /* ============================================================
+       FLUJO CORREO (Tanda 1) · el correo es OBLIGATORIO y es la
+       credencial: formato válido, no puede quedar vacío y no
+       puede ser EL MISMO que ya vive sellado en el perfil.
+       ============================================================ */
+    function validarCorreoNuevo(valorCrudo, correoActual) {
+      var v = String(valorCrudo == null ? '' : valorCrudo).trim();
+      if (!v) return { ok: false, vacio: true };
+      if (v.length > 100) return { ok: false, largo: true };
+      if (!REGEX.CORREO.test(v)) return { ok: false, formato: true };
+      if (correoActual &&
+          v.toLowerCase() === String(correoActual).toLowerCase()) {
+        return { ok: false, igual: true };
+      }
+      return { ok: true, valor: v };
+    }
+
+    /* Código OTP de 6 dígitos (molde del original: formato
+       EXACTO o nada — el backend igualmente lo exige). */
+    function validarCodigoOtp(valorCrudo) {
+      var v = String(valorCrudo == null ? '' : valorCrudo).trim();
+      if (!v) return { ok: false, vacio: true };
+      if (!REGEX.CODIGO6.test(v)) return { ok: false, formato: true };
+      return { ok: true, valor: v };
+    }
+
+    /* ============================================================
+       FLUJO CLAVE (Tanda 1) · write-only: la clave guardada
+       JAMÁS viaja al teléfono. La nueva se pide UNA sola vez
+       (orden del dueño) y las CINCO REGLAS DE FUERZA encienden
+       los checks debajo del campo. El resultado lleva SIEMPRE
+       las checks para que la pantalla las pinte en vivo.
+       ============================================================ */
+    function validarClaveNueva(valorCrudo, correo) {
+      var v = String(valorCrudo == null ? '' : valorCrudo).trim();
+      var checks = {
+        longitud:  v.length >= CLAVE_MIN,
+        mayuscula: /[A-Z]/.test(v),
+        minuscula: /[a-z]/.test(v),
+        numero:    /[0-9]/.test(v),
+        simbolo:   /[^A-Za-z0-9]/.test(v)
+      };
+      var res = { ok: true, valor: v, checks: checks };
+
+      if (!v) { res.ok = false; res.vacio = true; return res; }
+      if (v.length > CLAVE_MAX) { res.ok = false; res.largo = true; return res; }
+      if (v.length < CLAVE_MIN) { res.ok = false; res.corta = true; return res; }
+      if (correo &&
+          v.toLowerCase() === String(correo).toLowerCase()) {
+        res.ok = false; res.igualCorreo = true; return res;
+      }
+      if (CLAVE_PROHIBIDAS.indexOf(v.toLowerCase()) !== -1) {
+        res.ok = false; res.prohibida = true; return res;
+      }
+      for (var k in checks) {
+        if (Object.prototype.hasOwnProperty.call(checks, k) && !checks[k]) {
+          res.ok = false; res.falta = k; return res;
+        }
+      }
+      return res;
+    }
+
+    /* Clave ACTUAL (la puerta de identidad): obligatoria en su
+       paso, sin reglas de fuerza (es la que ya existe). */
+    function validarClaveActual(valorCrudo) {
+      var v = String(valorCrudo == null ? '' : valorCrudo);
+      if (!v.trim()) return { ok: false, vacio: true };
+      if (v.length > CLAVE_MAX) return { ok: false, largo: true };
+      return { ok: true, valor: v };
+    }
+
+    /* Punto GPS: opcional; si trae algo, formato EXACTO
+       lat,lng a 6 decimales (lo genera el GPS del teléfono). */
+    function validarUbicacionGps(valorCrudo) {
+      var v = String(valorCrudo == null ? '' : valorCrudo).trim();
+      if (!v) return { ok: true, valor: '' };
+      if (!REGEX.GPS.test(v)) return { ok: false, formato: true };
+      return { ok: true, valor: v };
+    }
+
     return {
-      REGLAS_PERFIL:     REGLAS_PERFIL,
-      limpiarTelefono:   limpiarTelefono,
-      limpiarTexto:      limpiarTexto,
-      email:             email,
-      nombre:            nombre,
-      validarPerfilCampo: validarPerfilCampo
+      REGLAS_PERFIL:      REGLAS_PERFIL,
+      CLAVE_MIN:          CLAVE_MIN,
+      CLAVE_MAX:          CLAVE_MAX,
+      CLAVE_PROHIBIDAS:   CLAVE_PROHIBIDAS,
+      limpiarTelefono:    limpiarTelefono,
+      limpiarTexto:       limpiarTexto,
+      email:              email,
+      nombre:             nombre,
+      validarPerfilCampo: validarPerfilCampo,
+      validarCorreoNuevo: validarCorreoNuevo,
+      validarCodigoOtp:   validarCodigoOtp,
+      validarClaveActual: validarClaveActual,
+      validarClaveNueva:  validarClaveNueva,
+      validarUbicacionGps: validarUbicacionGps
     };
 
   })();
