@@ -365,6 +365,40 @@
   }
 
   /* ============================================================
+     AVISO FLOTANTE CENTRAL (correcciones 12) · window.avisoFlotante
+     La voz única de los avisos cortos de la app: la clase
+     .notificacionFlotante del Core (cristal azul, píldora) con
+     la línea en .textoPrimario y el botón ✕. Entra subiendo,
+     se cierra sola a los 4s o al tocar la ✕. La usan el Perfil
+     y el LOGIN (la recuperación de clave) — UNA sola copia.
+     ============================================================ */
+  window.avisoFlotante = function (texto) {
+    var previa = document.querySelector('.notificacionFlotante');
+    if (previa) previa.parentNode.removeChild(previa);
+
+    var d = document.createElement('div');
+    d.className = 'notificacionFlotante visible';
+    d.setAttribute('role', 'status');
+    d.setAttribute('aria-live', 'polite');
+    d.innerHTML =
+      '<span class="textoPrimario"></span>' +
+      '<button type="button" class="avisoCerrar" aria-label="Cerrar" data-glifo="close"></button>';
+    d.querySelector('.textoPrimario').textContent = String(texto == null ? '' : texto);
+    document.body.appendChild(d);
+    if (typeof window.pintarGlifos === 'function') window.pintarGlifos(d);
+
+    var cerrar = function () {
+      d.classList.remove('visible');
+      setTimeout(function () {
+        if (d.parentNode) d.parentNode.removeChild(d);
+      }, 320);
+    };
+    var btn = d.querySelector('.avisoCerrar');
+    if (btn) btn.addEventListener('click', cerrar);
+    setTimeout(cerrar, 4000);
+  };
+
+  /* ============================================================
      HELPERS GLOBALES · WhatsApp (Soporte → canal de la central)
      ============================================================ */
 

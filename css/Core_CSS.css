@@ -3,18 +3,17 @@
 ARCHIVO:         Core_CSS.html
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
-                 maestra, campos y botones de campo, ANATOMÍA
-                 genérica del formulario, placeholders, SISTEMA
-                 SKELETON .skl, marca de la cabecera, modo móvil
-                 del lienzo y notificación flotante).
-VERSIÓN:         1.8
-CAMBIOS:         Tanda 2 · LOGIN: el Core recibe la anatomía
-                 genérica del formulario (form-field/label/
-                 errorForm/bloque/ojito/submit) — dos pantallas
-                 la usan. Historial: correcciones 9 (.botonCampo
-                 texto azul unificado) · 8 (nacen .campoEditable
-                 y .botonCampo) · 5 · 4 · 3 · bitácora del
-                 taller.
+                 maestra, .tituloApp, campos y botones de campo,
+                 ANATOMÍA genérica del formulario, checks de
+                 clave, placeholders, SISTEMA SKELETON .skl,
+                 marca de la cabecera, modo móvil del lienzo y
+                 notificación flotante).
+VERSIÓN:         1.9
+CAMBIOS:         Correcciones 12: redondeos 8px · .botonCampo
+                 peso 600 y fondo translúcido · nace .tituloApp ·
+                 .clave-checks entra al Core. Historial: Tanda 2
+                 · LOGIN · correcciones 9 · 8 · 5 · 4 · 3 ·
+                 bitácora del taller.
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 ════════════════════════════════════════════════════════════════════*/
 
@@ -216,14 +215,19 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
      · ALTURA 45px = la del CAMPO PREGUNTAS del lienzo del post
        del original (Pregunta_CSS.html: input de 42px + borde
        1.5px del wrap = 45px de caja visible).
+     · REDONDEO 8px (correcciones 12, orden del dueño): el
+       mismo para .campoEditable y .botonCampo.
      · BORDES INTACTOS: mismo peso y mismo color que traen los
        campos (1px #e2e8f0).
      · .campoEditable — el texto del campo va con la tipografía
        .textoPrimario (14px · 300 · #1f2937).
      · .botonCampo — misma altura y misma forma de los campos,
        borde del mismo peso y color, FONDO en el azul clarito del
-       trío oficial (#DBEAFE) y UNA SOLA LETRA PARA TODOS
-       (correcciones 9, orden del dueño):
+       trío oficial VISTO TRANSLÚCIDO (correcciones 12, orden del
+       dueño: rgba del #DBEAFE al 55% — se aclara sin perder el
+       azul; el borde NO se toca), PESO 600 (var(--weight-enfasis))
+       y UNA SOLA LETRA PARA TODOS (correcciones 9, orden del
+       dueño):
        – ACTIVO: texto .textoPrimario en AZUL — el azul oficial
          del trío (var(--color-primario)).
        – INACTIVO: texto .textoSecundario con el MISMO azul — la
@@ -235,7 +239,7 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     width: 100%;
     height: 45px;
     padding: 0 14px;
-    border-radius: 12px;
+    border-radius: 8px;
     border: 1px solid #e2e8f0;
     background-color: transparent;
     -webkit-tap-highlight-color: transparent;
@@ -255,12 +259,17 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     justify-content: center;
     height: 45px;
     padding: 0 14px;
-    border-radius: 12px;
+    border-radius: 8px;
     border: 1px solid #e2e8f0;
-    background-color: var(--color-primario-claro);
+    /* Fondo translúcido del azul clarito (correcciones 12): el
+       mismo #DBEAFE del trío al 55% — se ACLARA sin inventar
+       hex nuevo fuera del trío. */
+    background-color: rgba(219, 234, 254, 0.55);
     font-family: inherit;
     font-size: var(--size-textoPrimario);
-    font-weight: var(--weight-textoPrimario);
+    /* PESO 600 (correcciones 12, orden del dueño): la letra del
+       token de énfasis del Core, no un peso suelto. */
+    font-weight: var(--weight-enfasis);
     /* ACTIVO · el AZUL oficial de la Partner para la letra de
        TODOS los botones de campo (correcciones 9, orden del
        dueño: unificar el mismo color de los textos). */
@@ -272,14 +281,44 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
   }
   /* Presión: feedback único de todos los botones de campo. */
   .botonCampo:active:not([disabled]) { opacity: 0.7; }
-  /* INACTIVO · la letra pasa a .textoSecundario (14px · 300)
-     conservando el MISMO azul de todos los botones: la opacidad
-     la apaga, sin colores distintos ni hex sueltos. */
+  /* INACTIVO · la letra pasa al tamaño .textoSecundario (14px)
+     conservando el MISMO azul y el MISMO peso 600 de todos los
+     botones (correcciones 12): la opacidad la apaga, sin
+     colores ni pesos distintos. */
   .botonCampo[disabled] {
     font-size: var(--size-textoSecundario);
-    font-weight: var(--weight-textoSecundario);
     opacity: 0.45;
     cursor: not-allowed;
+  }
+
+  /* ============================================================
+     TIPOGRAFÍA .tituloApp (correcciones 12, orden del dueño) ·
+     el wordmark «ServyPartner» COMO TÍTULO DE PANTALLA: las
+     mismas características del título ServyPartner de la
+     cabecera del lienzo (.header-marca) — Servy azul fuerte +
+     cola gris suave, tracking -0.6px, línea 1.1 — pero de pie
+     SOLO y CENTRADO horizontalmente. La viste el LOGIN (el
+     texto lo pinta Login_Script desde SISTEMA.identidad — cero
+     texto duro). Las mitades: .tituloApp-servy / .tituloApp-cola.
+     ============================================================ */
+  .tituloApp {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    margin: 0;
+    font-size: var(--size-tituloPost);
+    line-height: 1.1;
+    letter-spacing: -0.6px;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .tituloApp .tituloApp-servy {
+    color: var(--color-primario);
+    font-weight: var(--weight-marca-fuerte);
+  }
+  .tituloApp .tituloApp-cola {
+    color: var(--color-textoSecundario);
+    font-weight: var(--weight-marca-suave);
   }
 
   /* ============================================================
@@ -409,6 +448,42 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
     color: #cbd5e1;
     cursor: not-allowed;
   }
+
+  /* ============================================================
+     CHECKS DE FUERZA DE LA CLAVE · anatomía CENTRAL desde las
+     correcciones 12: viven DEBAJO del campo «Nueva clave» y el
+     componente lo usan TAMBIÉN la recuperación del LOGIN (el
+     mismo que el Perfil — orden del dueño: cero código
+     duplicado). Las reglas viven en Validaciones_Script
+     (window.Validaciones.CHECKS_CLAVE — fuente única); cada
+     regla enciende su check al cumplirse y se apaga si se
+     rompe, en tiempo real mientras se teclea.
+     ============================================================ */
+  .clave-checks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    margin: 8px 2px 0;
+    padding: 0;
+  }
+  .clave-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: var(--size-cita);
+    font-weight: var(--weight-cita);
+    color: #94a3b8;
+    transition: color 0.15s ease;
+  }
+  .clave-check .ck {
+    width: 12px;
+    height: 12px;
+    color: #cbd5e1;
+    transition: color 0.15s ease;
+  }
+  .clave-check .ck svg { width: 100%; height: 100%; display: block; }
+  .clave-check.cumple { color: #16a34a; }
+  .clave-check.cumple .ck { color: #16a34a; }
 
   .form-submit {
     width: 100%;

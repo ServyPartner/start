@@ -1,0 +1,108 @@
+/*════════════════════════════════════════════════════════════════════
+
+ARCHIVO:         Login_CSS.html
+PROYECTO:        INGeniusCloud | ServyPartner
+RESPONSABILIDAD: Pantalla de ACCESO (login): montaje exclusivo
+                 (cabecera fuera, centrado vertical, letra de
+                 campos, enlace de recuperación, vistas del
+                 flujo OTP). El formulario viste las clases
+                 centrales del Core.
+VERSIÓN:         1.0
+DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
+                 anatomía del formulario), Login_Script.html
+════════════════════════════════════════════════════════════════════*/
+
+  /* ============================================================
+     FUERA LA CABECERA mientras el login está en pantalla
+     (orden del dueño: «un login de una app no debe tener eso»).
+     La clase la PONE y la QUITA Login_Script (pintarAcceso /
+     finAcceso) — el resto de la app la conserva intacta.
+     ============================================================ */
+  body.en-acceso .filtros-wrap { display: none; }
+
+  /* ============================================================
+     MONTAJE DE LA PANTALLA · todo el contenido CENTRADO
+     VERTICALMENTE (orden del dueño) dentro del área de
+     pantallas. Sin tarjeta ni caja decorativa: la pantalla es
+     el lienzo del sistema (mismo degradado del Core) y el
+     formulario respira a un ancho cómodo de lectura.
+     ============================================================ */
+  .acceso-wrap {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    /* El CENTRADO VERTICAL vive en la caja (margin auto): si el
+       contenido crece (teclado abierto, pantallas bajas), la
+       caja degrada a flujo normal y scrollea — nada se corta. */
+    padding: calc(20px + env(safe-area-inset-top, 0px)) 20px calc(28px + env(safe-area-inset-bottom, 0px));
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* SIN SCROLL VISIBLE (orden del dueño): la barra nunca se ve. */
+    scrollbar-width: none;
+  }
+  .acceso-wrap::-webkit-scrollbar { display: none; }
+
+  .acceso-caja {
+    width: 100%;
+    max-width: 340px;
+    /* margin AUTO EN LOS DOS EJES: CENTRADO vertical Y horizontal
+       (orden del dueño). Si el contenido crece (teclado abierto,
+       pantallas bajas), el auto degrada a flujo y scrollea. */
+    margin: auto;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* EL TÍTULO · el wordmark .tituloApp del Core (Servy azul +
+     Partner gris), CENTRADO horizontalmente por la propia clase
+     central (justify-content: center). */
+  .acceso-marca {
+    margin: 0 0 34px;
+  }
+
+  /* ============================================================
+     VISTAS · acceso · recuperación 1 (correo) · 2 (código) ·
+     3 (clave nueva). Una sola visible; el flujo las alterna
+     (Login_Script). Cada vista respira con el .form-bloque
+     del reglamento (vive en el Core).
+     ============================================================ */
+  .acceso-vista { display: flex; flex-direction: column; }
+  .acceso-vista[hidden] { display: none; }
+
+  /* Título de cada paso de la recuperación · tipografía central
+     .titulo del Core. */
+  .acceso-paso-titulo {
+    margin: 0 0 6px;
+  }
+  /* Nota del paso 2 («enviamos un código a…») · tipografía
+     central .textoSecundario del Core. */
+  .acceso-paso-nota {
+    margin: 0 0 2px;
+  }
+
+  /* ============================================================
+     LETRA DE LOS CAMPOS (orden del dueño, correcciones 12):
+     .textoSecundario cuando el campo está INACTIVO (vacío y sin
+     foco — solo habla el placeholder) y .textoPrimario cuando
+     está ACTIVO (escrito o enfocado). Mismos tokens del Core —
+     cero colores nuevos. El resto de la app no se toca.
+     ============================================================ */
+  .acceso-wrap .campoEditable {
+    color: var(--color-textoSecundario);
+  }
+  .acceso-wrap .form-field.activo .campoEditable,
+  .acceso-wrap .form-field:focus-within .campoEditable {
+    color: var(--color-textoPrimario);
+  }
+
+  /* ============================================================
+     EL ENLACE DE RECUPERACIÓN · «¿Olvidaste tu clave?» y los
+     «Volver al acceso» de cada paso. Tipografía central
+     .enlacesOpciones del Core (el mismo carril de enlaces);
+     la fila lo pega al borde derecho, bajo el campo.
+     ============================================================ */
+  .acceso-enlace-fila {
+    display: flex;
+    justify-content: flex-end;
+  }
+

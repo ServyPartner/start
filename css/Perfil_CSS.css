@@ -12,13 +12,11 @@ RESPONSABILIDAD: Pantalla PERFIL v2: héroe del avatar + TARJETA
                  botones cuadrados 45×45 de glifo (enviar · check)
                  + ojito y checks + ciclo visual del botón
                  GUARDAR + skeleton con medidas reales.
-VERSIÓN:         2.2
-CAMBIOS:         Tanda 2 · LOGIN: la anatomía genérica migra al
-                 Core_CSS (dos pantallas la usan); quedan los
-                 componentes propios del Perfil. Ritmo intacto
-                 (16px · 32+32 sin línea · títulos al borde
-                 izquierdo). Historial: correcciones 11 (fuera
-                 las divisorias) · 10 (reglamento) · 9 · 8 (45px,
+VERSIÓN:         2.3
+CAMBIOS:         Correcciones 12: los checks de fuerza de la
+                 clave migran al Core_CSS (la recuperación del
+                 login reutiliza el componente). Historial:
+                 Tanda 2 · correcciones 11 · 10 · 9 · 8 (45px,
                  título encima del borde, GPS en bloque
                  dirección, fila OTP 50/50).
 DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
@@ -219,38 +217,6 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
      propios de la pantalla.
      ============================================================ */
   .perfil-form { display: flex; flex-direction: column; }
-
-  /* ============================================================
-     CHECKS DE FUERZA DE LA CLAVE · viven DEBAJO del campo
-     «Nueva clave» SOLAMENTE (orden del dueño). Cada regla
-     enciende su check al cumplirse y se apaga si se rompe —
-     en tiempo real, mientras se teclea.
-     ============================================================ */
-  .clave-checks {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px 14px;
-    margin: 8px 2px 0;
-    padding: 0;
-  }
-  .clave-check {
-    display: inline-flex;
-    align-items: center;
-    gap: 5px;
-    font-size: var(--size-cita);
-    font-weight: var(--weight-cita);
-    color: #94a3b8;
-    transition: color 0.15s ease;
-  }
-  .clave-check .ck {
-    width: 12px;
-    height: 12px;
-    color: #cbd5e1;
-    transition: color 0.15s ease;
-  }
-  .clave-check .ck svg { width: 100%; height: 100%; display: block; }
-  .clave-check.cumple { color: #16a34a; }
-  .clave-check.cumple .ck { color: #16a34a; }
 
   /* ============================================================
      BOTONES DE LOS FLUJOS · píldoras del sistema en tamaño

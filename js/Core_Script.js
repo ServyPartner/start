@@ -1,22 +1,21 @@
 
 
   /* ============================================================
-     PARTNER · pantalla de ACCESO + sesión del partner (Tanda 2)
-     Cada carga abre en el ACCESO (acta): marca + pregunta + el
-     formulario que el acta §1 prometió — donde estaba la lista
-     de partners entran CORREO + CLAVE + Entrar. El correo ES el
-     usuario de la Partner (columna CORREO de la tabla). El
-     éxito del login trae el TOKEN LIGADO (partner+dispositivo)
-     y la identidad del partner; desde ahí el idPartner lo pone
-     la puerta del backend DESDE EL TOKEN (nunca el cliente).
-     La sesión vive en sessionStorage y NO sobrevive al cierre
-     (acta). El IDPARTNER es interno: jamás se muestra (acta).
+     PARTNER · la SESIÓN del partner (Tanda 2). La PANTALLA de
+     acceso vive en Login_Script.html (window.Login —
+     correcciones 12): el Core queda dueño de la SESIÓN. Cada
+     carga abre en el ACCESO (acta); el éxito del login trae el
+     TOKEN LIGADO (partner+dispositivo) y la identidad del
+     partner — guardarSesion los sella AQUÍ. El idPartner de
+     todas las acciones lo pone la puerta del backend DESDE EL
+     TOKEN (nunca el cliente). La sesión vive en sessionStorage
+     y NO sobrevive al cierre (acta). El IDPARTNER es interno:
+     jamás se muestra (acta).
      ============================================================ */
   window.Partner = (function () {
 
     var KEY_SESION = 'partner_sesion';
     var actual = null;
-    var accesoEnCurso = false;
 
     /* ============================================================
        LLAVE DE SESIÓN · CACHE DEL PERFIL (L2)
@@ -96,229 +95,38 @@
     }
 
     /* ============================================================
-       PANTALLA DE ACCESO · la pintura del acta §1 intacta (marca
-       arriba, caja central, botón principal abajo): donde estaba
-       la LISTA de partners entran los CAMPOS del acta — correo
-       (el usuario) + clave (con ojito sostenido) + botón Entrar.
-       Las clases viven CENTRALES en el Core (anatomía genérica
-       de la Tanda 2): el formulario hereda el reglamento del
-       dueño completo — 45px, título encima del borde justo con
-       el borde izquierdo, 16px de aire input→etiqueta. Cero
-       texto suelto: todo sale de SISTEMA.arranque.
+       GUARDAR SESIÓN (correcciones 12) · el éxito del LOGIN —
+       que vive en Login_Script.html (window.Login) — entrega
+       AQUÍ el TOKEN LIGADO + la identidad:
+       · EL TOKEN LIGADO manda desde ahora: el idPartner de
+         todas las acciones lo pone la puerta del backend DESDE
+         el token (nunca el cliente).
+       · La identidad se sella en sessionStorage (muere al
+         cerrar la app — acta) y avisa con partner:sesion.
+       · La cache del perfil nace limpia: los datos que llegan
+         son de ESTA sesión (otro partner en este dispositivo
+         no hereda nada).
        ============================================================ */
-    function pintarAcceso() {
-      var area = document.getElementById('pantallaArea');
-      if (!area) return;
-
-      var identidad = (window.SISTEMA && window.SISTEMA.identidad) || {};
-      var arranque  = (window.SISTEMA && window.SISTEMA.arranque) || {};
-      var marca     = identidad.nombreApp || 'ServyPartner';
-      var pregunta  = arranque.pregunta || '¿Quién está gestionando hoy?';
-
-      /* Marca partida: «Servy» azul + cola en gris (T2 — el
-         renombre trajo «ServyPartner»; la cola «Partner» viste
-         .marca-partner del Global_CSS). */
-      var idxCola = marca.lastIndexOf('Partner');
-      var idxCloud = marca.lastIndexOf('Cloud');
-      var html = '<div class="seleccion-wrap">' +
-        '<div class="seleccion-marca">' +
-          '<span class="marca-servy">' + _esc_(marca.substring(0, idxCola > 0 ? idxCola : (idxCloud > 0 ? idxCloud : marca.length))) + '</span>' +
-          (idxCola > 0 ? '<span class="marca-partner">' + _esc_(marca.substring(idxCola)) + '</span>' : '') +
-          (idxCola <= 0 && idxCloud > 0 ? '<span class="marca-cloud">' + _esc_(marca.substring(idxCloud)) + '</span>' : '') +
-        '</div>' +
-        '<p class="seleccion-pregunta subtitulo">' + _esc_(pregunta) + '</p>' +
-        '<form class="acceso-form" id="formAcceso" novalidate>' +
-          '<div class="form-bloque">' +
-
-            '<div class="form-field" id="fieldAccesoCorreo">' +
-              '<input type="email" id="inputAccesoCorreo" placeholder=" " class="form-input campoEditable" maxlength="100" autocomplete="email">' +
-              '<label for="inputAccesoCorreo" class="form-label">' + _esc_(arranque.correo || 'Correo Electrónico') + '</label>' +
-              '<div class="errorForm" hidden></div>' +
-            '</div>' +
-
-            '<div class="form-field" id="fieldAccesoClave">' +
-              '<input type="password" id="inputAccesoClave" placeholder=" " class="form-input campoEditable con-ojo" autocomplete="current-password">' +
-              '<label for="inputAccesoClave" class="form-label">' + _esc_(arranque.clave || 'Clave') + '</label>' +
-              '<button type="button" class="ojito" id="ojitoAcceso" data-glifo="ojo" aria-label="' + _esc_(arranque.ojo || 'Mostrar la clave mientras se mantiene presionado') + '"></button>' +
-              '<div class="errorForm" hidden></div>' +
-            '</div>' +
-
-            /* El botón principal del acta (píldora abajo) nace
-               INACTIVO: despierta con correo válido + clave. */
-            '<button type="submit" class="form-submit" id="btnAccesoEntrar" disabled>' +
-              '<span class="form-submit-spinner" aria-hidden="true"></span>' +
-              '<span class="form-submit-texto">' + _esc_(arranque.entrar || 'Entrar') + '</span>' +
-            '</button>' +
-
-          '</div>' +
-        '</form>' +
-      '</div>';
-
-      area.innerHTML = html;
-      if (typeof window.pintarGlifos === 'function') window.pintarGlifos(area);
-      engancharAcceso();
-    }
-
-    /* Error DEBAJO del campo (molde del errorForm del Perfil):
-       texto + marca inválida; vacío = limpiar. */
-    function _errorCampo_(field, texto) {
-      if (!field) return;
-      var caja = field.querySelector('.errorForm');
-      if (caja) {
-        caja.textContent = texto || '';
-        caja.hidden = !texto;
+    function guardarSesion(data) {
+      var p = (data && data.partner) || {};
+      if (!data || !data.token || !p.id) {
+        throw new Error('ACCESO_INVALIDO');
       }
-      field.classList.toggle('invalido', !!texto);
-    }
 
-    /* El correo pasa por la MISMA regla del backend
-       (validarEmail de Seguridad.gs). */
-    function _correoValido_(correo) {
-      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(String(correo || '').trim());
-    }
+      window.TOKEN_SESION = data.token;
 
-    function engancharAcceso() {
-      var area = document.getElementById('pantallaArea');
-      if (!area) return;
-
-      var form    = area.querySelector('#formAcceso');
-      var fCorreo = area.querySelector('#fieldAccesoCorreo');
-      var fClave  = area.querySelector('#fieldAccesoClave');
-      var iCorreo = area.querySelector('#inputAccesoCorreo');
-      var iClave  = area.querySelector('#inputAccesoClave');
-      var btn     = area.querySelector('#btnAccesoEntrar');
-      if (!form || !iCorreo || !iClave || !btn) return;
-
-      /* El título azul «activo» cuando el campo vive escrito
-         (molde del Perfil); cada tecla limpia el error propio. */
-      var vigiar = function (input, field) {
-        input.addEventListener('input', function () {
-          field.classList.toggle('activo', !!String(input.value || '').trim());
-          _errorCampo_(field, '');
-          despertar();
-        });
+      actual = {
+        id:     String(p.id),
+        nombre: String(p.nombre || '').trim(),
+        avatar: String(p.avatar || '').trim()
       };
+      try { sessionStorage.setItem(KEY_SESION, JSON.stringify(actual)); } catch (_) {}
 
-      /* El botón nace INACTIVO: despierta SOLO con correo
-         válido + clave escrita. */
-      var despertar = function () {
-        btn.disabled = !(_correoValido_(iCorreo.value) &&
-                         String(iClave.value || '').length > 0);
-      };
+      try {
+        document.dispatchEvent(new CustomEvent('partner:sesion', { detail: { partner: actual } }));
+      } catch (_) {}
 
-      vigiar(iCorreo, fCorreo);
-      vigiar(iClave, fClave);
-      _engancharOjito_(area.querySelector('#ojitoAcceso'), iClave);
-
-      form.addEventListener('submit', function (e) {
-        e.preventDefault();
-        iniciarSesion(iCorreo, iClave, fClave, btn);
-      });
-    }
-
-    /* OJITO SOSTENIDO (orden del dueño, molde del Perfil):
-       pointerdown muestra, soltar/salir/cancelar oculta. Sin
-       toggle: ver mientras presionas. El long-press del móvil
-       no abre menú ni selección. */
-    function _engancharOjito_(btn, input) {
-      if (!btn || !input || btn.dataset.bound === '1') return;
-      btn.dataset.bound = '1';
-
-      var mostrar = function (e) {
-        e.preventDefault();
-        btn.classList.add('presionado');
-        input.setAttribute('type', 'text');
-      };
-      var ocultar = function () {
-        btn.classList.remove('presionado');
-        input.setAttribute('type', 'password');
-      };
-
-      btn.addEventListener('pointerdown', mostrar);
-      ['pointerup', 'pointerleave', 'pointercancel'].forEach(function (ev) {
-        btn.addEventListener(ev, ocultar);
-      });
-      btn.addEventListener('contextmenu', function (e) { e.preventDefault(); });
-    }
-
-    /* ============================================================
-       EL LOGIN (Tanda 2): correo + clave → iniciarSesion. El
-       backend verifica contra la columna CLAVE (migrando el
-       sembrado a mano al hash), aplica el bloqueo y devuelve el
-       TOKEN LIGADO + la identidad (id · nombre · avatar — capa
-       7: nada más viaja). El botón hace su ciclo: .procesando
-       con spinner → al error vuelve despertado; al éxito, la
-       app abre el esqueleto con el footer.
-       ============================================================ */
-    function iniciarSesion(iCorreo, iClave, fClave, btn) {
-      if (accesoEnCurso) return;
-      var correo = String(iCorreo.value || '').trim();
-      var clave  = String(iClave.value || '');
-
-      /* El botón solo despierta con datos válidos; si igual
-         llegara un submit raro, muere aquí sin texto suelto. */
-      if (!_correoValido_(correo) || !clave) return;
-
-      accesoEnCurso = true;
-      btn.disabled = true;
-      btn.classList.add('procesando');
-      _errorCampo_(fClave, '');
-
-      postBackend('iniciarSesion', { correo: correo, clave: clave })
-        .then(function (data) {
-          accesoEnCurso = false;
-          btn.classList.remove('procesando');
-
-          var p = (data && data.partner) || {};
-          if (!data || !data.token || !p.id) {
-            throw new Error('ACCESO_INVALIDO');
-          }
-
-          /* EL TOKEN LIGADO manda desde ahora: el idPartner de
-             todas las acciones lo pone la puerta del backend
-             DESDE el token (nunca el cliente). */
-          window.TOKEN_SESION = data.token;
-
-          actual = {
-            id:     String(p.id),
-            nombre: String(p.nombre || '').trim(),
-            avatar: String(p.avatar || '').trim()
-          };
-          try { sessionStorage.setItem(KEY_SESION, JSON.stringify(actual)); } catch (_) {}
-
-          try {
-            document.dispatchEvent(new CustomEvent('partner:sesion', { detail: { partner: actual } }));
-          } catch (_) {}
-
-          /* La cache del perfil nace limpia: los datos que
-             llegan son de ESTA sesión (otro partner en este
-             dispositivo no hereda nada). */
-          cachePerfilLimpiar();
-
-          abrirEsqueleto();
-        })
-        .catch(function (err) {
-          accesoEnCurso = false;
-          btn.classList.remove('procesando');
-          btn.disabled = false;
-
-          var arranque = (window.SISTEMA && window.SISTEMA.arranque) || {};
-          var msg = String((err && err.message) || '');
-
-          if (msg === 'ACCESO_BLOQUEADO' || msg.indexOf('RATE_LIMIT') === 0) {
-            _errorCampo_(fClave, arranque.accesoBloqueado ||
-              'Demasiados intentos fallidos. Espera unos minutos y prueba de nuevo.');
-          } else if (msg === 'ACCESO_INVALIDO' || msg === 'CORREO_INVALIDO' ||
-                     msg === 'CAMPO_VACIO:clave' || msg === 'LONGITUD_INVALIDA:clave') {
-            /* UN SOLO error para correo ausente y clave mala —
-               sin pistas de reconocimiento (capa del kit). */
-            _errorCampo_(fClave, arranque.accesoInvalido ||
-              'Correo o clave incorrectos. Vuelve a intentarlo.');
-          } else {
-            _errorCampo_(fClave, arranque.accesoRed ||
-              'No se pudo conectar. Revisa tu conexión e intenta de nuevo.');
-          }
-        });
+      cachePerfilLimpiar();
     }
 
     /* ============================================================
@@ -342,7 +150,10 @@
 
       if (window.Podio) window.Podio.reiniciar();
 
-      pintarAcceso();
+      /* La pantalla de ACCESO la pinta Login_Script (correcciones
+         12): la cabecera se apaga mientras el login vive en
+         pantalla (body.en-acceso — Login_CSS). */
+      window.Login.pintarAcceso();
     }
 
     function cerrarSesion() {
@@ -361,6 +172,12 @@
        ESQUELETO · footer visible + pestaña inicial
        ============================================================ */
     function abrirEsqueleto() {
+      /* El MODO LOGIN se apaga: la cabecera vuelve (Login_CSS
+         viste el estado — body.en-acceso). */
+      if (window.Login && typeof window.Login.finAcceso === 'function') {
+        window.Login.finAcceso();
+      }
+
       var footer = document.getElementById('podioFooter');
       if (footer) footer.hidden = false;
 
@@ -373,6 +190,8 @@
     return {
       cerrarSesion:     cerrarSesion,
       sesionExpirada:   sesionExpirada,
+      guardarSesion:    guardarSesion,
+      abrirEsqueleto:   abrirEsqueleto,
       pintarMarcaHeader: pintarMarcaHeader,
       cachePerfil: {
         leer:    cachePerfilLeer,

@@ -38,6 +38,19 @@
       'ingcloud', 'ingcloud2024'
     ];
 
+    /* ---------- CHECKS_CLAVE · FUENTE ÚNICA (correcciones 12) --
+       Las cinco reglas de fuerza CON SU TEXTO: la lista la
+       pintan el Perfil (campo «Nueva clave») y la recuperación
+       del LOGIN — el mismo componente (.clave-checks del Core
+       + este array), cero duplicado (orden del dueño). */
+    var CHECKS_CLAVE = [
+      { regla: 'longitud',  texto: 'Mínimo 8 caracteres' },
+      { regla: 'mayuscula', texto: 'Mayúscula' },
+      { regla: 'minuscula', texto: 'Minúscula' },
+      { regla: 'numero',    texto: 'Número' },
+      { regla: 'simbolo',   texto: 'Símbolo' }
+    ];
+
     /* ---------- Limpiadores puros ---------- */
     function limpiarTelefono(v) {
       return String(v == null ? '' : v).replace(REGEX.NO_DIGITO, '');
@@ -169,6 +182,7 @@
       CLAVE_MIN:          CLAVE_MIN,
       CLAVE_MAX:          CLAVE_MAX,
       CLAVE_PROHIBIDAS:   CLAVE_PROHIBIDAS,
+      CHECKS_CLAVE:       CHECKS_CLAVE,
       limpiarTelefono:    limpiarTelefono,
       limpiarTexto:       limpiarTexto,
       email:              email,
@@ -182,3 +196,4 @@
     };
 
   })();
+

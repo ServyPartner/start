@@ -3,10 +3,9 @@
 ARCHIVO:         Global_CSS.html
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Menú global + guía PWA + puntero touch (PC) +
-                 exclusivos de la Partner: pantalla de ACCESO
-                 (marca + pregunta — el formulario vive en el
-                 Core), footer podio 5, pantallas durmientes.
-VERSIÓN:         1.4
+                 exclusivos de la Partner: footer podio 5,
+                 pantallas durmientes.
+VERSIÓN:         1.5
 DEPENDENCIAS:    Core_CSS.html (variables y clases maestras)
 ════════════════════════════════════════════════════════════════════*/
 
@@ -704,54 +703,6 @@ DEPENDENCIAS:    Core_CSS.html (variables y clases maestras)
     border-radius: 12px;
     border-left: 3px solid var(--color-primario);
     margin: 10px 0 0;
-  }
-
-  /* ============================================================
-     EXCLUSIVO DE LA PARTNER · PANTALLA DE ACCESO (Tanda 2)
-     Cada carga de la app abre aquí (la sesión no sobrevive al
-     cierre — orden del acta). Marca arriba y pregunta; donde
-     estaba la LISTA de partners entran los CAMPOS del acta
-     (correo + clave + botón Entrar) — las clases del formulario
-     viven CENTRALIZADAS en el Core (anatomía genérica de la
-     Tanda 2) y el flujo en Core_Script. El CSS de la lista
-     (cards/vacía/reintentar) MURIÓ con la lista.
-     ============================================================ */
-  .seleccion-wrap {
-    flex: 1 1 auto;
-    min-height: 0;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-    /* SIN SCROLL VISIBLE (orden del dueño): la barra nunca se ve. */
-    scrollbar-width: none;
-    padding: 8px 20px 28px;
-    display: flex;
-    flex-direction: column;
-  }
-  .seleccion-wrap::-webkit-scrollbar { display: none; }
-  .seleccion-marca {
-    display: inline-flex;
-    align-items: baseline;
-    font-size: var(--size-marca-fila);
-    letter-spacing: -0.6px;
-    line-height: 1;
-    margin: 10px 0 18px;
-  }
-  .seleccion-marca .marca-servy {
-    color: var(--color-primario);
-    font-weight: var(--weight-marca-fuerte);
-  }
-  .seleccion-marca .marca-cloud {
-    color: #0f172a;
-    font-weight: var(--weight-marca-media);
-  }
-  .seleccion-marca .marca-partner {
-    color: #64748b;
-    font-weight: var(--weight-marca-suave);
-    font-size: var(--size-marca-cola);
-    margin-left: 6px;
-  }
-  .seleccion-pregunta {
-    margin: 0 0 16px;
   }
 
   /* ============================================================

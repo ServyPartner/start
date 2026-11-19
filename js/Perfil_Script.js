@@ -47,14 +47,11 @@
     var REGLAS = window.Validaciones.REGLAS_PERFIL;
 
     /* Las CINCO reglas de fuerza de la clave (orden del dueño):
-       se encienden bajo el campo «Nueva clave» SOLAMENTE. */
-    var CHECKS_CLAVE = [
-      { regla: 'longitud',  texto: 'Mínimo 8 caracteres' },
-      { regla: 'mayuscula', texto: 'Mayúscula' },
-      { regla: 'minuscula', texto: 'Minúscula' },
-      { regla: 'numero',    texto: 'Número' },
-      { regla: 'simbolo',   texto: 'Símbolo' }
-    ];
+       se encienden bajo el campo «Nueva clave» SOLAMENTE. La
+       FUENTE ÚNICA vive en Validaciones_Script (correcciones
+       12): el mismo componente lo usa la recuperación del
+       LOGIN. */
+    var CHECKS_CLAVE = window.Validaciones.CHECKS_CLAVE;
 
     function _esc_(texto) {
       return String(texto == null ? '' : texto)
@@ -89,32 +86,14 @@
     }
 
     /* ============================================================
-       AVISO FLOTANTE · clase centralizada .notificacionFlotante
-       del Core (voz única — cero avisos sueltos)
+       AVISO FLOTANTE · vive CENTRAL en Global_Script (correcciones
+       12 — window.avisoFlotante, UNA sola copia; la clase
+       .notificacionFlotante del Core). El LOGIN lo reutiliza.
        ============================================================ */
     function _aviso(texto) {
-      var previa = document.querySelector('.notificacionFlotante');
-      if (previa) previa.parentNode.removeChild(previa);
-
-      var d = document.createElement('div');
-      d.className = 'notificacionFlotante visible';
-      d.setAttribute('role', 'status');
-      d.setAttribute('aria-live', 'polite');
-      d.innerHTML =
-        '<span class="textoPrimario">' + _esc_(texto) + '</span>' +
-        '<button type="button" class="avisoCerrar" aria-label="Cerrar" data-glifo="close"></button>';
-      document.body.appendChild(d);
-      if (typeof window.pintarGlifos === 'function') window.pintarGlifos(d);
-
-      var cerrar = function () {
-        d.classList.remove('visible');
-        setTimeout(function () {
-          if (d.parentNode) d.parentNode.removeChild(d);
-        }, 320);
-      };
-      var btn = d.querySelector('.avisoCerrar');
-      if (btn) btn.addEventListener('click', cerrar);
-      setTimeout(cerrar, 4000);
+      if (typeof window.avisoFlotante === 'function') {
+        window.avisoFlotante(texto);
+      }
     }
 
     /* ============================================================
