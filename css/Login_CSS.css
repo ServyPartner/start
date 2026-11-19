@@ -3,11 +3,12 @@
 ARCHIVO:         Login_CSS.html
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: Pantalla de ACCESO (login): montaje exclusivo
-                 (cabecera fuera, centrado vertical, letra de
+                 (cabecera fuera, TÍTULO FIJO ARRIBA — correcciones
+                 14 —, centrado vertical de la caja, letra de
                  campos, enlace de recuperación, vistas del
                  flujo OTP). El formulario viste las clases
                  centrales del Core.
-VERSIÓN:         1.1
+VERSIÓN:         1.2
 DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
                  anatomía del formulario), Login_Script.html
 ════════════════════════════════════════════════════════════════════*/
@@ -55,9 +56,16 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
 
   /* EL TÍTULO · el wordmark .tituloApp del Core (Servy azul +
      Partner gris), CENTRADO horizontalmente por la propia clase
-     central (justify-content: center). */
+     central. FIJO ARRIBA (correcciones 14, orden del dueño):
+     FUERA de la caja centrada — primer hijo del wrap, anclado
+     en la parte alta de la pantalla (el dueño: «es el
+     protagonista de Login»). Al alternar vistas el flujo
+     re-centra SOLO la caja: el título NO se mueve. La
+     separación bajo él la da el centrado de la caja en el
+     espacio restante — respira como titular principal. */
   .acceso-marca {
-    margin: 0 0 34px;
+    flex-shrink: 0;
+    margin: 2px 0 0;
   }
 
   /* ============================================================

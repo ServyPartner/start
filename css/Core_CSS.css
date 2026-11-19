@@ -6,10 +6,12 @@ RESPONSABILIDAD: CSS núcleo de la Partner (tokens, tipografía
                  maestra, .tituloApp, campos y botones de campo,
                  ANATOMÍA genérica del formulario, checks de
                  fuerza de la clave (el acceso, su recuperación y
-                 el Perfil), placeholders, SISTEMA SKELETON .skl,
+                 el Perfil) con su CAMBIO DE GLIFO: INACTIVO el
+                 check simple · ACTIVO el círculo cortado
+                 (checkCirculo), placeholders, SISTEMA SKELETON .skl,
                  marca de la cabecera, modo móvil del lienzo y
                  notificación flotante).
-VERSIÓN:         2.0
+VERSIÓN:         2.1
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
 ════════════════════════════════════════════════════════════════════*/
 
@@ -480,6 +482,18 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app)
   .clave-check .ck svg { width: 100%; height: 100%; display: block; }
   .clave-check.cumple { color: #16a34a; }
   .clave-check.cumple .ck { color: #16a34a; }
+
+  /* EL CAMBIO DE GLIFO (correcciones 14, orden del dueño):
+     INACTIVO = el check simple (el que ya existía) · ACTIVO =
+     el CÍRCULO CORTADO checkCirculo (Iconos): el círculo que
+     la palomita atraviesa y corta. Cada check cambia de glifo
+     SOLO cuando su regla se cumple — y el swap lo pinta AQUÍ,
+     en el CSS del componente: las tres claves que visten
+     .clave-checks (acceso · recuperación · Perfil) cambian
+     solas, cero código nuevo por pantalla. */
+  .clave-check .ck-circulo { display: none; }
+  .clave-check.cumple .ck { display: none; }
+  .clave-check.cumple .ck-circulo { display: block; }
 
   .form-submit {
     width: 100%;

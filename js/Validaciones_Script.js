@@ -51,6 +51,26 @@
       { regla: 'simbolo',   texto: 'Símbolo' }
     ];
 
+    /* ---------- checksClaveHtml · PLANTILLA ÚNICA (correcciones
+       14) — el HTML de los CINCO checks se fabrica AQUÍ una
+       sola vez: cada regla lleva su glifo INACTIVO (check —
+       pinta gris) y su glifo ACTIVO (checkCirculo — el círculo
+       que la palomita corta, Iconos). El swap entre ambos lo
+       pinta el CSS CENTRAL del componente (.clave-check del
+       Core): las tres pantallas que visten el componente (la
+       clave del acceso, la clave nueva de la recuperación y la
+       del Perfil) cambian de glifo solas. Consumidores: el
+       Login (acceso + recuperación) y el Perfil — cero
+       plantilla duplicada (orden del dueño: reutilizar). */
+    function checksClaveHtml() {
+      return CHECKS_CLAVE.map(function (c) {
+        return '<span class="clave-check" data-regla="' + c.regla + '">' +
+                 '<span class="ck" data-glifo="check" aria-hidden="true"></span>' +
+                 '<span class="ck ck-circulo" data-glifo="checkCirculo" aria-hidden="true"></span>' +
+                 c.texto + '</span>';
+      }).join('');
+    }
+
     /* ---------- Limpiadores puros ---------- */
     function limpiarTelefono(v) {
       return String(v == null ? '' : v).replace(REGEX.NO_DIGITO, '');
@@ -223,6 +243,7 @@
       validarClaveNueva:  validarClaveNueva,
       textoRegla:         textoRegla,
       mensajeClave:       mensajeClave,
+      checksClaveHtml:    checksClaveHtml,
       validarUbicacionGps: validarUbicacionGps
     };
 

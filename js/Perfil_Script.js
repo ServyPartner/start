@@ -46,12 +46,10 @@
        validadores del mismo módulo. */
     var REGLAS = window.Validaciones.REGLAS_PERFIL;
 
-    /* Las CINCO reglas de fuerza de la clave (orden del dueño):
-       se encienden bajo el campo «Nueva clave» SOLAMENTE. La
-       FUENTE ÚNICA vive en Validaciones_Script (correcciones
-       12): el mismo componente lo usa la recuperación del
-       LOGIN. */
-    var CHECKS_CLAVE = window.Validaciones.CHECKS_CLAVE;
+    /* Las CINCO reglas de fuerza de la clave viven en SU FUENTE
+       ÚNICA (Validaciones_Script): las reglas (CHECKS_CLAVE) y
+       la PLANTILLA del check (checksClaveHtml — correcciones
+       14, el mismo HTML que el LOGIN). Aquí solo se consume. */
 
     function _esc_(texto) {
       return String(texto == null ? '' : texto)
@@ -329,12 +327,12 @@
       var whatsapp = String(perfil.telefonoWhatsapp || '').trim();
 
       /* Los CINCO checks de la clave nacen apagados; render-
-         ClaveChecks() los enciende en vivo mientras se teclea. */
-      var checkHtml = CHECKS_CLAVE.map(function (c) {
-        return '<span class="clave-check" data-regla="' + c.regla + '">' +
-                 '<span class="ck" data-glifo="check" aria-hidden="true"></span>' +
-                 c.texto + '</span>';
-      }).join('');
+         ClaveChecks() los enciende en vivo mientras se teclea.
+         LA PLANTILLA es LA ÚNICA del sistema (correcciones 14:
+         window.Validaciones.checksClaveHtml — mismo HTML que la
+         clave del acceso y de la recuperación; el cambio de
+         glifo check→checkCirculo lo pinta el CSS central). */
+      var checkHtml = window.Validaciones.checksClaveHtml();
 
       area.innerHTML =
         '<div class="perfil-wrap">' +

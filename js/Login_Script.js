@@ -131,21 +131,25 @@
       var rec = arranque.recuperar || {};
 
       /* Los CINCO checks de la clave — el MISMO componente del
-         Perfil (fuente única: window.Validaciones.CHECKS_CLAVE;
-         orden del dueño: reutilizar, no recrear). */
-      var checkHtml = (window.Validaciones.CHECKS_CLAVE || []).map(function (c) {
-        return '<span class="clave-check" data-regla="' + c.regla + '">' +
-                 '<span class="ck" data-glifo="check" aria-hidden="true"></span>' +
-                 c.texto + '</span>';
-      }).join('');
+         Perfil y LA MISMA PLANTILLA ÚNICA (correcciones 14:
+         window.Validaciones.checksClaveHtml — el HTML de los
+         checks se fabrica UNA sola vez para el acceso, la
+         recuperación y el Perfil; el cambio de glifo lo pinta
+         el CSS central del componente). */
+      var checkHtml = window.Validaciones.checksClaveHtml();
 
       area.innerHTML =
         '<div class="acceso-wrap">' +
-          '<div class="acceso-caja">' +
 
-            '<div class="acceso-marca tituloApp" id="accesoMarca" role="heading" aria-level="1">' +
-              _marcaTitulo_() +
-            '</div>' +
+          /* EL TÍTULO · FIJO ARRIBA (correcciones 14, orden del
+             dueño): FUERA de la caja centrada — primer hijo del
+             wrap. El flujo re-centra SOLO la caja al alternar
+             vistas: el título NO se mueve. */
+          '<div class="acceso-marca tituloApp" id="accesoMarca" role="heading" aria-level="1">' +
+            _marcaTitulo_() +
+          '</div>' +
+
+          '<div class="acceso-caja">' +
 
             /* ---------- VISTA ACCESO · correo + clave ---------- */
             '<form class="acceso-vista" id="vistaAcceso" novalidate>' +
@@ -157,8 +161,11 @@
                   '<div class="errorForm" hidden></div>' +
                 '</div>' +
 
+                /* LA CLAVE nace INACTIVA (correcciones 14): la
+                   puerta la abre _puertaClave_() si y solo si el
+                   correo es válido — el input nace disabled. */
                 '<div class="form-field" id="fieldAccesoClave">' +
-                  '<input type="password" id="inputAccesoClave" placeholder=" " class="form-input campoEditable con-ojo" autocomplete="current-password">' +
+                  '<input type="password" id="inputAccesoClave" placeholder=" " class="form-input campoEditable con-ojo" autocomplete="current-password" disabled>' +
                   '<label for="inputAccesoClave" class="form-label">' + _esc_(arranque.clave || 'Clave') + '</label>' +
                   '<button type="button" class="ojito" id="ojitoAcceso" data-glifo="ojo" aria-label="' + _esc_(arranque.ojo || 'Mostrar la clave mientras se mantiene presionado') + '"></button>' +
                   /* CHECKS DE FUERZA bajo la CLAVE del acceso (orden
@@ -279,6 +286,7 @@
         fClave:   area.querySelector('#fieldAccesoClave'),
         iCorreo:  area.querySelector('#inputAccesoCorreo'),
         iClave:   area.querySelector('#inputAccesoClave'),
+        ojitoAcceso: area.querySelector('#ojitoAcceso'),
         btnEntrar:area.querySelector('#btnAccesoEntrar'),
         accesoChecks: area.querySelector('#accesoChecks'),
         btnRecuperar: area.querySelector('#btnRecuperar'),
@@ -314,12 +322,18 @@
         el.btnEntrar.disabled = !(_correoValido_(el.iCorreo.value) &&
                                   String(el.iClave.value || '').length > 0);
       };
-      vigiar(el.iCorreo, el.fCorreo, despertar);
+      /* LA PUERTA (correcciones 14): cada tecla del CORREO abre
+         o cierra la CLAVE; nace cerrada (correo vacío). */
+      vigiar(el.iCorreo, el.fCorreo, function () {
+        _puertaClave_();
+        despertar();
+      });
       vigiar(el.iClave, el.fClave, function () {
         despertar();
         renderChecksAcceso();
       });
-      _engancharOjito_(area.querySelector('#ojitoAcceso'), el.iClave);
+      _engancharOjito_(el.ojitoAcceso, el.iClave);
+      _puertaClave_();   /* estado inicial: correo vacío → CERRADA */
 
       el.vistaAcceso.addEventListener('submit', function (e) {
         e.preventDefault();
@@ -376,6 +390,19 @@
        centralizado Validaciones_Script). */
     function _correoValido_(correo) {
       return !!(window.Validaciones && window.Validaciones.email(correo));
+    }
+
+    /* LA PUERTA DE LA CLAVE (correcciones 14, orden del dueño):
+       el campo CLAVE está INACTIVO hasta que el CORREO es
+       válido — si y solo si. Si el correo vuelve a invalidarse,
+       la puerta se cierra (el campo conserva lo escrito). El
+       OJITO acompaña a la puerta: inactivo mientras esté
+       cerrada. */
+    function _puertaClave_() {
+      if (!el.iClave || !el.ojitoAcceso) return;
+      var abierta = _correoValido_(String(el.iCorreo.value || '').trim());
+      el.iClave.disabled = !abierta;
+      el.ojitoAcceso.disabled = !abierta;
     }
 
     /* El POOL ÚNICO de avisos de clave (SISTEMA.claves — 03
@@ -604,9 +631,12 @@
             _ciclo_(el.btnRecGuardar, false);
 
             /* De vuelta al acceso: el correo queda escrito y la
-               clave vacía — el partner entra con su clave nueva. */
+               clave vacía — el partner entra con su clave nueva.
+               La PUERTA se reevalúa (correo válido → CLAVE
+               abierta, correcciones 14). */
             el.iCorreo.value = correoListo;
             el.fCorreo.classList.add('activo');
+            _puertaClave_();
             el.iClave.value = '';
             el.fClave.classList.remove('activo');
             _errorCampo_(el.fClave, '');
