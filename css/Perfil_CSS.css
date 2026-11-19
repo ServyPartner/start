@@ -12,16 +12,14 @@ RESPONSABILIDAD: Pantalla PERFIL v2: héroe del avatar + TARJETA
                  botones cuadrados 45×45 de glifo (enviar · check)
                  + ojito y checks + ciclo visual del botón
                  GUARDAR + skeleton con medidas reales.
-VERSIÓN:         2.0
-CAMBIOS:         Correcciones 10: títulos justos con el borde
-                 IZQUIERDO del campo · 16px de aire del input a
-                 la etiqueta siguiente · bloques con 32px de
-                 margen + línea divisoria 1px #E5E7EB + 32px de
-                 relleno (reglamento exacto del dueño); skeleton
-                 al mismo ritmo. Historial: correcciones 9
-                 (ritmo 28/42, letra azul única) · 8 (45px,
-                 título encima del borde, GPS en bloque
-                 dirección, fila OTP 50/50).
+VERSIÓN:         2.1
+CAMBIOS:         Correcciones 11: fuera las 3 LÍNEAS DIVISORIAS
+                 entre bloques — el ritmo 32 margen + 32 relleno
+                 queda intacto (64px caja a caja), solo muere el
+                 border-top. Historial: correcciones 10
+                 (reglamento: títulos al borde izquierdo · 16px
+                 input→etiqueta) · 9 · 8 (45px, título encima del
+                 borde, GPS en bloque dirección, fila OTP 50/50).
 DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
                  sistema .skl), Global_CSS.html (pantalla-area),
                  Perfil_Script.html
@@ -252,12 +250,10 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
      BLOQUES DEL FORMULARIO · los 4 bloques del lienzo: 1·
      eslogan + dirección + GPS · 2· correo + Solicitar/Ingresar
      código · 3· clave actual + nueva clave · 4· Guardar.
-     SEPARACIÓN ENTRE BLOQUES — reglamento EXACTO del dueño
-     (correcciones 10): 32px de MARGEN superior + 32px de
-     RELLENO superior con una LÍNEA DIVISORIA de 1px #E5E7EB
-     justa en el centro de ese aire (65px de caja a caja). La
-     línea nace del border-top del bloque que llega: 32px de
-     margen por encima y 32px de relleno por debajo.
+     SEPARACIÓN ENTRE BLOQUES — ritmo del reglamento (correcciones
+     10) SIN la línea: correcciones 11 (orden del dueño) FUERA las
+     3 líneas divisorias — queda 32px de MARGEN superior + 32px de
+     RELLENO superior, SIN border-top (64px de caja a caja).
      DENTRO del bloque, el GAP lleva la regla de campos: 16px
      de aire desde el borde inferior de un input hasta la
      etiqueta siguiente — más la fila del título que vive
@@ -272,7 +268,6 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   .form-bloque + .form-bloque {
     margin-top: 32px;
     padding-top: 32px;
-    border-top: 1px solid #E5E7EB;
   }
 
   /* La vestidura base la manda .campoEditable (Core_CSS). Solo
@@ -707,14 +702,13 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
 
   /* ============================================================
      SKELETON DE LA PANTALLA · silueta del lienzo v2 REAL al
-     MISMO RITMO que el formulario (correcciones 10): círculo
+     MISMO RITMO que el formulario (correcciones 10/11): círculo
      del avatar, TARJETA sellada, separador y los 4 BLOQUES de
      campos de 45px (gap de campos: 16px de aire + fila del
-     título dentro; entre bloques: 32px de margen + línea 1px
-     #E5E7EB + 32px de relleno — la MISMA divisoria del
-     reglamento) y píldora del botón. Las formas las viste el
-     sistema .skl del Core. Hoy solo actúa en la PRIMERA
-     lectura sin cache.
+     título dentro; entre bloques: 32px de margen + 32px de
+     relleno — SIN línea divisoria, orden del dueño) y píldora
+     del botón. Las formas las viste el sistema .skl del Core.
+     Hoy solo actúa en la PRIMERA lectura sin cache.
      ============================================================ */
   .skl-avatar {
     width: 104px;
@@ -741,7 +735,6 @@ DEPENDENCIAS:    Core_CSS.html (variables, clases maestras y
   .skl-bloque + .skl-bloque {
     margin-top: 32px;
     padding-top: 32px;
-    border-top: 1px solid #E5E7EB;
   }
   .skl-campo {
     height: 45px;
