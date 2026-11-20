@@ -783,6 +783,14 @@
       if (msg === 'OTP_INTENTOS_AGOTADOS') return rec.errIntentos;
       if (msg.indexOf('RATE_LIMIT') === 0) return rec.errLimite;
       if (msg === 'SIN_VERIFICACION_OTP')  return rec.errExpirado;
+      /* CORRECCIONES 20 · el CONTRATO DEL ORIGINAL
+         (Reserva_OTP_Script): el correo que no salió sale con
+         SU voz corta — antes caía al genérico «No se pudo
+         conectar» y el dueño no sabía qué pasó. El texto vive
+         en el fallback (código estático): vive AL INSTANTE,
+         sin esperar el paquete del sistema. */
+      if (msg === 'CORREO_NO_ENVIADO')     return rec.errEnvio ||
+        'No se pudo enviar el código.';
       if (msg === 'TIMEOUT') {
         /* CORRECCIONES 18: el corte NO es culpa de la red — el
            servidor tardó (el OTP lleva un MailApp dentro). El
@@ -806,7 +814,13 @@
       if (msg === 'CLAVE_IGUAL_CORREO')    return claves.errIgualCorreo;
       if (msg === 'CLAVE_PROHIBIDA')       return claves.errProhibida;
       if (msg === 'SISTEMA_OCUPADO')       return claves.errOcupado;
-      return arranque.accesoRed;
+      /* CORRECCIONES 20 · ERROR_INTERNO explícito: el error
+         interno del servidor NO se explica — cae al genérico
+         corto CON fallback (antes el último retorno podía
+         salir sin voz si el paquete no traía la llave). */
+      if (msg === 'ERROR_INTERNO')         return arranque.accesoRed ||
+        'No se pudo conectar';
+      return arranque.accesoRed || 'No se pudo conectar';
     }
 
     /* ============================================================

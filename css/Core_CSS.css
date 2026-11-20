@@ -13,9 +13,17 @@ RESPONSABILIDAD: CSS núcleo de la Partner (trío azul oficial,
                  azul y píldora de alerta .avisoError).
                  Los TOKENS DE LETRA y las clases de tipografía
                  viven CENTRALIZADOS en Tipografia_CSS.html.
-VERSIÓN:         2.4
-CAMBIOS:         Correcciones 18: .avisoError viste CRISTAL
-                 ÁMBAR (rojo → ámbar, contraste con el azul).
+VERSIÓN:         2.5
+CAMBIOS:         Correcciones 20 (orden del dueño: «analiza servy
+                 original en su 2 versiones github y GAS para que
+                 veas como pinta de blanco las franjas de arriba
+                 y la franja de abajo en el navegador»): el
+                 degradado del DOCUMENTO (body.is-mobile) copia
+                 la pintura EXACTA del original (Core_CSS del
+                 ServyCloud): #fdf3ec arriba y blanco desde el
+                 30% — las franjas del navegador pintan como allá,
+                 no azules. El LIENZO (.area-contenido) NO se
+                 toca.
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app;
                  la letra vive en Tipografia_CSS.html)
 ════════════════════════════════════════════════════════════════════*/
@@ -401,12 +409,13 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app;
   body.is-mobile {
     display: block !important;
     padding: 0 !important;
-    /* degradado del documento: AZUL CLARO de la Partner arriba
-       (#DBEAFE, tercera del trío del acta) y blanco desde el
-       30% — el mismo que viste el preloader y el arranque. El
+    /* degradado del documento: el BLANCO EXACTO del ServyCloud
+       original (#fdf3ec arriba y blanco desde el 30% — pintura
+       copiada línea a línea de su Core_CSS, correcciones 20:
+       las franjas del navegador pintan como allá). El
        degradado del LIENZO (.area-contenido) NO se toca. */
-    background-color: #DBEAFE !important;
-    background-image: linear-gradient(180deg, #DBEAFE 0%, #DBEAFE 12%, #ffffff 30%, #ffffff 100%) !important;
+    background-color: #fdf3ec !important;
+    background-image: linear-gradient(180deg, #fdf3ec 0%, #fdf3ec 12%, #ffffff 30%, #ffffff 100%) !important;
     background-repeat: no-repeat !important;
     color: #000;
   }
