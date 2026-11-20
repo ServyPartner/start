@@ -44,13 +44,78 @@
     /* ============================================================
        VISTAS · acceso · rec1 (correo) · rec2 (código) · rec3
        (clave nueva). Una sola visible; «Volver al acceso» regresa.
+       Al salir una vista, el CRONÓMETRO del código muere con ella
+       (correcciones 18): nadie cuenta el tiempo de un código que
+       ya no está en pantalla.
        ============================================================ */
     var VISTAS = ['vistaAcceso', 'vistaRecup1', 'vistaRecup2', 'vistaRecup3'];
 
     function mostrarVista(id) {
+      _cronoParar_();
+      if (el.crono) el.crono.hidden = true;
       for (var i = 0; i < VISTAS.length; i++) {
         var v = document.getElementById(VISTAS[i]);
         if (v) v.hidden = (VISTAS[i] !== id);
+      }
+    }
+
+    /* ============================================================
+       EL CRONÓMETRO DEL CÓDIGO (correcciones 18, orden del
+       dueño: «no hay ningun cronometro regresivo para indicarle
+       al usuario el tiempo que le queda»). El TTL REAL vive en
+       el caché del backend (OTPMAIL_TTL_SEG — 03 OTP.gs, 10 min)
+       y viaja en la respuesta de recuperarClaveSolicitar; aquí
+       cuenta ATRÁS con el texto rec.expira («El código expira en
+       {tiempo}»). AL LLEGAR A CERO el código está MUERTO (el
+       backend respondería OTP_EXPIRADO): la píldora lo dice y el
+       paso 1 queda listo para pedir otro — correo conservado y
+       botón Solicitar código despierto.
+       ============================================================ */
+    var cronoId  = null;
+    var cronoFin = 0;
+
+    function _cronoParar_() {
+      if (cronoId) { clearInterval(cronoId); cronoId = null; }
+    }
+
+    function _cronoArrancar_(segundos) {
+      _cronoParar_();
+      if (!el.crono) return;
+      var ttl = parseInt(segundos, 10);
+      /* SOLO se descarta un ttl AUSENTE o ROTO (backend viejo):
+         el ttl REAL del motor OTP manda tal cual viaja. */
+      if (!ttl || ttl < 1) ttl = 600;
+      cronoFin = Date.now() + ttl * 1000;
+      el.crono.hidden = false;
+      _cronoPinta_();
+      cronoId = setInterval(_cronoPinta_, 1000);
+    }
+
+    function _cronoPinta_() {
+      if (!el.crono) return;
+      var resta = Math.max(0, cronoFin - Date.now());
+      var s  = Math.ceil(resta / 1000);
+      var mm = String(Math.floor(s / 60));
+      var ss = String(s % 60);
+      if (mm.length < 2) mm = '0' + mm;
+      if (ss.length < 2) ss = '0' + ss;
+      var rec = ((window.SISTEMA && window.SISTEMA.arranque) || {}).recuperar || {};
+      el.crono.textContent = String(rec.expira || 'El código expira en {tiempo}')
+        .replace('{tiempo}', mm + ':' + ss);
+
+      if (s <= 0) {
+        _cronoParar_();
+        /* El código MURIÓ: píldora de expirado (SIN limpieza de
+           campos de acceso — es un error de la recuperación) y
+           de vuelta al paso 1 con el correo ya escrito. */
+        window.avisoError(rec.errExpirado || 'El código expiró. Solicita otro.');
+        el.iRecCodigo.value = '';
+        el.fRecCodigo.classList.remove('activo');
+        el.btnRecVerificar.disabled = true;
+        el.btnRecEnviar.disabled = !_correoValido_(
+          String(el.iRecCorreo.value || '').trim());
+        mostrarVista('vistaRecup1');
+        try { el.iRecCorreo.focus(); } catch (_) {}
       }
     }
 
@@ -203,7 +268,7 @@
                 '</div>' +
                 '<button type="submit" class="form-submit botonPrimario" id="btnRecupEnviar" disabled>' +
                   '<span class="form-submit-spinner" aria-hidden="true"></span>' +
-                  '<span class="form-submit-texto">' + _esc_(rec.enviarCodigo || 'Enviar código') + '</span>' +
+                  '<span class="form-submit-texto">' + _esc_(rec.enviarCodigo || 'Solicitar código') + '</span>' +
                 '</button>' +
                 '<div class="acceso-enlace-fila">' +
                   '<button type="button" class="enlacesOpciones" data-volver="1">' +
@@ -222,6 +287,11 @@
                   '<input type="text" id="inputRecupCodigo" placeholder=" " class="form-input campoEditable" maxlength="6" inputmode="numeric" autocomplete="one-time-code">' +
                   '<label for="inputRecupCodigo" class="tituloCampo">' + _esc_(rec.codigo || 'Ingresar Código') + '</label>' +
                 '</div>' +
+                /* EL CRONÓMETRO DEL CÓDIGO (correcciones 18, orden
+                   del dueño): cuenta ATRÁS el TTL real que viaja
+                   del backend — el usuario SIEMPRE sabe cuánto
+                   tiempo le queda al código. */
+                '<p class="acceso-paso-crono textoSecundario" id="recupCrono" hidden></p>' +
                 '<button type="submit" class="form-submit botonPrimario" id="btnRecupVerificar" disabled>' +
                   '<span class="form-submit-spinner" aria-hidden="true"></span>' +
                   '<span class="form-submit-texto">' + _esc_(rec.verificar || 'Verificar código') + '</span>' +
@@ -296,7 +366,8 @@
         iRecClave:   area.querySelector('#inputRecupClave'),
         btnRecGuardar: area.querySelector('#btnRecupGuardar'),
         recupChecks: area.querySelector('#recupChecks'),
-        recupNota:   area.querySelector('#recupNota')
+        recupNota:   area.querySelector('#recupNota'),
+        crono:       area.querySelector('#recupCrono')
       };
 
       /* La letra del campo habla por estados: .activo cuando
@@ -414,6 +485,27 @@
                                 res.ok);
     }
 
+    /* LA LIMPIEZA DEL ACCESO (correcciones 18, orden del dueño:
+       «al cerrarse el toast o darle click en la X, debe limpiar
+       los campos de clave y correo para que el usuario vuelva a
+       intentarlo»). La llaman los errores del ACCESO vía el
+       tercer argumento de window.avisoError (alCerrar — corre
+       con la ✕, con la expiración o cuando otra píldora
+       reemplaza a la viva): campos vacíos, puerta cerrada,
+       checks apagados, botón Entrar INACTIVO y el foco listo en
+       el correo para arrancar de nuevo. */
+    function _limpiarAcceso_() {
+      if (!el.iCorreo || !el.iClave) return;
+      el.iCorreo.value = '';
+      el.iClave.value  = '';
+      el.fCorreo.classList.remove('activo');
+      el.fClave.classList.remove('activo');
+      _puertaClave_();      /* puerta cerrada + ojito apagado */
+      renderChecksAcceso(); /* los CINCO checks fuera */
+      _puertaEntrar_();     /* botón INACTIVO de nuevo */
+      try { el.iCorreo.focus(); } catch (_) {}
+    }
+
     /* El POOL ÚNICO de avisos de clave (SISTEMA.claves — 03
        Constantes.gs): el MISMO texto que pinta el Perfil. */
     function _claves_() {
@@ -502,19 +594,28 @@
 
           /* Los errores del login viajan TODOS en la píldora de
              alerta .avisoError (correcciones 17) — con tiempo de
-             expiración; nada queda escrito bajo el campo. */
+             expiración y, desde las correcciones 18, con la
+             LIMPIEZA del acceso al cerrarse (alCerrar: ✕,
+             expiración o reemplazo). Nada queda escrito bajo el
+             campo: el usuario vuelve a intentarlo desde cero. */
           if (msg === 'ACCESO_BLOQUEADO' || msg.indexOf('RATE_LIMIT') === 0) {
             window.avisoError(arranque.accesoBloqueado ||
-              'Demasiados intentos fallidos. Espera unos minutos y prueba de nuevo.');
+              'Demasiados intentos. Espera un rato.', null, _limpiarAcceso_);
           } else if (msg === 'ACCESO_INVALIDO' || msg === 'CORREO_INVALIDO' ||
                      msg === 'CAMPO_VACIO:clave' || msg === 'LONGITUD_INVALIDA:clave') {
             /* UN SOLO error para correo ausente y clave mala —
                sin pistas de reconocimiento (capa del kit). */
             window.avisoError(arranque.accesoInvalido ||
-              'Correo o clave incorrectos. Vuelve a intentarlo.');
+              'Correo o clave incorrecta', null, _limpiarAcceso_);
+          } else if (msg === 'TIMEOUT') {
+            /* CORRECCIONES 18: el corte del timeout NO es culpa
+               de la red del usuario — el servidor tardó (el OTP
+               lleva un MailApp dentro). Texto honesto propio. */
+            window.avisoError(arranque.accesoTardanza ||
+              'El servidor tardó demasiado', null, _limpiarAcceso_);
           } else {
             window.avisoError(arranque.accesoRed ||
-              'No se pudo conectar. Revisa tu conexión e intenta de nuevo.');
+              'No se pudo conectar', null, _limpiarAcceso_);
           }
         });
     }
@@ -539,7 +640,7 @@
       _ciclo_(el.btnRecEnviar, true);
 
       postBackend('recuperarClaveSolicitar', { correo: recupCorreo })
-        .then(function () {
+        .then(function (data) {
           recupEnCurso = false;
           _ciclo_(el.btnRecEnviar, false);
 
@@ -552,6 +653,10 @@
           el.fRecCodigo.classList.remove('activo');
           el.btnRecVerificar.disabled = true;
           mostrarVista('vistaRecup2');
+          /* EL CRONÓMETRO (correcciones 18): arranca con el TTL
+             REAL del código (viaja en la respuesta — 03 OTP.gs
+             v1.3) y muere solo al llegar a cero. */
+          _cronoArrancar_(data && data.ttl);
           try { el.iRecCodigo.focus(); } catch (_) {}
         })
         .catch(function (err) {
@@ -678,6 +783,18 @@
       if (msg === 'OTP_INTENTOS_AGOTADOS') return rec.errIntentos;
       if (msg.indexOf('RATE_LIMIT') === 0) return rec.errLimite;
       if (msg === 'SIN_VERIFICACION_OTP')  return rec.errExpirado;
+      if (msg === 'TIMEOUT') {
+        /* CORRECCIONES 18: el corte NO es culpa de la red — el
+           servidor tardó (el OTP lleva un MailApp dentro). El
+           texto HONESTO es accesoTardanza; el genérico
+           «No se pudo conectar» confundió al dueño pidiendo un
+           código. */
+        return arranque.accesoTardanza || 'El servidor tardó demasiado';
+      }
+      if (msg === 'RESPUESTA_NO_JSON' || /^HTTP_/.test(msg) ||
+          msg === 'SIN_URL_EXEC') {
+        return arranque.accesoRed || 'No se pudo conectar';
+      }
       if (msg.indexOf('CLAVE_DEBIL:') === 0) {
         return claves.errFalta
           ? String(claves.errFalta).replace('{regla}',

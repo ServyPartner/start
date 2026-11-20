@@ -1,3 +1,4 @@
+
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Tipografia_CSS.html
@@ -7,7 +8,9 @@ RESPONSABILIDAD: Catálogo ÚNICO de la tipografía: tokens de letra,
                  (.avisoError), wordmarks, familia marca, letra
                  del formulario (.tituloCampo · .checkClave) y
                  letras de texto de las pantallas.
-VERSIÓN:         1.2
+VERSIÓN:         1.3
+CAMBIOS:         Correcciones 18: tinta de .avisoError rojo →
+                 ÁMBAR #92400E (token --color-avisoError).
 DEPENDENCIAS:    Ninguna (base; se incluye justo después de
                  Core_CSS.html)
 ════════════════════════════════════════════════════════════════════*/
@@ -53,10 +56,11 @@ DEPENDENCIAS:    Ninguna (base; se incluye justo después de
     /* .avisoError — la letra de la píldora de alerta
        (correcciones 17). Mismo cuerpo que la línea de la
        notificación flotante del original (la maestra
-       .textoPrimario: 14px · 300) con TINTA DE ERROR roja — la
-       misma tinta de la caja .errorForm (#991b1b). El vidrio y
-       la posición de la píldora viven en Core_CSS.html. */
-    --size-avisoError: 14px;      --weight-avisoError: 300;  --color-avisoError: #991b1b;
+       .textoPrimario: 14px · 300) con TINTA DE ALERTA ÁMBAR
+       (correcciones 18, orden del dueño: el rojo no contrastaba
+       con el azul predominante — el ámbar es su complementario;
+       la caja viste el mismo vidrio ámbar en Core_CSS.html). */
+    --size-avisoError: 14px;      --weight-avisoError: 300;  --color-avisoError: #92400e;
 
     /* ============================================================
        FAMILIA MARCA · tamaños y pesos de los wordmarks
@@ -214,9 +218,12 @@ DEPENDENCIAS:    Ninguna (base; se incluye justo después de
      centralizada para eso, vamos a crearla y a llamarla
      .avisoError»). LA LETRA vive aquí, CENTRALIZADA: mismo
      cuerpo que la línea de la notificación flotante del
-     original ServyCloud (14px · 300) con la TINTA DE ERROR
-     #991b1b — la misma de la caja .errorForm (Core_CSS).
-     LA CAJA (píldora de vidrio rojo · posición fija inferior
+     original ServyCloud (14px · 300) con la TINTA DE ALERTA
+     ÁMBAR #92400E (correcciones 18, orden del dueño: el rojo
+     no contrastaba con el azul predominante — el ámbar es su
+     complementario; la caja viste el mismo vidrio ámbar en
+     Core_CSS.html).
+     LA CAJA (píldora de vidrio ámbar · posición fija inferior
      derecha · tamaño · animación de entrada/salida · botón ✕)
      vive en Core_CSS.html junto a su hermana
      .notificacionFlotante — el FORMATO traído del original.

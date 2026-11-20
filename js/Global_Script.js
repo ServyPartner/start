@@ -192,9 +192,15 @@
   }
 
   /* ============================================================
-     FETCH CON TIMEOUT
+     FETCH CON TIMEOUT · correcciones 18: 20 s por intento. La
+     solicitud del OTP lleva un envío de MailApp DENTRO y los
+     arranques en frío de GAS tardan más que un POST simple —
+     con 12 s el cliente cortaba una llamada que el servidor
+     estaba atendiendo bien y el dueño veía «No se pudo
+     conectar» pidiendo un código (orden del dueño, correcciones
+     18). El corte ahora es más paciente.
      ============================================================ */
-  var TIMEOUT_MS = 12000;
+  var TIMEOUT_MS = 20000;
   var MAX_REINTENTOS = 3;
   var BACKOFF_BASE_MS = 500;
 
@@ -405,7 +411,7 @@
      del dueño: «vamos a crear un aviso de alerta, con tiempo de
      expiración … y lo vas a traer para mostrar el error en un
      aviso de alerta»). LA VOZ DE LOS ERRORES: la píldora de
-     vidrio rojo .avisoError del Core (el MISMO formato traído
+     vidrio ámbar .avisoError del Core (el MISMO formato traído
      del original que .notificacionFlotante — posición inferior
      derecha, tamaño, animación, ✕) con la letra centralizada
      .avisoError (Tipografia_CSS). Entra subiendo, SE CIERRA
@@ -414,10 +420,24 @@
      de 4 s) o al tocar la ✕. role="alert": el teléfono la anuncia
      de inmediato. La viste el LOGIN (acceso + recuperación);
      toda la app la puede vestir — UNA sola copia.
+     TERCER ARGUMENTO alCerrar (correcciones 18, orden del
+     dueño: «al cerrarse el toast o darle click en la X, debe
+     limpiar los campos»): un callback que corre UNA sola vez
+     cuando la píldora muere — por ✕, por expiración o por ser
+     reemplazada por otra. El LOGIN lo usa para limpiar los
+     campos de acceso (correo + clave) y dejar al usuario
+     intentando de nuevo desde cero.
      ============================================================ */
-  window.avisoError = function (texto, ms) {
+  window.avisoError = function (texto, ms, alCerrar) {
     var previa = document.querySelector('.avisoError');
-    if (previa) previa.parentNode.removeChild(previa);
+    if (previa) {
+      /* La píldora reemplazada también CERRÓ (correcciones 18):
+         su callback corre antes de morir. */
+      if (typeof previa._alCerrar === 'function') {
+        try { previa._alCerrar(); } catch (_) {}
+      }
+      previa.parentNode.removeChild(previa);
+    }
     var previaAzul = document.querySelector('.notificacionFlotante');
     if (previaAzul) previaAzul.parentNode.removeChild(previaAzul);
 
@@ -429,11 +449,18 @@
       '<span></span>' +
       '<button type="button" class="avisoCerrar" aria-label="Cerrar" data-glifo="close"></button>';
     d.querySelector('span').textContent = String(texto == null ? '' : texto);
+    d._alCerrar = (typeof alCerrar === 'function') ? alCerrar : null;
     document.body.appendChild(d);
     if (typeof window.pintarGlifos === 'function') window.pintarGlifos(d);
 
+    var muerta = false;
     var cerrar = function () {
+      if (muerta) return;
+      muerta = true;
       d.classList.remove('visible');
+      if (typeof d._alCerrar === 'function') {
+        try { d._alCerrar(); } catch (_) {}
+      }
       setTimeout(function () {
         if (d.parentNode) d.parentNode.removeChild(d);
       }, 320);

@@ -1,3 +1,4 @@
+
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Login_CSS.html
@@ -12,7 +13,14 @@ RESPONSABILIDAD: Pantalla de ACCESO (login): montaje exclusivo
                  viajan en la píldora .avisoError (Core_CSS ·
                  Tipografia_CSS · Global_Script, correcciones
                  17).
-VERSIÓN:         1.5
+VERSIÓN:         1.6
+CAMBIOS:         Correcciones 18 (orden del dueño): el ACCESO
+                 viste el fondo del PRELOADER (#60A5FA →
+                 #93C5FD); líneas de campos en BLANCO (reposo y
+                 foco) y toda la letra del login en blanco
+                 (wordmark, títulos, nota, enlaces, ojito,
+                 checks); el cronómetro del código (.acceso-paso-
+crono) pinta con la letra del paso 2.
 DEPENDENCIAS:    Core_CSS.html (anatomía del formulario),
                  Tipografia_CSS.html (la letra), Login_Script.html
 ════════════════════════════════════════════════════════════════════*/
@@ -24,6 +32,23 @@ DEPENDENCIAS:    Core_CSS.html (anatomía del formulario),
      finAcceso) — el resto de la app la conserva intacta.
      ============================================================ */
   body.en-acceso .filtros-wrap { display: none; }
+
+  /* ============================================================
+     EL FONDO DEL ACCESO · EL MISMO DEL PRELOADER (orden del
+     dueño, correcciones 18: «la pantalla de fondo del login es
+     posible que sea igual al del preloader, me gusta mucho mas,
+     se ve mas profesional»): el degradado AZUL del cromo
+     (GitHub_Cromo.css — .preloader-overlay: #60A5FA → #93C5FD).
+     Se pinta SOLO mientras el login vive (body.en-acceso): al
+     abrir sesión finAcceso quita la clase y el LIENZO vuelve a
+     su pintura blanca de siempre (Core_CSS — el fondo del
+     lienzo principal NO se toca).
+     ============================================================ */
+  body.en-acceso .area-contenido {
+    background-color: #60A5FA !important;
+    background-image: linear-gradient(180deg, #60A5FA 0%, #93C5FD 100%) !important;
+    background-repeat: no-repeat;
+  }
 
   /* ============================================================
      MONTAJE DE LA PANTALLA · DOS BLOQUES FIJOS (orden del dueño,
@@ -106,20 +131,104 @@ DEPENDENCIAS:    Core_CSS.html (anatomía del formulario),
     margin: 0 0 2px;
   }
 
+  /* EL CRONÓMETRO DEL CÓDIGO (correcciones 18, orden del
+     dueño): la línea que cuenta ATRÁS el TTL del código en el
+     paso 2. Letra central .textoSecundario (vestida de blanco
+     más abajo, como todo el login); cifras tabulares para que
+     el reloj no baile segundo a segundo. */
+  .acceso-paso-crono {
+    margin: 0 2px;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.4px;
+  }
+  .acceso-paso-crono[hidden] { display: none; }
+
+  /* ============================================================
+     LETRA BLANCA SOBRE EL AZUL DEL PRELOADER (orden del dueño,
+     correcciones 18: «las lineas del campo deben ser blancas
+     para que se vean»). TODO el login viste blanco sobre el
+     degradado #60A5FA → #93C5FD — la MISMA voz del preloader
+     (GitHub_Cromo.css: marca blanca, cola blanca al 65%).
+     Solo dentro del login (body.en-acceso): el Perfil y el
+     resto de la app conservan su letra intacta.
+     ============================================================ */
+
+  /* EL WORDMARK del acceso · la marca del preloader: Servy
+     BLANCO + cola blanca al 65% (misma pareja del cromo). */
+  body.en-acceso .acceso-marca .tituloApp-servy { color: #ffffff; }
+  body.en-acceso .acceso-marca .tituloApp-cola  { color: rgba(255, 255, 255, 0.65); }
+
+  /* TÍTULOS de los pasos y NOTA del paso 2 — blancos. */
+  body.en-acceso .acceso-wrap .acceso-paso-titulo {
+    color: #ffffff !important;
+  }
+  body.en-acceso .acceso-wrap .textoSecundario {
+    color: rgba(255, 255, 255, 0.8) !important;
+  }
+
+  /* LAS LÍNEAS DEL CAMPO EN BLANCO · borde del campo y FOCO
+     en blanco puro (el foco azul var(--color-primario) se
+     perdía sobre el fondo azul). */
+  body.en-acceso .acceso-wrap .campoEditable {
+    border-color: rgba(255, 255, 255, 0.9);
+    color: rgba(255, 255, 255, 0.85);
+  }
+  body.en-acceso .acceso-wrap .form-field.activo .campoEditable,
+  body.en-acceso .acceso-wrap .form-field:focus-within .campoEditable {
+    color: #ffffff;
+    border-color: #ffffff;
+  }
+  body.en-acceso .acceso-wrap .form-field .form-input:focus {
+    border-color: #ffffff;
+  }
+  body.en-acceso .acceso-wrap .form-input[disabled] {
+    color: rgba(255, 255, 255, 0.45);
+  }
+
+  /* EL TÍTULO DEL CAMPO (.tituloCampo) y su tinte de foco —
+     blanco; el azul del foco no existe sobre el fondo azul. */
+  body.en-acceso .acceso-wrap .tituloCampo { color: rgba(255, 255, 255, 0.85); }
+  body.en-acceso .acceso-wrap .form-field.activo .tituloCampo,
+  body.en-acceso .acceso-wrap .form-field:focus-within .tituloCampo {
+    color: #ffffff;
+  }
+
+  /* EL OJITO — blanco (presionado: blanco pleno). */
+  body.en-acceso .acceso-wrap .ojito { color: rgba(255, 255, 255, 0.85); }
+  body.en-acceso .acceso-wrap .ojito.presionado { color: #ffffff; }
+  body.en-acceso .acceso-wrap .ojito[disabled]  { color: rgba(255, 255, 255, 0.4); }
+
+  /* LOS CINCO CHECKS de fuerza — letra y glifo blancos: el
+     verde .cumple del Perfil no existe aquí; en el preloader
+     TODO es blanco (misma voz del cromo). */
+  body.en-acceso .acceso-wrap .checkClave {
+    color: rgba(255, 255, 255, 0.75);
+  }
+  body.en-acceso .acceso-wrap .checkClave .ck {
+    color: rgba(255, 255, 255, 0.5);
+  }
+  body.en-acceso .acceso-wrap .checkClave.cumple,
+  body.en-acceso .acceso-wrap .checkClave.cumple .ck {
+    color: #ffffff;
+  }
+
+  /* EL ENLACE de recuperación y los «Volver al acceso» —
+     blancos (el azul #2563EB de la maestra se perdía sobre el
+     fondo azul). */
+  body.en-acceso .acceso-wrap .enlacesOpciones {
+    color: #ffffff !important;
+  }
+
   /* ============================================================
      LETRA DE LOS CAMPOS (orden del dueño, correcciones 12):
      .textoSecundario cuando el campo está INACTIVO (vacío y sin
      foco — solo habla el placeholder) y .textoPrimario cuando
      está ACTIVO (escrito o enfocado). Mismos tokens del Core —
      cero colores nuevos. El resto de la app no se toca.
+     Desde las correcciones 18 los tintes los VISTE el bloque
+     LETRA BLANCA SOBRE EL AZUL de arriba (el fondo del login es
+     el del preloader) — aquí solo queda el montaje.
      ============================================================ */
-  .acceso-wrap .campoEditable {
-    color: var(--color-textoSecundario);
-  }
-  .acceso-wrap .form-field.activo .campoEditable,
-  .acceso-wrap .form-field:focus-within .campoEditable {
-    color: var(--color-textoPrimario);
-  }
 
   /* ============================================================
      EL ENLACE DE RECUPERACIÓN · «¿Olvidaste tu clave?» y los

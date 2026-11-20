@@ -1,6 +1,8 @@
+
 /*════════════════════════════════════════════════════════════════════
 
 ARCHIVO:         Core_CSS.html
+ESPEJO GITHUB:   github/css/Core_CSS.css (subir a GitHub Pages; editar en GAS y pegar el contenido)
 PROYECTO:        INGeniusCloud | ServyPartner
 RESPONSABILIDAD: CSS núcleo de la Partner (trío azul oficial,
                  campos y botones de campo, ANATOMÍA genérica del
@@ -11,7 +13,9 @@ RESPONSABILIDAD: CSS núcleo de la Partner (trío azul oficial,
                  azul y píldora de alerta .avisoError).
                  Los TOKENS DE LETRA y las clases de tipografía
                  viven CENTRALIZADOS en Tipografia_CSS.html.
-VERSIÓN:         2.3
+VERSIÓN:         2.4
+CAMBIOS:         Correcciones 18: .avisoError viste CRISTAL
+                 ÁMBAR (rojo → ámbar, contraste con el azul).
 DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app;
                  la letra vive en Tipografia_CSS.html)
 ════════════════════════════════════════════════════════════════════*/
@@ -628,15 +632,19 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app;
      expiración … busca el formato en servy original»).
      EL FORMATO TRAÍDO DEL ORIGINAL: la MISMA anatomía de
      .notificacionFlotante (la voz única de los avisos de la
-     app) vestida de ERROR — hermana gemela, tinta distinta.
+     app) vestida de ALERTA — hermana gemela, tinta distinta.
      · POSICIÓN FIJA INFERIOR DERECHA incluida en la clase,
        respeta el safe-area del móvil. El bottom 68px respeta la
        barra de Safari.
-     · CRISTAL ROJO: fondo #fef2f2 translúcido + blur y borde
-       rojo claro — se adivina lo que hay detrás.
-     · TINTA ÚNICA #991b1b: la letra la sirve la tipografía
+     · CRISTAL ÁMBAR (correcciones 18, orden del dueño: «el
+       color rojo no me gusta … no hace nada de contraste con
+       el azul predominante»): el ÁMBAR es el COMPLEMENTARIO
+       del azul — salta a la vista sobre el azul del login y
+       sobre el blanco del lienzo. Fondo #FFFBEB translúcido +
+       blur y borde ámbar — se adivina lo que hay detrás.
+     · TINTA ÚNICA #92400E: la letra la sirve la tipografía
        CENTRALIZADA .avisoError (Tipografia_CSS — tokens
-       --size/-weight/-color-avisoError: 14px · 300 · #991b1b)
+       --size/-weight/-color-avisoError: 14px · 300 · #92400E)
        y la ✕ viste la misma tinta.
      · FORMA: PÍLDORA (misma caja: min-height 44px · padding
        0 16px · radio 999px · max-width min(320px, 100vw - 32px)).
@@ -655,11 +663,11 @@ DEPENDENCIAS:    Ninguna (es la base de todos los CSS de la app;
     align-items: center;
     gap: 10px;
     padding: 0 16px;
-    background: rgba(254, 242, 242, 0.55) !important;
+    background: rgba(255, 251, 235, 0.55) !important;
     -webkit-backdrop-filter: blur(8px);
     backdrop-filter: blur(8px);
-    border: 1px solid rgba(220, 38, 38, 0.35);
-    color: #991b1b;
+    border: 1px solid rgba(245, 158, 11, 0.4);
+    color: #92400e;
     border-radius: 999px !important;
     box-shadow: 0 8px 24px rgba(15, 23, 42, 0.18), 0 3px 10px rgba(15, 23, 42, 0.10);
     z-index: 9999;
