@@ -14,7 +14,7 @@ RESPONSABILIDAD: Misma estructura que el Index de GAS, pero estática:
                  izquierda y el Menú Global a la derecha — el
                  lienzo NO lleva título de pestaña. Sin GA4 (la
                  Partner P1 no lleva analítica propia).
-VERSIÓN:         1.5
+VERSIÓN:         1.6
 ENCABEZADOS:     Solo describen lo que funciona HOY. El historial
                  de tandas vive en la bitácora del taller.
 DEPENDENCIAS:    css/*.css (Core_CSS + Tipografia_CSS — la letra
@@ -56,7 +56,9 @@ DEPENDENCIAS:    css/*.css (Core_CSS + Tipografia_CSS — la letra
   <link rel="stylesheet" href="./css/Core_CSS.css"><link rel="stylesheet" href="./css/Tipografia_CSS.css"><link rel="stylesheet" href="./css/Global_CSS.css"><link rel="stylesheet" href="./css/Perfil_CSS.css"><link rel="stylesheet" href="./css/Login_CSS.css">
 
 <!-- ═══ CROMO DE LA PÁGINA ESTÁTICA ═══ -->
-  <meta name="theme-color" content="#2563EB">
+  <!-- FRANJAS DEL NAVEGADOR (correcciones 19): el blanco EXACTO
+       del ServyCloud original (#fdf3ec) — el azul se veía mal. -->
+  <meta name="theme-color" content="#fdf3ec">
   <!-- PWA iOS: el lienzo pinta DETRÁS de la barra de estado
        (black-translucent + viewport-fit=cover + los safe-areas de
        Core_CSS). En Safari/Chrome del navegador las metas no
